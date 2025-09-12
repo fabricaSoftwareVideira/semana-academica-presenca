@@ -2,7 +2,9 @@
   {
     "matricula": "2025318749",
     "nome": "ANA JULIA PETROLI BUSATTO",
-    "turma": "1A"
+    "turma": "1A",
+    "qrcodeGerado": true,
+    "qrcodeGeradoEm": "2025-09-12T18:52:05.932Z"
   },
   {
     "matricula": "2025308902",
@@ -169,186 +171,213 @@
     "nome": "WELLINGTON NICOLAS DE ANDRADE",
     "turma": "1A"
   },
-  [
-    {
-      "matricula": "2025302918",
-      "nome": "ALFREDO FUNKLER NETO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025314300",
-      "nome": "ANNA CAROLINA SERIGHELLI",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025314249",
-      "nome": "ARTHUR GALVAO CERON",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312333",
-      "nome": "ARTHUR TEIXEIRA RIBEIRO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025330162",
-      "nome": "CAIO MANOEL RODRIGUES",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312010",
-      "nome": "DAFNE ZAMBONI RIBEIRO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025306176",
-      "nome": "DAVI XAVIER",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312899",
-      "nome": "EDUARDO MARQUES",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025315836",
-      "nome": "ELLEN GUZI",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025305660",
-      "nome": "GABRIEL DONATTI DOS SANTOS",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025308107",
-      "nome": "GUILHERME SIEWERDT SOUZA",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025328594",
-      "nome": "HURICK FELIPE DE ALMEIDA MAZUREK",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312066",
-      "nome": "ISABELLA VITORIA DIAS",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312208",
-      "nome": "ISABELLY CAROLINE LINS",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025300790",
-      "nome": "JULIA RAFAELA LIDANI",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025317483",
-      "nome": "JULIA SILVA",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025315872",
-      "nome": "KAMILY DA FONSECA CAMPOS",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025302130",
-      "nome": "KEVIN ANTONIO SILVEIRA",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025308896",
-      "nome": "LAURA CORDEIRO MAFI",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025306096",
-      "nome": "LILIAN SCORTEGAGNA RAMOS",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025307754",
-      "nome": "LUIS ENGELBERTO FUERST",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025308368",
-      "nome": "MANUELA KARPINSKI COELHO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312306",
-      "nome": "MIGUEL EDUARDO SOUTHIER CENDRON",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025308027",
-      "nome": "MURILO JUNGERMANN SIMIONATTO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025314356",
-      "nome": "NATALIA PAULA OTTO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025305894",
-      "nome": "NICOLAS CORDEIRO DAS ALMAS",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025306200",
-      "nome": "NICOLAS ROMANATTO MORO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025319405",
-      "nome": "OTÁVIO HENRIQUE LEÃO SLONGO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312342",
-      "nome": "PEDRO KARPINSKI COELHO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312816",
-      "nome": "PIETRO ANDRIK CERONI",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025310722",
-      "nome": "RAFAEL FELIPE DE CAMARGO DE SOUSA",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025310606",
-      "nome": "SOFIA DE MELLO",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025302300",
-      "nome": "SOPHIA DE CEZARE",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025312324",
-      "nome": "VITOR ENGELBERTO FUERST",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025328834",
-      "nome": "VITOR EVANDRO SCHWANTZ BERGONSI",
-      "turma": "1B"
-    },
-    {
-      "matricula": "2025317438",
-      "nome": "VITOR HENRIQUE PRATES",
-      "turma": "1B"
-    }
-  ]
+  {
+    "matricula": "2025302918",
+    "nome": "ALFREDO FUNKLER NETO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025314300",
+    "nome": "ANNA CAROLINA SERIGHELLI",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025314249",
+    "nome": "ARTHUR GALVAO CERON",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312333",
+    "nome": "ARTHUR TEIXEIRA RIBEIRO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025330162",
+    "nome": "CAIO MANOEL RODRIGUES",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312010",
+    "nome": "DAFNE ZAMBONI RIBEIRO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025306176",
+    "nome": "DAVI XAVIER",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312899",
+    "nome": "EDUARDO MARQUES",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025315836",
+    "nome": "ELLEN GUZI",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025305660",
+    "nome": "GABRIEL DONATTI DOS SANTOS",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025308107",
+    "nome": "GUILHERME SIEWERDT SOUZA",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025328594",
+    "nome": "HURICK FELIPE DE ALMEIDA MAZUREK",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312066",
+    "nome": "ISABELLA VITORIA DIAS",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312208",
+    "nome": "ISABELLY CAROLINE LINS",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025300790",
+    "nome": "JULIA RAFAELA LIDANI",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025317483",
+    "nome": "JULIA SILVA",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025315872",
+    "nome": "KAMILY DA FONSECA CAMPOS",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025302130",
+    "nome": "KEVIN ANTONIO SILVEIRA",
+    "turma": "1B",
+    "participacoes": [
+      {
+        "id": 1,
+        "nome": "Oficina de Programação",
+        "data": "2025-09-12T19:36:20.885Z"
+      },
+      {
+        "id": 2,
+        "nome": "Oficina de Design Gráfico",
+        "data": "2025-09-12T19:44:04.014Z"
+      }
+    ],
+    "pontos": 2
+  },
+  {
+    "matricula": "2025308896",
+    "nome": "LAURA CORDEIRO MAFI",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025306096",
+    "nome": "LILIAN SCORTEGAGNA RAMOS",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025307754",
+    "nome": "LUIS ENGELBERTO FUERST",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025308368",
+    "nome": "MANUELA KARPINSKI COELHO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312306",
+    "nome": "MIGUEL EDUARDO SOUTHIER CENDRON",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025308027",
+    "nome": "MURILO JUNGERMANN SIMIONATTO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025314356",
+    "nome": "NATALIA PAULA OTTO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025305894",
+    "nome": "NICOLAS CORDEIRO DAS ALMAS",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025306200",
+    "nome": "NICOLAS ROMANATTO MORO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025319405",
+    "nome": "OTÁVIO HENRIQUE LEÃO SLONGO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312342",
+    "nome": "PEDRO KARPINSKI COELHO",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025312816",
+    "nome": "PIETRO ANDRIK CERONI",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025310722",
+    "nome": "RAFAEL FELIPE DE CAMARGO DE SOUSA",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025310606",
+    "nome": "SOFIA DE MELLO",
+    "turma": "1B",
+    "participacoes": [
+      {
+        "id": 1,
+        "nome": "Oficina de Programação",
+        "data": "2025-09-12T19:46:58.111Z"
+      }
+    ],
+    "pontos": 1
+  },
+  {
+    "matricula": "2025302300",
+    "nome": "SOPHIA DE CEZARE",
+    "turma": "1B",
+    "participacoes": [
+      {
+        "id": 1,
+        "nome": "Oficina de Programação",
+        "data": "2025-09-12T19:36:07.034Z"
+      }
+    ],
+    "pontos": 1
+  },
+  {
+    "matricula": "2025312324",
+    "nome": "VITOR ENGELBERTO FUERST",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025328834",
+    "nome": "VITOR EVANDRO SCHWANTZ BERGONSI",
+    "turma": "1B"
+  },
+  {
+    "matricula": "2025317438",
+    "nome": "VITOR HENRIQUE PRATES",
+    "turma": "1B"
+  }
 ]

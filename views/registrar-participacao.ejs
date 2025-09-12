@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Registrar Participação - Semana Acadêmica</title>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            background: #f7f7f7;
+            padding: 20px;
+        }
+
+        #reader {
+            width: 300px;
+            margin: 20px auto;
+            display: none;
+        }
+
+        select,
+        button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 5px;
+        }
+
+        #resultado {
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+
+        #erro {
+            margin-top: 10px;
+            color: red;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Registrar Participação</h1>
+
+    <p>Selecione o evento antes de escanear:</p>
+    <select id="eventoSelect">
+        <option value="">-- Escolha o evento --</option>
+        <% eventos.forEach(e=> { %>
+            <option value="<%= e.id %>">
+                <%= e.nome %>
+            </option>
+            <% }) %>
+    </select>
+
+    <br>
+    <button id="btnStart">Iniciar Registro</button>
+
+    <div id="reader"></div>
+
+    <div id="resultado"></div>
+    <div id="erro"></div>
+
+    <script>
+        const resultado = document.getElementById("resultado");
+        const erro = document.getElementById("erro");
+        const eventoSelect = document.getElementById("eventoSelect");
+        const btnStart = document.getElementById("btnStart");
+        const readerDiv = document.getElementById("reader");
+
+        let html5QrcodeScanner;
+
+        function registrarParticipacao(matricula, eventoId) {
+            fetch(`/participacao/${matricula}/${eventoId}`, { method: "POST" })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.error) {
+                        erro.innerText = data.error;
+                        resultado.innerText = "";
+                    } else {
+                        resultado.innerText = `Participação registrada: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
+                        erro.innerText = "";
+                    }
+                })
+                .catch(e => {
+                    erro.innerText = "Erro ao registrar participação";
+                    resultado.innerText = "";
+                    console.error(e);
+                });
+        }
+
+        function onScanSuccess(decodedText, decodedResult) {
+            const eventoId = eventoSelect.value;
+            if (!eventoId) {
+                erro.innerText = "Selecione o evento antes de escanear!";
+                return;
+            }
+
+            try {
+                let payload;
+                try { payload = JSON.parse(decodedText); } catch { payload = decodedText; }
+
+                if (payload) {
+                    registrarParticipacao(payload, eventoId);
+                    // Após registrar, parar scanner
+                    html5QrcodeScanner.stop().then(() => {
+                        html5QrcodeScanner.clear();
+                        readerDiv.style.display = "none";
+                        btnStart.disabled = false;
+                    }).catch(err => {
+                        console.error("Erro ao parar scanner:", err);
+                    });
+                } else {
+                    erro.innerText = "QR Code inválido!";
+                }
+            } catch (e) {
+                erro.innerText = "Erro ao ler QR Code!";
+                console.error(e);
+            }
+        }
+
+        btnStart.addEventListener("click", () => {
+            if (!eventoSelect.value) {
+                erro.innerText = "Selecione o evento antes de iniciar!";
+                return;
+            }
+            // limpar mensagens
+            resultado.innerText = "";
+            erro.innerText = "";
+
+            // iniciar scanner
+            readerDiv.style.display = "block";
+            btnStart.disabled = true;
+
+            html5QrcodeScanner = new Html5Qrcode("reader");
+            html5QrcodeScanner.start(
+                { facingMode: "environment" },
+                { fps: 10, qrbox: 250 },
+                onScanSuccess
+            ).catch(err => {
+                erro.innerText = "Erro ao iniciar câmera!";
+                console.error(err);
+                btnStart.disabled = false;
+            });
+        });
+    </script>
+</body>
+
+</html>

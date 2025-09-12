@@ -2,13 +2,77 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
+const QRCode = require("qrcode");
+const { createCanvas, loadImage } = require("canvas");
 
 const app = express();
 const PORT = 3000;
 
 app.use(express.json());
+app.use(express.static("public"));
+app.use(express.urlencoded({ extended: true })); // para ler dados do form
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 const DATA_FILE = path.join(__dirname, "data", "alunos.json");
+
+const maxWidth = 280; // largura máxima do texto
+
+function drawTextWrapped(ctx, text, x, y, maxWidth, lineHeight) {
+    const words = text.split(" ");
+    let line = "";
+    let testLine, metrics;
+
+    words.forEach((word) => {
+        testLine = line + word + " ";
+        metrics = ctx.measureText(testLine);
+        if (metrics.width > maxWidth && line !== "") {
+            ctx.fillText(line, x, y);
+            line = word + " ";
+            y += lineHeight;
+        } else {
+            line = testLine;
+        }
+    });
+
+    ctx.fillText(line, x, y);
+    return y + lineHeight;
+}
+
+
+async function gerarQrCodeComTexto(payload, aluno) {
+    if (!payload) throw new Error("Matrícula não fornecida");
+
+    const canvasWidth = 300;
+    const canvasHeight = 420; // QR 300 + espaço 120px para texto
+    const canvas = createCanvas(canvasWidth, canvasHeight);
+    const ctx = canvas.getContext("2d");
+
+    // fundo branco
+    ctx.fillStyle = "#fff";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // QR Code
+    const qrCanvas = createCanvas(300, 300);
+    await QRCode.toCanvas(qrCanvas, payload, { width: 300, margin: 2 });
+    ctx.drawImage(qrCanvas, 0, 0);
+
+    // texto
+    ctx.fillStyle = "#000";
+    ctx.textAlign = "center";
+
+    // Nome do aluno (com quebra automática se precisar)
+    ctx.font = "bold 18px Arial";
+    let y = 320;
+    y = drawTextWrapped(ctx, aluno.nome, canvasWidth / 2, y, 280, 20);
+
+    // Turma
+    ctx.font = "16px Arial";
+    ctx.fillText(`Turma: ${aluno.turma}`, canvasWidth / 2, y);
+
+    return canvas.toDataURL();
+}
 
 // Função para ler alunos do JSON
 function lerAlunos() {
@@ -110,6 +174,7 @@ app.get("/eventos", (req, res) => {
 // Rota para listar alunos
 app.get("/alunos", (req, res) => {
     const alunos = lerAlunos();
+    console.log("Quantidade de alunos lidos:", alunos.length);
     res.json(alunos);
 });
 
@@ -288,6 +353,102 @@ app.get("/ranking/turmas", (req, res) => {
     res.json(ranking);
 });
 
+app.get("/", (req, res) => {
+    res.send("API da Semana Acadêmica");
+});
+
+// Rota para abrir a tela public/gerar-qrcode.html
+app.get("/gerar", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "gerar-qrcode.html"));
+});
+
+// Rota para gerar QR code a partir da matrícula
+app.post("/gerar", (req, res) => {
+    const { matricula } = req.body;
+    if (!matricula) {
+        return res.status(400).json({ error: "Matrícula é obrigatória" });
+    }
+
+    // Verifica se aluno existe
+    const alunos = lerAlunos();
+    const aluno = alunos.find(a => a.matricula === matricula);
+    if (!aluno) {
+        return res.status(404).json({ error: "Aluno não encontrado" });
+    }
+
+    // Conteúdo que vai dentro do QR Code (pode ser só matrícula ou JSON)
+    const payload = JSON.stringify(aluno.matricula);
+
+    // Gerar QR code em Base64
+    // QRCode.toDataURL(payload, { width: 250 }, (err, url) => {
+    //     if (err) {
+    //         return res.status(500).json({ error: "Erro ao gerar QR Code" });
+    //     }
+
+    //     res.json({
+    //         aluno: {
+    //             matricula: aluno.matricula,
+    //             nome: aluno.nome,
+    //             turma: aluno.turma,
+    //         },
+    //         qrcode: url // imagem base64
+    //     });
+    // });
+    gerarQrCodeComTexto(payload, aluno)
+        .then((url) => {
+            res.render("qrcode", { aluno, qrcode: url });
+        })
+        .catch(() => {
+            res.render("form", { error: "Erro ao gerar QR Code" });
+        });
+
+    // Gravar log de geração de QR code (opcional)
+    const logFile = path.join(__dirname, "data", "qrcode_logs.txt");
+    const logEntry = `${new Date().toISOString()} - QR Code gerado para matrícula: ${matricula}\n`;
+    fs.appendFileSync(logFile, logEntry);
+
+
+    // Gravar em alunos.json que o QR code foi gerado (opcional)
+    aluno.qrcodeGerado = true;
+    aluno.qrcodeGeradoEm = new Date().toISOString();
+    salvarAlunos(alunos);
+});
+
+// Gerar QR code para todos os alunos em lote e salvar em arquivos PNG na pasta "qrcodes"
+app.post("/gerar-lote", (req, res) => {
+    const alunos = lerAlunos();
+    const outputDir = path.join(__dirname, "qrcodes");
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir);
+    }
+
+    // Gerar QR code para cada aluno usando a função gerarQrCodeComTexto
+    let gerados = 0;
+    alunos.forEach(async (aluno) => {
+        const payload = JSON.stringify(aluno.matricula);
+        try {
+            const dataUrl = await gerarQrCodeComTexto(payload, aluno);
+            // Remover o prefixo "data:image/png;base64,"
+            const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
+            const outputFile = path.join(outputDir, `${aluno.matricula}.png`);
+            fs.writeFileSync(outputFile, base64Data, "base64");
+            gerados++;
+            console.log(`QR Code gerado para ${aluno.matricula} (${gerados}/${alunos.length})`);
+        } catch (err) {
+            console.error(`Erro ao gerar QR Code para ${aluno.matricula}:`, err);
+        }
+    });
+
+    res.json({ message: "Geração de QR Codes em lote iniciada. Verifique a pasta 'qrcodes'." });
+});
+
+// Ir para tela public/registrar-participacao.html, enviando lista de eventos usando ejs
+app.get("/registrar-participacao", (req, res) => {
+    const eventos = lerEventos();
+    res.render("registrar-participacao", { eventos });
+});
+
+// Iniciar o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
