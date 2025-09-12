@@ -200,8 +200,61 @@ app.post("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
     salvarTurmas(turmas);
 
     res.json({ message: "Vitória registrada", turma, pontosTotais: turmas[turma] });
+});
 
+// Cancelar participação em um evento
+app.delete("/participacao/:matricula/:eventoId", (req, res) => {
+    const { matricula, eventoId } = req.params;
+    const alunos = lerAlunos();
+    const eventos = lerEventos();
 
+    const aluno = alunos.find(a => a.matricula === matricula);
+    if (!aluno) return res.status(404).json({ error: "Aluno não encontrado" });
+
+    const evento = eventos.find(e => e.id === parseInt(eventoId));
+    if (!evento) return res.status(404).json({ error: "Evento não encontrado" });
+
+    if (!aluno.participacoes) aluno.participacoes = [];
+    const participacaoIndex = aluno.participacoes.findIndex(p => p.id === evento.id);
+    if (participacaoIndex === -1) {
+        return res.status(400).json({ error: "Aluno não participou deste evento" });
+    }
+
+    // Remover participação e subtrair pontos
+    aluno.participacoes.splice(participacaoIndex, 1);
+    aluno.pontos -= evento.pontos;
+    if (aluno.pontos < 0) aluno.pontos = 0; // Evitar pontos negativos
+
+    salvarAlunos(alunos);
+    res.json({ message: "Participação cancelada", aluno });
+});
+
+// Cancelar vitória de uma turma em um evento
+app.delete("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
+    const { turmaId, eventoId, posicao } = req.params;
+    const turmas = lerTurmas();
+    const eventos = lerEventos();
+
+    const turma = turmas.find(t => t.id === turmaId);
+    if (!turma) return res.status(404).json({ error: "Turma não encontrada" });
+
+    const evento = eventos.find(e => e.id === parseInt(eventoId));
+    if (!evento) return res.status(404).json({ error: "Evento não encontrado" });
+
+    if (!turma.vitorias) turma.vitorias = [];
+    const vitoriaIndex = turma.vitorias.findIndex(v => v.eventoId === evento.id && v.posicao === parseInt(posicao));
+    if (vitoriaIndex === -1) {
+        return res.status(400).json({ error: "Turma não registrou vitória nesta posição para este evento" });
+    }
+
+    // Remover vitória e subtrair pontos
+    const vitoria = turma.vitorias[vitoriaIndex];
+    turma.vitorias.splice(vitoriaIndex, 1);
+    turma.pontos -= vitoria.pontos;
+    if (turma.pontos < 0) turma.pontos = 0; // Evitar pontos negativos
+
+    salvarTurmas(turmas);
+    res.json({ message: "Vitória cancelada", turma });
 });
 
 
@@ -211,19 +264,26 @@ app.get("/ranking/alunos", (req, res) => {
     res.json(alunos);
 });
 
-// Ranking por turma
+// Ranking por turma, incluindo pontuação total de cada turma
 app.get("/ranking/turmas", (req, res) => {
+    const turmas = lerTurmas();
     const alunos = lerAlunos();
-    const turmas = {};
 
-    alunos.forEach(a => {
-        if (!turmas[a.turma]) turmas[a.turma] = 0;
-        turmas[a.turma] += a.pontos;
+    // Calcular pontos totais por turma com base nos alunos
+    const ranking = Object.values(turmas).map(turma => {
+        const pontosTotalAlunos = alunos
+            .filter(a => a.turma === turma.id)
+            .reduce((sum, a) => sum + (a.pontos || 0), 0);
+        return { ...turma, pontosTotalAlunos };
+    }).sort((a, b) => b.pontosTotalAlunos - a.pontosTotalAlunos);
+
+    // Somar pontos da turma (vitorias) com pontos dos alunos
+    ranking.forEach(turma => {
+        turma.pontosTotal = (turma.pontos || 0) + (turma.pontosTotalAlunos || 0);
     });
 
-    const ranking = Object.entries(turmas)
-        .map(([turma, pontos]) => ({ turma, pontos }))
-        .sort((a, b) => b.pontos - a.pontos);
+    // Ordenar pelo total completo
+    ranking.sort((a, b) => b.pontosTotal - a.pontosTotal);
 
     res.json(ranking);
 });
