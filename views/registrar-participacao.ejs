@@ -157,6 +157,12 @@
         <div id="erro"></div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
+    <script>
+        Clerk.load({ frontendApi: '<%= process.env.CLERK_PUBLISHABLE_KEY %>' });
+    </script>
+
+
     <script>
         const resultado = document.getElementById("resultado");
         const erro = document.getElementById("erro");
@@ -190,7 +196,10 @@
             const url = `/participacao/${matricula}/${eventoId}`;
             const method = modo === "registrar" ? "POST" : "DELETE";
 
-            fetch(url, { method })
+            fetch(url, {
+                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${Clerk.session.getToken()}` },
+                method
+            })
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) {
