@@ -1,4 +1,5 @@
 // index.js
+require('dotenv').config();
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
@@ -7,13 +8,20 @@ const { createCanvas, loadImage } = require("canvas");
 
 const app = express();
 const PORT = 3000;
+const rolesAllowed = ["admin", "organizador"];
 
 app.use(express.json());
 app.use(express.static("public"));
-app.use(express.urlencoded({ extended: true })); // para ler dados do form
+app.use(express.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
+
+// Middleware para disponibilizar variáveis do Clerk no frontend
+app.use((req, res, next) => {
+    res.locals.CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
+    next();
+});
 
 const DATA_FILE = path.join(__dirname, "data", "alunos.json");
 
@@ -39,7 +47,6 @@ function drawTextWrapped(ctx, text, x, y, maxWidth, lineHeight) {
     ctx.fillText(line, x, y);
     return y + lineHeight;
 }
-
 
 async function gerarQrCodeComTexto(payload, aluno) {
     if (!payload) throw new Error("Matrícula não fornecida");
@@ -82,7 +89,6 @@ function lerAlunos() {
 }
 
 // Função para ler eventos do JSON
-// { id, nome, descricao, data, horario, local, tipo, pontos }
 function lerEventos() {
     const eventosFile = path.join(__dirname, "data", "eventos.json");
     if (!fs.existsSync(eventosFile)) return [];
@@ -92,7 +98,7 @@ function lerEventos() {
 
 function lerTurmas() {
     const turmasFile = path.join(__dirname, "data", "turmas.json");
-    if (!fs.existsSync(turmasFile)) return {};
+    if (!fs.existsSync(turmasFile)) return [];
     const data = fs.readFileSync(turmasFile);
     return JSON.parse(data);
 }
@@ -113,8 +119,56 @@ function salvarTurmas(turmas) {
     fs.writeFileSync(turmasFile, JSON.stringify(turmas, null, 2));
 }
 
+// Middleware para verificar roles
+const rolesMiddleware = (req, res, next) => {
+    const user = req.auth.user;
+    if (!user.publicMetadata.role || !rolesAllowed.includes(user.publicMetadata.role)) {
+        return res.status(403).json({
+            error: "Acesso negado. Apenas administradores ou organizadores podem registrar participações."
+        });
+    }
+    next();
+};
+
+// ROTAS PÚBLICAS (sem autenticação)
+
+// Página inicial - redireciona para login
+app.get("/", (req, res) => {
+    res.redirect("/login");
+});
+
+// Página de login
+app.get("/login", (req, res) => {
+    res.render("login");
+});
+
+// Dashboard (requer autenticação)
+app.get("/dashboard", (req, res) => {
+    const user = req.auth.user;
+    const role = user.publicMetadata.role;
+    const rolesAllowed = ['admin', 'organizador'];
+
+    if (!role || !rolesAllowed.includes(role)) {
+        return res.status(403).send(`
+            <h2>Acesso Negado</h2>
+            <p>Apenas administradores ou organizadores podem acessar o sistema.</p>
+            <p>Seu papel atual: ${role || 'Não definido'}</p>
+            <a href="/login">Voltar ao login</a>
+        `);
+    }
+
+    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
+});
+
+// Rota para abrir a tela de gerar QR code
+app.get("/gerar", (req, res) => {
+    res.sendFile(path.join(__dirname, "public", "gerar-qrcode.html"));
+});
+
+// ROTAS DA API (com autenticação)
+
 // Rota para cadastrar aluno
-app.post("/alunos", (req, res) => {
+app.post("/alunos", rolesMiddleware, (req, res) => {
     const { matricula, nome, turma } = req.body;
     if (!matricula || !nome || !turma) {
         return res.status(400).json({ error: "matricula, nome e turma são obrigatórios" });
@@ -133,7 +187,7 @@ app.post("/alunos", (req, res) => {
 });
 
 // Rota para cadastrar evento
-app.post("/eventos", (req, res) => {
+app.post("/eventos", rolesMiddleware, (req, res) => {
     const { nome, descricao, data, horario, local, tipo, pontos } = req.body;
     if (!nome || !descricao || !data || !horario || !local || !tipo || pontos === undefined) {
         return res.status(400).json({ error: "Todos os campos são obrigatórios" });
@@ -148,22 +202,23 @@ app.post("/eventos", (req, res) => {
 });
 
 // Rota para cadastrar turma
-app.post("/turmas", (req, res) => {
+app.post("/turmas", rolesMiddleware, (req, res) => {
     const { sigla } = req.body;
     if (!sigla) {
         return res.status(400).json({ error: "sigla é obrigatória" });
     }
 
     const turmas = lerTurmas();
-    if (turmas[sigla]) {
+    if (turmas.find(t => t.id === sigla)) {
         return res.status(400).json({ error: "Turma já cadastrada" });
     }
 
+    const novaTurma = { id: sigla, nome: `Turma ${sigla}`, pontos: 0 };
+    turmas.push(novaTurma);
     salvarTurmas(turmas);
 
-    res.json({ sigla, pontos: 0 });
+    res.json(novaTurma);
 });
-
 
 // Rota para listar eventos
 app.get("/eventos", (req, res) => {
@@ -184,9 +239,8 @@ app.get("/turmas", (req, res) => {
     res.json(turmas);
 });
 
-// Rota para registrar participação em um evento (cada evento tem pontos diferentes). 
-// Registrar que participou da oficina para evitar múltiplas participações.
-app.post("/participacao/:matricula/:eventoId", (req, res) => {
+// Rota para registrar participação em um evento
+app.post("/participacao/:matricula/:eventoId", rolesMiddleware, (req, res) => {
     const { matricula, eventoId } = req.params;
     const alunos = lerAlunos();
     const eventos = lerEventos();
@@ -206,21 +260,22 @@ app.post("/participacao/:matricula/:eventoId", (req, res) => {
     if (aluno.pontos === null || aluno.pontos === undefined) aluno.pontos = 0;
 
     aluno.pontos += evento.pontos;
-    aluno.participacoes.push({ id: evento.id, nome: evento.nome, data: new Date().toISOString() });
+    aluno.participacoes.push({
+        id: evento.id,
+        nome: evento.nome,
+        data: new Date().toISOString()
+    });
+
     salvarAlunos(alunos);
     res.json({ message: "Participação registrada", aluno });
 });
 
-// Rota para registrar vitória para a turma em um evento (cada evento tem pontos diferentes).
-// O evento tem pontos diferentes para primeiro, segundo e terceiro lugar.
-// Registrar pontos no arquivo turmas.json, não no aluno. Vincular o evento à turma em turma.json
-// turmas.json {"id": "1A", "nome": "Turma 1A" }
-app.post("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
+// Rota para registrar vitória para a turma em um evento
+app.post("/vitoria/:turmaId/:eventoId/:posicao", rolesMiddleware, (req, res) => {
     const { turmaId, eventoId, posicao } = req.params;
     const eventos = lerEventos();
     const turmas = lerTurmas();
 
-    // Verificar se a turma existe
     const turma = turmas.find(t => t.id === turmaId);
     if (!turma) {
         return res.status(404).json({ error: "Turma não encontrada" });
@@ -237,38 +292,43 @@ app.post("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
         return res.status(400).json({ error: "Evento não tem pontos definidos para posições" });
     }
 
-    // Verificar se a turma já registrou vitória no evento ou se outra turma ganhou na mesma posição
+    // Verificar se a turma já registrou vitória no evento
     if (!turma.vitorias) turma.vitorias = [];
     if (turma.vitorias.find(v => v.eventoId === evento.id && v.posicao === parseInt(posicao))) {
         return res.status(400).json({ error: "Turma já registrou vitória nesta posição para este evento" });
     }
-    const todasVitorias = Object.values(turmas).flatMap(t => t.vitorias || []);
+
+    // Verificar se outra turma já ganhou na mesma posição
+    const todasVitorias = turmas.flatMap(t => t.vitorias || []);
     if (todasVitorias.find(v => v.eventoId === evento.id && v.posicao === parseInt(posicao))) {
         return res.status(400).json({ error: "Outra turma já registrou vitória nesta posição para este evento" });
     }
 
     // Determinar pontos com base na posição
-
     let pontos = 0;
     if (posicao === "1") pontos = evento.primeiroLugar;
     else if (posicao === "2") pontos = evento.segundoLugar;
     else if (posicao === "3") pontos = evento.terceiroLugar;
 
-    // Adicionar pontos ao objeto turma no turmas.json
+    // Adicionar pontos à turma
     if (turma.pontos === null || turma.pontos === undefined) turma.pontos = 0;
     turma.pontos += pontos;
 
     // Registrar vitória na turma
-    if (!turma.vitorias) turma.vitorias = [];
-    turma.vitorias.push({ eventoId: evento.id, eventoNome: evento.nome, posicao: parseInt(posicao), pontos, data: new Date().toISOString() });
+    turma.vitorias.push({
+        eventoId: evento.id,
+        eventoNome: evento.nome,
+        posicao: parseInt(posicao),
+        pontos,
+        data: new Date().toISOString()
+    });
 
     salvarTurmas(turmas);
-
-    res.json({ message: "Vitória registrada", turma, pontosTotais: turmas[turma] });
+    res.json({ message: "Vitória registrada", turma });
 });
 
 // Cancelar participação em um evento
-app.delete("/participacao/:matricula/:eventoId", (req, res) => {
+app.delete("/participacao/:matricula/:eventoId", rolesMiddleware, (req, res) => {
     const { matricula, eventoId } = req.params;
     const alunos = lerAlunos();
     const eventos = lerEventos();
@@ -288,14 +348,14 @@ app.delete("/participacao/:matricula/:eventoId", (req, res) => {
     // Remover participação e subtrair pontos
     aluno.participacoes.splice(participacaoIndex, 1);
     aluno.pontos -= evento.pontos;
-    if (aluno.pontos < 0) aluno.pontos = 0; // Evitar pontos negativos
+    if (aluno.pontos < 0) aluno.pontos = 0;
 
     salvarAlunos(alunos);
     res.json({ message: "Participação cancelada", aluno });
 });
 
 // Cancelar vitória de uma turma em um evento
-app.delete("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
+app.delete("/vitoria/:turmaId/:eventoId/:posicao", rolesMiddleware, (req, res) => {
     const { turmaId, eventoId, posicao } = req.params;
     const turmas = lerTurmas();
     const eventos = lerEventos();
@@ -316,50 +376,41 @@ app.delete("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
     const vitoria = turma.vitorias[vitoriaIndex];
     turma.vitorias.splice(vitoriaIndex, 1);
     turma.pontos -= vitoria.pontos;
-    if (turma.pontos < 0) turma.pontos = 0; // Evitar pontos negativos
+    if (turma.pontos < 0) turma.pontos = 0;
 
     salvarTurmas(turmas);
     res.json({ message: "Vitória cancelada", turma });
 });
 
-
 // Ranking por aluno
 app.get("/ranking/alunos", (req, res) => {
-    const alunos = lerAlunos().sort((a, b) => b.pontos - a.pontos);
+    const alunos = lerAlunos().sort((a, b) => (b.pontos || 0) - (a.pontos || 0));
     res.json(alunos);
 });
 
-// Ranking por turma, incluindo pontuação total de cada turma
+// Ranking por turma
 app.get("/ranking/turmas", (req, res) => {
     const turmas = lerTurmas();
     const alunos = lerAlunos();
 
-    // Calcular pontos totais por turma com base nos alunos
-    const ranking = Object.values(turmas).map(turma => {
+    // Calcular pontos totais por turma
+    const ranking = turmas.map(turma => {
         const pontosTotalAlunos = alunos
             .filter(a => a.turma === turma.id)
             .reduce((sum, a) => sum + (a.pontos || 0), 0);
-        return { ...turma, pontosTotalAlunos };
-    }).sort((a, b) => b.pontosTotalAlunos - a.pontosTotalAlunos);
 
-    // Somar pontos da turma (vitorias) com pontos dos alunos
-    ranking.forEach(turma => {
-        turma.pontosTotal = (turma.pontos || 0) + (turma.pontosTotalAlunos || 0);
-    });
+        const pontosVitorias = turma.pontos || 0;
+        const pontosTotal = pontosVitorias + pontosTotalAlunos;
 
-    // Ordenar pelo total completo
-    ranking.sort((a, b) => b.pontosTotal - a.pontosTotal);
+        return {
+            ...turma,
+            pontosTotalAlunos,
+            pontosVitorias,
+            pontosTotal
+        };
+    }).sort((a, b) => b.pontosTotal - a.pontosTotal);
 
     res.json(ranking);
-});
-
-app.get("/", (req, res) => {
-    res.send("API da Semana Acadêmica");
-});
-
-// Rota para abrir a tela public/gerar-qrcode.html
-app.get("/gerar", (req, res) => {
-    res.sendFile(path.join(__dirname, "public", "gerar-qrcode.html"));
 });
 
 // Rota para gerar QR code a partir da matrícula
@@ -369,31 +420,14 @@ app.post("/gerar", (req, res) => {
         return res.status(400).json({ error: "Matrícula é obrigatória" });
     }
 
-    // Verifica se aluno existe
     const alunos = lerAlunos();
     const aluno = alunos.find(a => a.matricula === matricula);
     if (!aluno) {
         return res.status(404).json({ error: "Aluno não encontrado" });
     }
 
-    // Conteúdo que vai dentro do QR Code (pode ser só matrícula ou JSON)
     const payload = JSON.stringify(aluno.matricula);
 
-    // Gerar QR code em Base64
-    // QRCode.toDataURL(payload, { width: 250 }, (err, url) => {
-    //     if (err) {
-    //         return res.status(500).json({ error: "Erro ao gerar QR Code" });
-    //     }
-
-    //     res.json({
-    //         aluno: {
-    //             matricula: aluno.matricula,
-    //             nome: aluno.nome,
-    //             turma: aluno.turma,
-    //         },
-    //         qrcode: url // imagem base64
-    //     });
-    // });
     gerarQrCodeComTexto(payload, aluno)
         .then((url) => {
             res.render("qrcode", { aluno, qrcode: url });
@@ -402,53 +436,63 @@ app.post("/gerar", (req, res) => {
             res.render("form", { error: "Erro ao gerar QR Code" });
         });
 
-    // Gravar log de geração de QR code (opcional)
+    // Log de geração de QR code
     const logFile = path.join(__dirname, "data", "qrcode_logs.txt");
     const logEntry = `${new Date().toISOString()} - QR Code gerado para matrícula: ${matricula}\n`;
     fs.appendFileSync(logFile, logEntry);
 
-
-    // Gravar em alunos.json que o QR code foi gerado (opcional)
+    // Marcar que o QR code foi gerado
     aluno.qrcodeGerado = true;
     aluno.qrcodeGeradoEm = new Date().toISOString();
     salvarAlunos(alunos);
 });
 
-// Gerar QR code para todos os alunos em lote e salvar em arquivos PNG na pasta "qrcodes"
-app.post("/gerar-lote", (req, res) => {
+// Gerar QR code para todos os alunos em lote
+app.post("/gerar-lote", rolesMiddleware, (req, res) => {
     const alunos = lerAlunos();
     const outputDir = path.join(__dirname, "qrcodes");
     if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir);
     }
 
-    // Gerar QR code para cada aluno usando a função gerarQrCodeComTexto
     let gerados = 0;
+    const total = alunos.length;
+
     alunos.forEach(async (aluno) => {
         const payload = JSON.stringify(aluno.matricula);
         try {
             const dataUrl = await gerarQrCodeComTexto(payload, aluno);
-            // Remover o prefixo "data:image/png;base64,"
             const base64Data = dataUrl.replace(/^data:image\/png;base64,/, "");
             const outputFile = path.join(outputDir, `${aluno.matricula}.png`);
             fs.writeFileSync(outputFile, base64Data, "base64");
             gerados++;
-            console.log(`QR Code gerado para ${aluno.matricula} (${gerados}/${alunos.length})`);
+            console.log(`QR Code gerado para ${aluno.matricula} (${gerados}/${total})`);
         } catch (err) {
             console.error(`Erro ao gerar QR Code para ${aluno.matricula}:`, err);
         }
     });
 
-    res.json({ message: "Geração de QR Codes em lote iniciada. Verifique a pasta 'qrcodes'." });
+    res.json({
+        message: "Geração de QR Codes em lote iniciada. Verifique a pasta 'qrcodes'.",
+        total: total
+    });
 });
 
-// Ir para tela public/registrar-participacao.html, enviando lista de eventos usando ejs
-app.get("/registrar-participacao", (req, res) => {
+// Rota para registrar participação (requer autenticação)
+app.get("/registrar-participacao", rolesMiddleware, (req, res) => {
     const eventos = lerEventos();
-    res.render("registrar-participacao", { eventos });
+    res.render("registrar-participacao", {
+        eventos,
+        user: req.auth.user
+    });
 });
 
 // Iniciar o servidor
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
+    console.log("Rotas disponíveis:");
+    console.log("- GET  /           -> Redireciona para /login");
+    console.log("- GET  /login      -> Tela de login");
+    console.log("- GET  /dashboard  -> Dashboard (requer auth)");
+    console.log("- GET  /registrar-participacao -> Scanner QR (requer auth)");
 });
