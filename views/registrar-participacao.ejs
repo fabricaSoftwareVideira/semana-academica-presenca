@@ -3,86 +3,207 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Registrar Participação - Semana Acadêmica</title>
+    <title>Registrar / Cancelar Participação - Semana Acadêmica</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
+        /* Reset básico */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         body {
-            font-family: Arial;
-            text-align: center;
+            font-family: Arial, sans-serif;
             background: #f7f7f7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
             padding: 20px;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8rem;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 400px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            margin-bottom: 15px;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            margin-bottom: 10px;
+            transition: background-color 0.3s;
+        }
+
+        #btnToggle.registrar {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        #btnToggle.registrar:hover {
+            background-color: #45a049;
+        }
+
+        #btnToggle.cancelar {
+            background-color: #f44336;
+            color: white;
+        }
+
+        #btnToggle.cancelar:hover {
+            background-color: #da190b;
+        }
+
+        #btnStart {
+            background-color: #2196F3;
+            color: white;
+        }
+
+        #btnStart:hover {
+            background-color: #0b7dda;
         }
 
         #reader {
-            width: 300px;
+            width: 100%;
+            max-width: 300px;
             margin: 20px auto;
             display: none;
         }
 
-        select,
-        button {
-            padding: 10px;
-            font-size: 16px;
-            margin: 5px;
-        }
-
         #resultado {
-            margin-top: 20px;
-            font-size: 18px;
-            color: green;
+            font-size: 16px;
+            margin-top: 10px;
+            color: #2e7d32;
+            text-align: center;
+            word-wrap: break-word;
         }
 
         #erro {
-            margin-top: 10px;
-            color: red;
+            font-size: 16px;
+            margin-top: 5px;
+            color: #d32f2f;
+            text-align: center;
+            word-wrap: break-word;
+        }
+
+        /* Responsividade */
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            button {
+                font-size: 16px;
+                padding: 12px;
+            }
+
+            select {
+                font-size: 14px;
+                padding: 10px;
+            }
         }
     </style>
 </head>
 
 <body>
-    <h1>Registrar Participação</h1>
+    <h1>Registrar / Cancelar Participação</h1>
 
-    <p>Selecione o evento antes de escanear:</p>
-    <select id="eventoSelect">
-        <option value="">-- Escolha o evento --</option>
-        <% eventos.forEach(e=> { %>
-            <option value="<%= e.id %>">
-                <%= e.nome %>
-            </option>
-            <% }) %>
-    </select>
+    <div class="container">
 
-    <br>
-    <button id="btnStart">Iniciar Registro</button>
+        <select id="eventoSelect">
+            <option value="">-- Escolha o evento --</option>
+            <% eventos.forEach(e=> { %>
+                <option value="<%= e.id %>">
+                    <%= e.nome %>
+                </option>
+                <% }) %>
+        </select>
 
-    <div id="reader"></div>
+        <button id="btnToggle" class="registrar">🔵 Modo: Registrar Participação</button>
+        <button id="btnStart">📷 Iniciar Scanner</button>
 
-    <div id="resultado"></div>
-    <div id="erro"></div>
+        <div id="reader"></div>
+
+        <div id="resultado"></div>
+        <div id="erro"></div>
+    </div>
 
     <script>
         const resultado = document.getElementById("resultado");
         const erro = document.getElementById("erro");
         const eventoSelect = document.getElementById("eventoSelect");
         const btnStart = document.getElementById("btnStart");
+        const btnToggle = document.getElementById("btnToggle");
         const readerDiv = document.getElementById("reader");
 
         let html5QrcodeScanner;
+        let modo = "registrar"; // "registrar" ou "cancelar"
 
-        function registrarParticipacao(matricula, eventoId) {
-            fetch(`/participacao/${matricula}/${eventoId}`, { method: "POST" })
+        // Alterna entre registrar e cancelar
+        btnToggle.addEventListener("click", () => {
+            if (modo === "registrar") {
+                modo = "cancelar";
+                btnToggle.textContent = "🔴 Modo: Cancelar Participação";
+                btnToggle.className = "cancelar";
+            } else {
+                modo = "registrar";
+                btnToggle.textContent = "🔵 Modo: Registrar Participação";
+                btnToggle.className = "registrar";
+            }
+        });
+
+        function registrarOuCancelar(matricula, eventoId) {
+            if (!eventoId) {
+                erro.innerText = "Selecione o evento!";
+                return;
+            }
+
+            const url = `/participacao/${matricula}/${eventoId}`;
+            const method = modo === "registrar" ? "POST" : "DELETE";
+
+            fetch(url, { method })
                 .then(res => res.json())
                 .then(data => {
                     if (data.error) {
                         erro.innerText = data.error;
                         resultado.innerText = "";
                     } else {
-                        resultado.innerText = `Participação registrada: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
+                        const acao = modo === "registrar" ? "Registrado" : "Cancelado";
+                        resultado.innerText = `${acao}: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
                         erro.innerText = "";
                     }
                 })
                 .catch(e => {
-                    erro.innerText = "Erro ao registrar participação";
+                    erro.innerText = "Erro na requisição";
                     resultado.innerText = "";
                     console.error(e);
                 });
@@ -90,25 +211,18 @@
 
         function onScanSuccess(decodedText, decodedResult) {
             const eventoId = eventoSelect.value;
-            if (!eventoId) {
-                erro.innerText = "Selecione o evento antes de escanear!";
-                return;
-            }
-
             try {
-                let payload;
-                try { payload = JSON.parse(decodedText); } catch { payload = decodedText; }
+                let payload = JSON.parse(decodedText);
 
                 if (payload) {
-                    registrarParticipacao(payload, eventoId);
-                    // Após registrar, parar scanner
+                    registrarOuCancelar(payload, eventoId);
+
+                    // Fecha scanner e habilita botão novamente
                     html5QrcodeScanner.stop().then(() => {
                         html5QrcodeScanner.clear();
                         readerDiv.style.display = "none";
                         btnStart.disabled = false;
-                    }).catch(err => {
-                        console.error("Erro ao parar scanner:", err);
-                    });
+                    }).catch(err => console.error("Erro ao parar scanner:", err));
                 } else {
                     erro.innerText = "QR Code inválido!";
                 }
@@ -123,11 +237,10 @@
                 erro.innerText = "Selecione o evento antes de iniciar!";
                 return;
             }
-            // limpar mensagens
+
             resultado.innerText = "";
             erro.innerText = "";
 
-            // iniciar scanner
             readerDiv.style.display = "block";
             btnStart.disabled = true;
 
