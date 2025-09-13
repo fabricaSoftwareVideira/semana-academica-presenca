@@ -13,7 +13,9 @@ router.get("/", (req, res) => {
     // Se não estiver autenticado, mostrar a página pública com o ranking
     const ranking = rankingController.rankingPublico();
     const eventosPorTipo = eventoController.agruparPorTipo();
-    res.render("home", { user, ranking, eventosPorTipo, isAuthenticated });
+    const rankingExistePontuacao = ranking.some(u => u.pontosTotal > 0);
+
+    res.render("home", { user, ranking, rankingExistePontuacao, eventosPorTipo, isAuthenticated });
 });
 
 module.exports = router;
