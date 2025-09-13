@@ -32,7 +32,9 @@ app.use(session({
     saveUninitialized: false,
     cookie: {
         maxAge: 1000 * 60 * 60, // 1 hora
-        sameSite: 'lax'          // importante para cookies com fetch
+        httpOnly: true,
+        secure: false,
+        sameSite: 'lax'
     }
 }));
 
@@ -86,15 +88,12 @@ passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
     const users = getUsers();
     const user = users.find(u => u.id === id);
-    console.log("Deserializando usuário:", user);
-
     done(null, user);
 });
 
 // Rota para página não encontrada e renderizar uma view 404.ejs
 app.use((req, res) => {
     res.status(404).render("404");
-
 });
 
 module.exports = app;

@@ -4,7 +4,7 @@ const participacaoController = require('../controllers/participacao.controller')
 const { ensureAuthenticated, checkRole, checkAnyRole } = require('../middlewares/auth');
 
 // Rotas protegidas por autenticação e autorização
-// router.use(ensureAuthenticated);
+router.use(ensureAuthenticated);
 router.use(checkAnyRole(['admin', 'organizador', 'convidado']));
 
 // Rotas de participação e vitória
