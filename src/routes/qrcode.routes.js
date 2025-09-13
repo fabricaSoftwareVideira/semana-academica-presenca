@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const qrcodeController = require('../controllers/qrcode.controller');
+const { ensureAuthenticated, checkRole } = require('../middlewares/auth');
 
 router.post('/gerar', async (req, res) => {
     const { matricula } = req.body;
@@ -15,7 +16,7 @@ router.post('/gerar', async (req, res) => {
     }
 });
 
-router.post('/gerar-lote', (req, res) => {
+router.post('/gerar-lote', ensureAuthenticated, checkRole('admin'), (req, res) => {
     try {
         const result = qrcodeController.gerarQRCodeEmLote();
         res.json(result);

@@ -41,6 +41,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background 0.3s;
+            text-decoration: none;
         }
 
         .logout-btn:hover {
@@ -126,8 +127,10 @@
     <div class="header">
         <h1>🎓 Dashboard - Semana Acadêmica</h1>
         <div class="user-info">
-            <span id="userName">Carregando...</span>
-            <button class="logout-btn" onclick="logout()">Sair</button>
+            <span id="userName">
+                <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+            </span>
+            <a href="auth/logout" class="logout-btn">Sair</a>
         </div>
     </div>
 
@@ -180,54 +183,54 @@
 
         let clerk;
 
-        async function initDashboard() {
-            try {
-                clerk = window.Clerk;
-                await clerk.load({ publishableKey: CLERK_PUBLISHABLE_KEY });
+        // async function initDashboard() {
+        //     try {
+        //         clerk = window.Clerk;
+        //         await clerk.load({ publishableKey: CLERK_PUBLISHABLE_KEY });
 
-                // Verificar se está logado
-                if (!clerk.user) {
-                    window.location.href = '/login';
-                    return;
-                }
+        //         // Verificar se está logado
+        //         if (!clerk.user) {
+        //             window.location.href = '/login';
+        //             return;
+        //         }
 
-                // Mostrar nome do usuário
-                document.getElementById('userName').textContent =
-                    clerk.user.firstName || clerk.user.emailAddresses[0].emailAddress;
+        //         // Mostrar nome do usuário
+        //         document.getElementById('userName').textContent =
+        //             clerk.user.firstName || clerk.user.emailAddresses[0].emailAddress;
 
-                // Verificar role
-                const role = clerk.user.publicMetadata.role;
-                document.getElementById('userRole').textContent = role || 'Não definido';
-                document.getElementById('roleInfo').style.display = 'block';
+        //         // Verificar role
+        //         const role = clerk.user.publicMetadata.role;
+        //         document.getElementById('userRole').textContent = role || 'Não definido';
+        //         document.getElementById('roleInfo').style.display = 'block';
 
-                // Verificar permissões
-                const rolesAllowed = ['admin', 'organizador'];
-                if (!role || !rolesAllowed.includes(role)) {
-                    document.getElementById('accessDenied').style.display = 'block';
-                    document.getElementById('loading').style.display = 'none';
-                } else {
-                    document.getElementById('dashboard').style.display = 'grid';
-                    document.getElementById('loading').style.display = 'none';
-                }
+        //         // Verificar permissões
+        //         const rolesAllowed = ['admin', 'organizador'];
+        //         if (!role || !rolesAllowed.includes(role)) {
+        //             document.getElementById('accessDenied').style.display = 'block';
+        //             document.getElementById('loading').style.display = 'none';
+        //         } else {
+        //             document.getElementById('dashboard').style.display = 'grid';
+        //             document.getElementById('loading').style.display = 'none';
+        //         }
 
-            } catch (error) {
-                console.error('Erro ao carregar dashboard:', error);
-                document.getElementById('loading').innerHTML =
-                    '<p style="color: red;">Erro ao carregar. Recarregue a página.</p>';
-            }
-        }
+        //     } catch (error) {
+        //         console.error('Erro ao carregar dashboard:', error);
+        //         document.getElementById('loading').innerHTML =
+        //             '<p style="color: red;">Erro ao carregar. Recarregue a página.</p>';
+        //     }
+        // }
 
-        async function logout() {
-            try {
-                await clerk.signOut();
-                window.location.href = '/login';
-            } catch (error) {
-                console.error('Erro ao fazer logout:', error);
-            }
-        }
+        // async function logout() {
+        //     try {
+        //         await clerk.signOut();
+        //         window.location.href = '/login';
+        //     } catch (error) {
+        //         console.error('Erro ao fazer logout:', error);
+        //     }
+        // }
 
         // Inicializar quando a página carregar
-        document.addEventListener('DOMContentLoaded', initDashboard);
+        // document.addEventListener('DOMContentLoaded', initDashboard);
     </script>
 </body>
 

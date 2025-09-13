@@ -52,4 +52,16 @@ function rankingTurmasHandler(req, res) {
     res.json(ranking);
 }
 
-module.exports = { rankingAlunosHandler, rankingTurmasHandler };
+// Rota pública que retorna apenas a pontuação por turma
+function rankingPublicoHandler(req, res) {
+    const ranking = listarRankingDasTurmas().map(turma => ({
+        id: turma.id,
+        nome: turma.nome,
+        pontosVitorias: turma.pontosVitorias,
+        pontosTotalAlunos: turma.pontosTotalAlunos,
+        pontosTotal: turma.pontosTotal
+    }));
+    res.json(ranking);
+}
+
+module.exports = { rankingAlunosHandler, rankingTurmasHandler, rankingPublicoHandler };
