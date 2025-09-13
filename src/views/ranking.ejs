@@ -1,0 +1,150 @@
+<!-- src/views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Semana Acadêmica</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        .ranking-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .ranking-card {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s;
+        }
+
+        .ranking-position {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-right: 20px;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        .ranking-info {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .ranking-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #333;
+        }
+
+        .ranking-points span {
+            display: block;
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Mobile */
+        @media (max-width: 480px) {
+            .ranking-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .ranking-position {
+                margin-bottom: 8px;
+            }
+
+            .ranking-points span {
+                font-size: 0.85rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>
+            <a href="/" class="logo">Semana Acadêmica</a>
+        </h1>
+        <% if (typeof user!=='undefined' ) { %>
+            <div class="user-info">
+                <span id="userName">
+                    <%= user.username %>
+                        (<%= user.role %>)
+                </span>
+                <a href="/auth/logout" class="logout-btn">Sair</a>
+            </div>
+            <% } %>
+    </div>
+
+    <div class="container">
+        <h2 class="page-title">Ranking de Participações</h2>
+        <div class="ranking-list">
+            <% ranking.forEach((item, index)=> { %>
+                <div class="ranking-card">
+                    <div class="ranking-position">
+                        <%= index + 1 %>
+                    </div>
+                    <div class="ranking-info">
+                        <div class="ranking-name">
+                            <%= item.nome %>
+                        </div>
+                        <div class="ranking-points">
+                            <span>Pontos Vitórias: <%= item.pontosVitorias %></span>
+                            <span>Pontos Alunos: <%= item.pontosTotalAlunos %></span>
+                            <span>Total: <%= item.pontosTotal %></span>
+                        </div>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+    </div>
+
+
+    <footer role="contentinfo">
+        <div class="footer-content">
+
+            <!-- Informações do site -->
+            <div class="footer-info">
+                <h3>Semana Acadêmica</h3>
+                <div class="footer-logo">
+                    <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                    <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                </div>
+
+            </div>
+
+            <!-- Redes sociais -->
+            <div class="footer-social">
+                <h3>Siga-nos</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
+                    <li>
+                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                class="fa fa-envelope"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </footer>
+
+</body>
+
+</html>

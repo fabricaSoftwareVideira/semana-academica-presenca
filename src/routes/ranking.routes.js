@@ -6,6 +6,9 @@ const { ensureAuthenticated, checkRole } = require("../middlewares/auth");
 
 router.get("/alunos", ensureAuthenticated, rankingController.rankingAlunosHandler);
 router.get("/turmas", ensureAuthenticated, rankingController.rankingTurmasHandler);
-router.get("/publico", rankingController.rankingPublicoHandler);
+router.get("/publico", (req, res) => {
+    const ranking = rankingController.rankingPublico();
+    res.render("ranking", { ranking });
+});
 
 module.exports = router;
