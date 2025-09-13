@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Gerar QR Code - Semana Acadêmica</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Container central */
+        .qrcode-container {
+            max-width: 400px;
+            margin: 5vh auto;
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .qrcode-container h1 {
+            font-size: 1.6rem;
+            margin-bottom: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .qrcode-container form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .qrcode-container input {
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 8px;
+            border: 1px solid var(--gray-light);
+            width: 100%;
+        }
+
+        .qrcode-container button {
+            padding: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            background: var(--primary-color);
+            color: white;
+            transition: background 0.3s;
+        }
+
+        .qrcode-container button:hover {
+            background: var(--primary-color-hover);
+        }
+
+        /* Resultado QR Code */
+        #resultado {
+            margin-top: 20px;
+        }
+
+        #resultado img {
+            max-width: 200px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+
+        #resultado a button {
+            width: auto;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+
+        /* Mensagens de erro */
+        #erro {
+            margin-top: 15px;
+            color: var(--btn-danger);
+            font-weight: bold;
+        }
+
+        @media (max-width: 480px) {
+            .qrcode-container {
+                padding: 1.5rem;
+                margin: 1rem 1rem;
+            }
+
+            .qrcode-container h1 {
+                font-size: 1.4rem;
+            }
+        }
+
+        .info-text {
+            color: var(--gray-dark);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="header">
+        <h1>
+            <a href="/" class="logo">Semana Acadêmica</a>
+        </h1>
+    </header>
+
+    <main class="qrcode-container">
+        <h1>Gerar QR Code</h1>
+        <p class="info-text">Digite sua matrícula para gerar seu QR Code de participação.</p>
+
+        <form action="/qrcode/gerar" method="POST">
+            <input type="text" id="matricula" name="matricula" placeholder="Digite sua matrícula" value="2025318749"
+                required />
+            <button type="submit">Gerar QR Code</button>
+        </form>
+
+        <div id="resultado">
+            <% if (typeof qrCodeDataURL !=='undefined' && typeof aluno !=='undefined' ) { %>
+                <img src="<%= qrCodeDataURL %>" alt="QR Code" />
+                <div>
+                    <strong>
+                        <%= aluno.nome %>
+                    </strong><br>
+                    Turma: <%= aluno.turma %>
+                </div>
+                <a href="<%= qrCodeDataURL %>" download="<%= aluno.nome %>_qrcode.png">
+                    <button>Baixar QR Code</button>
+                </a>
+                <% } %>
+        </div>
+
+        <div id="erro">
+            <% if (typeof error !=='undefined' ) { %>
+                <%= error %>
+                    <% } %>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+
+            <!-- Informações do site -->
+            <div class="footer-info">
+                <h3>Semana Acadêmica</h3>
+                <div class="footer-logo">
+                    <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                    <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                </div>
+
+            </div>
+
+            <!-- Redes sociais -->
+            <div class="footer-social">
+                <h3>Siga-nos</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
+                    <li>
+                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                class="fa fa-envelope"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </footer>
+</body>
+
+</html>

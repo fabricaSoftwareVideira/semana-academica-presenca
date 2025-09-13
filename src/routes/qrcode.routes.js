@@ -3,6 +3,10 @@ const router = express.Router();
 const qrcodeController = require('../controllers/qrcode.controller');
 const { ensureAuthenticated, checkRole } = require('../middlewares/auth');
 
+router.get('/', (req, res) => {
+    res.render('gerar-qrcode');
+});
+
 router.post('/gerar', async (req, res) => {
     const { matricula } = req.body;
     if (!matricula) {
@@ -10,9 +14,11 @@ router.post('/gerar', async (req, res) => {
     }
     try {
         const result = await qrcodeController.gerarQRCodeAluno(matricula);
-        res.json(result);
+        // res.json(result);
+        res.render('gerar-qrcode', { qrCodeDataURL: result.qrCodeDataUrl, aluno: result.aluno });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // res.status(500).json({ error: error.message });
+        res.render('gerar-qrcode', { error: error.message });
     }
 });
 
