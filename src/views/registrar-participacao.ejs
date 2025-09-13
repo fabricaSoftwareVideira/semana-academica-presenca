@@ -12,6 +12,26 @@
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/style.css">
     <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .container {
+            flex: 1;
+            /* ocupa espaço livre */
+            display: flex;
+            justify-content: center;
+            /* centraliza o card na vertical */
+            align-items: center;
+            /* centraliza na horizontal */
+            padding-bottom: 40px;
+            /* espaço extra acima do footer */
+        }
+
         #reader {
             width: 100%;
             max-width: 300px;
@@ -63,8 +83,6 @@
     </nav>
 
     <div class="container">
-
-
         <div class="card">
             <h3 class="page-title">
                 Registrar / Cancelar Participação
@@ -89,8 +107,10 @@
                             <% } %>
             </div>
 
-            <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
-            <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
+            <div class="button-group">
+                <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
+                <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
+            </div>
 
             <div id="reader"></div>
 
