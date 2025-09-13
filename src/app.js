@@ -60,11 +60,11 @@ app.get("/dashboard", (req, res) => {
     }
 });
 app.use("/", homeRoutes);
+app.use("/ranking", rankingRoutes);
 app.use("/alunos", alunosRoutes);
 app.use("/eventos", eventosRoutes);
 app.use("/turmas", turmasRoutes);
 app.use("/participacao", participacaoRoutes);
-app.use("/ranking", rankingRoutes);
 app.use("/qrcode", qrcodeRoutes);
 app.use("/auth", authRoutes);
 app.use("/users", usersRoutes);
