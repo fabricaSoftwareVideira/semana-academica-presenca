@@ -4,11 +4,10 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const QRCode = require("qrcode");
-const { createCanvas, loadImage } = require("canvas");
+const { createCanvas } = require("canvas");
 
 const app = express();
 const PORT = 3000;
-const rolesAllowed = ["admin", "organizador"];
 
 app.use(express.json());
 app.use(express.static("public"));
@@ -16,12 +15,6 @@ app.use(express.urlencoded({ extended: true }));
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
-
-// Middleware para disponibilizar variáveis do Clerk no frontend
-app.use((req, res, next) => {
-    res.locals.CLERK_PUBLISHABLE_KEY = process.env.CLERK_PUBLISHABLE_KEY;
-    next();
-});
 
 const DATA_FILE = path.join(__dirname, "data", "alunos.json");
 
@@ -119,19 +112,6 @@ function salvarTurmas(turmas) {
     fs.writeFileSync(turmasFile, JSON.stringify(turmas, null, 2));
 }
 
-// Middleware para verificar roles
-const rolesMiddleware = (req, res, next) => {
-    const user = req.auth.user;
-    if (!user.publicMetadata.role || !rolesAllowed.includes(user.publicMetadata.role)) {
-        return res.status(403).json({
-            error: "Acesso negado. Apenas administradores ou organizadores podem registrar participações."
-        });
-    }
-    next();
-};
-
-// ROTAS PÚBLICAS (sem autenticação)
-
 // Página inicial - redireciona para login
 app.get("/", (req, res) => {
     res.redirect("/login");
@@ -142,24 +122,6 @@ app.get("/login", (req, res) => {
     res.render("login");
 });
 
-// Dashboard (requer autenticação)
-app.get("/dashboard", (req, res) => {
-    const user = req.auth.user;
-    const role = user.publicMetadata.role;
-    const rolesAllowed = ['admin', 'organizador'];
-
-    if (!role || !rolesAllowed.includes(role)) {
-        return res.status(403).send(`
-            <h2>Acesso Negado</h2>
-            <p>Apenas administradores ou organizadores podem acessar o sistema.</p>
-            <p>Seu papel atual: ${role || 'Não definido'}</p>
-            <a href="/login">Voltar ao login</a>
-        `);
-    }
-
-    res.sendFile(path.join(__dirname, "public", "dashboard.html"));
-});
-
 // Rota para abrir a tela de gerar QR code
 app.get("/gerar", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "gerar-qrcode.html"));
@@ -168,7 +130,7 @@ app.get("/gerar", (req, res) => {
 // ROTAS DA API (com autenticação)
 
 // Rota para cadastrar aluno
-app.post("/alunos", rolesMiddleware, (req, res) => {
+app.post("/alunos", (req, res) => {
     const { matricula, nome, turma } = req.body;
     if (!matricula || !nome || !turma) {
         return res.status(400).json({ error: "matricula, nome e turma são obrigatórios" });
@@ -187,7 +149,7 @@ app.post("/alunos", rolesMiddleware, (req, res) => {
 });
 
 // Rota para cadastrar evento
-app.post("/eventos", rolesMiddleware, (req, res) => {
+app.post("/eventos", (req, res) => {
     const { nome, descricao, data, horario, local, tipo, pontos } = req.body;
     if (!nome || !descricao || !data || !horario || !local || !tipo || pontos === undefined) {
         return res.status(400).json({ error: "Todos os campos são obrigatórios" });
@@ -202,7 +164,7 @@ app.post("/eventos", rolesMiddleware, (req, res) => {
 });
 
 // Rota para cadastrar turma
-app.post("/turmas", rolesMiddleware, (req, res) => {
+app.post("/turmas", (req, res) => {
     const { sigla } = req.body;
     if (!sigla) {
         return res.status(400).json({ error: "sigla é obrigatória" });
@@ -240,7 +202,7 @@ app.get("/turmas", (req, res) => {
 });
 
 // Rota para registrar participação em um evento
-app.post("/participacao/:matricula/:eventoId", rolesMiddleware, (req, res) => {
+app.post("/participacao/:matricula/:eventoId", (req, res) => {
     const { matricula, eventoId } = req.params;
     const alunos = lerAlunos();
     const eventos = lerEventos();
@@ -271,7 +233,7 @@ app.post("/participacao/:matricula/:eventoId", rolesMiddleware, (req, res) => {
 });
 
 // Rota para registrar vitória para a turma em um evento
-app.post("/vitoria/:turmaId/:eventoId/:posicao", rolesMiddleware, (req, res) => {
+app.post("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
     const { turmaId, eventoId, posicao } = req.params;
     const eventos = lerEventos();
     const turmas = lerTurmas();
@@ -328,7 +290,7 @@ app.post("/vitoria/:turmaId/:eventoId/:posicao", rolesMiddleware, (req, res) => 
 });
 
 // Cancelar participação em um evento
-app.delete("/participacao/:matricula/:eventoId", rolesMiddleware, (req, res) => {
+app.delete("/participacao/:matricula/:eventoId", (req, res) => {
     const { matricula, eventoId } = req.params;
     const alunos = lerAlunos();
     const eventos = lerEventos();
@@ -355,7 +317,7 @@ app.delete("/participacao/:matricula/:eventoId", rolesMiddleware, (req, res) => 
 });
 
 // Cancelar vitória de uma turma em um evento
-app.delete("/vitoria/:turmaId/:eventoId/:posicao", rolesMiddleware, (req, res) => {
+app.delete("/vitoria/:turmaId/:eventoId/:posicao", (req, res) => {
     const { turmaId, eventoId, posicao } = req.params;
     const turmas = lerTurmas();
     const eventos = lerEventos();
@@ -448,7 +410,7 @@ app.post("/gerar", (req, res) => {
 });
 
 // Gerar QR code para todos os alunos em lote
-app.post("/gerar-lote", rolesMiddleware, (req, res) => {
+app.post("/gerar-lote", (req, res) => {
     const alunos = lerAlunos();
     const outputDir = path.join(__dirname, "qrcodes");
     if (!fs.existsSync(outputDir)) {
@@ -479,7 +441,7 @@ app.post("/gerar-lote", rolesMiddleware, (req, res) => {
 });
 
 // Rota para registrar participação (requer autenticação)
-app.get("/registrar-participacao", rolesMiddleware, (req, res) => {
+app.get("/registrar-participacao", (req, res) => {
     const eventos = lerEventos();
     res.render("registrar-participacao", {
         eventos,
