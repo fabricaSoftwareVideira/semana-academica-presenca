@@ -1,3 +1,5 @@
+const path = require("path");
+const fs = require("fs");
 const express = require('express');
 const router = express.Router();
 const qrcodeController = require('../controllers/qrcode.controller');
@@ -29,13 +31,16 @@ router.post('/gerar-lote', ensureAuthenticated, checkRole('admin'), async (req, 
         const user = req.user;
         const isAuthenticated = req.isAuthenticated();
         const result = await qrcodeController.gerarQRCodeEmLote();
-        // res.json(result);
-        res.render('gerar-qrcode', { message: result.message, user, isAuthenticated });
-        // res.redirect('/qrcode');
+
+        res.render('gerar-qrcode', { message: result.message, user, isAuthenticated, zipFile: result.zipFile });
     } catch (error) {
-        // res.status(500).json({ error: error.message });
         res.render('gerar-qrcode', { error: error.message });
     }
+});
+
+router.get('/download/:file', ensureAuthenticated, checkRole('admin'), (req, res) => {
+    const filePath = path.join(__dirname, "../../", req.params.file);
+    res.download(filePath);
 });
 
 module.exports = router;

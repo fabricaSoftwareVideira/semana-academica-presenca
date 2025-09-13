@@ -146,6 +146,14 @@
                         <%= message %>
                             <% } %>
                 </p>
+                <% if (typeof zipFile !=='undefined' ) { %>
+                    <p>
+                        <a href="/qrcode/download/<%= zipFile %>" class="btn btn-success">
+                            Baixar QR Codes em ZIP
+                        </a>
+                    </p>
+                    <% } %>
+
             </form>
             <% } %>
 
