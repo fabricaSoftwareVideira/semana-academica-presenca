@@ -124,7 +124,15 @@
   {
     "matricula": "2025306630",
     "nome": "LETICIA MARIA BUTTNER DE OLIVEIRA",
-    "turma": "1A"
+    "turma": "1A",
+    "participacoes": [
+      {
+        "id": 1,
+        "nome": "Oficina de Programação",
+        "data": "2025-09-13T13:46:04.683Z"
+      }
+    ],
+    "pontos": 1
   },
   {
     "matricula": "2025315774",
@@ -149,7 +157,15 @@
   {
     "matricula": "2025303254",
     "nome": "MIGUEL TURKE BEATRIZ DOS SANTOS",
-    "turma": "1A"
+    "turma": "1A",
+    "participacoes": [
+      {
+        "id": 3,
+        "nome": "Palestra: Inovações Tecnológicas",
+        "data": "2025-09-13T13:49:21.880Z"
+      }
+    ],
+    "pontos": 1
   },
   {
     "matricula": "2025312217",
@@ -295,7 +311,15 @@
   {
     "matricula": "2025306096",
     "nome": "LILIAN SCORTEGAGNA RAMOS",
-    "turma": "1B"
+    "turma": "1B",
+    "participacoes": [
+      {
+        "id": 2,
+        "nome": "Oficina de Design Gráfico",
+        "data": "2025-09-13T13:46:12.311Z"
+      }
+    ],
+    "pontos": 1
   },
   {
     "matricula": "2025307754",

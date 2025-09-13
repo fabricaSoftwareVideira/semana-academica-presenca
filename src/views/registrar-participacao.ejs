@@ -52,79 +52,73 @@
     </header>
 
     <div class="container">
-        <h2 class="page-title">
-            Registrar / Cancelar Participação
-        </h2>
-    </div>
 
-    <div class="card">
-        <div class="form-group">
-            <!-- se eventos tiver mais que um, use select -->
-            <% if (eventos.length> 1) { %>
-                <select id="eventoSelect">
-                    <option value="">-- Escolha o evento --</option>
-                    <% eventos.forEach(e=> { %>
-                        <option value="<%= e.id %>">
-                            <%= e.nome %>
-                        </option>
-                        <% }) %>
-                </select>
-                <% } else if (eventos.length===1) { %>
-                    <input type="hidden" id="eventoSelect" value="<%= eventos[0].id %>">
-                    <p>Evento: <%= eventos[0].nome %>
-                    </p>
-                    <% } else { %>
-                        <p>Nenhum evento disponível.</p>
-                        <% } %>
+
+        <div class="card">
+            <h3 class="page-title">
+                Registrar / Cancelar Participação
+            </h3>
+            <div class="form-group">
+                <!-- se eventos tiver mais que um, use select -->
+                <% if (eventos.length> 1) { %>
+                    <select id="eventoSelect">
+                        <option value="">-- Escolha o evento --</option>
+                        <% eventos.forEach(e=> { %>
+                            <option value="<%= e.id %>">
+                                <%= e.nome %>
+                            </option>
+                            <% }) %>
+                    </select>
+                    <% } else if (eventos.length===1) { %>
+                        <input type="hidden" id="eventoSelect" value="<%= eventos[0].id %>">
+                        <p>Evento: <%= eventos[0].nome %>
+                        </p>
+                        <% } else { %>
+                            <p>Nenhum evento disponível.</p>
+                            <% } %>
+            </div>
+
+            <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
+            <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
+
+            <div id="reader"></div>
+
+            <div id="resultado"></div>
+            <div id="erro"></div>
         </div>
 
-        <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
-        <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
 
-        <div id="reader"></div>
-
-        <div id="resultado"></div>
-        <div id="erro"></div>
     </div>
 
-    <footer role="contentinfo">
-        <div class="container">
-            <div class="footer-content">
+    <footer>
+        <div class="footer-content">
 
-                <!-- Informações do site -->
-                <div class="footer-info">
-                    <h3>Semana Acadêmica</h3>
-                    <p>&copy; 2025 Semana Acadêmica</p>
-                    <div class="footer-logo">
-                        <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
-                        <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
-                    </div>
-                </div>
-
-                <!-- Contato -->
-                <div class="footer-contact">
-                    <h3>Contato</h3>
-                    <p>
-                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br">fabricadesoftware.videira@ifc.edu.br</a>
-                    </p>
-                    <p>Rodovia SC 135, km 125 - Bairro Campo Experimental</p>
-                    <p>CEP 89564-590 - Videira - SC</p>
-                    <p>(49) 3533-4900</p>
-                </div>
-
-                <!-- Redes sociais -->
-                <div class="footer-social">
-                    <h3>Siga-nos</h3>
-                    <ul>
-                        <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
-                                    class="fab fa-instagram"></i></a></li>
-                    </ul>
+            <!-- Informações do site -->
+            <div class="footer-info">
+                <h3>Semana Acadêmica</h3>
+                <div class="footer-logo">
+                    <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                    <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
                 </div>
 
             </div>
+
+            <!-- Redes sociais -->
+            <div class="footer-social">
+                <h3>Siga-nos</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
+                    <li>
+                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                class="fa fa-envelope"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
         </div>
     </footer>
-
 
     <script src="/js/registrar-participacao.js"></script>
 </body>
