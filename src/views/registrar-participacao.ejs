@@ -6,42 +6,27 @@
     <title>Registrar / Cancelar Participação - Semana Acadêmica</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Reset básico */
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            font-family: Arial, sans-serif;
-            background: #f7f7f7;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            min-height: 100vh;
-            padding: 20px;
-            color: #333;
-        }
-
-        h1 {
+        .page-title {
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: 1.5rem;
             font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c3e50;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
-            max-width: 400px;
+        .card {
             background: #fff;
-            padding: 20px;
             border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+            padding: 2rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
         }
 
         select {
@@ -50,46 +35,63 @@
             font-size: 16px;
             border-radius: 8px;
             border: 1px solid #ccc;
-            margin-bottom: 15px;
         }
 
-        button {
+        .btn {
             width: 100%;
-            padding: 15px;
-            font-size: 18px;
+            padding: 14px;
+            font-size: 16px;
             font-weight: bold;
             border-radius: 8px;
             border: none;
             cursor: pointer;
-            margin-bottom: 10px;
-            transition: background-color 0.3s;
+            margin-bottom: 12px;
+            transition: all 0.3s ease;
         }
 
-        #btnToggle.registrar {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        #btnToggle.registrar:hover {
-            background-color: #45a049;
-        }
-
-        #btnToggle.cancelar {
-            background-color: #f44336;
-            color: white;
-        }
-
-        #btnToggle.cancelar:hover {
-            background-color: #da190b;
-        }
-
-        #btnStart {
+        .btn-primary {
             background-color: #2196F3;
             color: white;
         }
 
-        #btnStart:hover {
+        .btn-primary:hover {
             background-color: #0b7dda;
+        }
+
+        .btn-success {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #45a049;
+        }
+
+        .btn-danger {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #da190b;
+        }
+
+        .btn-warning {
+            background-color: #ff9800;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #e68a00;
+        }
+
+        .btn-info {
+            background-color: #00bcd4;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background-color: #009bb3;
         }
 
         #reader {
@@ -104,52 +106,46 @@
             margin-top: 10px;
             color: #2e7d32;
             text-align: center;
-            word-wrap: break-word;
+            font-weight: 500;
         }
 
         #erro {
             font-size: 16px;
-            margin-top: 5px;
+            margin-top: 8px;
             color: #d32f2f;
             text-align: center;
-            word-wrap: break-word;
+            font-weight: 500;
         }
 
-        /* Responsividade */
         @media (max-width: 480px) {
-            h1 {
+            .card {
+                padding: 1.2rem;
+            }
+
+            .page-title {
                 font-size: 1.5rem;
-            }
-
-            button {
-                font-size: 16px;
-                padding: 12px;
-            }
-
-            select {
-                font-size: 14px;
-                padding: 10px;
             }
         }
     </style>
 </head>
 
 <body>
-    <h1>Registrar / Cancelar Participação</h1>
+    <h1 class="page-title">Registrar / Cancelar Participação</h1>
 
-    <div class="container">
+    <div class="card">
+        <div class="form-group">
+            <select id="eventoSelect">
+                <option value="">-- Escolha o evento --</option>
+                <% eventos.forEach(e=> { %>
+                    <option value="<%= e.id %>">
+                        <%= e.nome %>
+                    </option>
+                    <% }) %>
+            </select>
+        </div>
 
-        <select id="eventoSelect">
-            <option value="">-- Escolha o evento --</option>
-            <% eventos.forEach(e=> { %>
-                <option value="<%= e.id %>">
-                    <%= e.nome %>
-                </option>
-                <% }) %>
-        </select>
-
-        <button id="btnToggle" class="registrar">🔵 Modo: Registrar Participação</button>
-        <button id="btnStart">📷 Iniciar Scanner</button>
+        <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
+        <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
 
         <div id="reader"></div>
 
@@ -166,18 +162,19 @@
         const readerDiv = document.getElementById("reader");
 
         let html5QrcodeScanner;
-        let modo = "registrar"; // "registrar" ou "cancelar"
+        let modo = "registrar";
+        let scannerAtivo = false; // novo controle
 
-        // Alterna entre registrar e cancelar
+        // alterna registrar/cancelar
         btnToggle.addEventListener("click", () => {
             if (modo === "registrar") {
                 modo = "cancelar";
                 btnToggle.textContent = "🔴 Modo: Cancelar Participação";
-                btnToggle.className = "cancelar";
+                btnToggle.className = "btn btn-danger";
             } else {
                 modo = "registrar";
                 btnToggle.textContent = "🔵 Modo: Registrar Participação";
-                btnToggle.className = "registrar";
+                btnToggle.className = "btn btn-success";
             }
         });
 
@@ -186,7 +183,6 @@
                 erro.innerText = "Selecione o evento!";
                 return;
             }
-
             const url = `/participacao/${matricula}/${eventoId}`;
             const method = modo === "registrar" ? "POST" : "DELETE";
 
@@ -194,12 +190,9 @@
                 headers: { "Content-Type": "application/json" },
                 credentials: "include",
                 method,
-
             })
                 .then(res => {
-                    if (res.status === 401) {
-                        throw new Error("Você precisa estar logado.");
-                    }
+                    if (res.status === 401) throw new Error("Você precisa estar logado.");
                     return res.json();
                 })
                 .then(data => {
@@ -219,36 +212,22 @@
                 });
         }
 
-
         let processingScan = false;
 
-        function onScanSuccess(decodedText, decodedResult) {
-            if (processingScan) return; // ignora scans extras
+        function onScanSuccess(decodedText) {
+            if (processingScan) return;
             processingScan = true;
 
             const eventoId = eventoSelect.value;
             try {
-                let payload;
-                try {
-                    payload = JSON.parse(decodedText);
-                } catch {
-                    payload = decodedText.trim(); // assume string simples
-                }
-
+                let payload = decodedText;
+                try { payload = JSON.parse(decodedText); } catch { }
 
                 if (payload) {
                     registrarOuCancelar(payload, eventoId);
 
-                    // Fecha scanner e habilita botão novamente
-                    html5QrcodeScanner.stop().then(() => {
-                        html5QrcodeScanner.clear();
-                        readerDiv.style.display = "none";
-                        btnStart.disabled = false;
-                        processingScan = false; // libera para próximo uso
-                    }).catch(err => {
-                        console.error("Erro ao parar scanner:", err);
-                        processingScan = false;
-                    });
+                    pararScanner(); // fecha scanner automaticamente após leitura
+                    processingScan = false;
                 } else {
                     erro.innerText = "QR Code inválido!";
                     processingScan = false;
@@ -260,8 +239,8 @@
             }
         }
 
-
-        btnStart.addEventListener("click", () => {
+        // inicia scanner
+        function iniciarScanner() {
             if (!eventoSelect.value) {
                 erro.innerText = "Selecione o evento antes de iniciar!";
                 return;
@@ -271,18 +250,45 @@
             erro.innerText = "";
 
             readerDiv.style.display = "block";
-            btnStart.disabled = true;
 
             html5QrcodeScanner = new Html5Qrcode("reader");
             html5QrcodeScanner.start(
                 { facingMode: "environment" },
                 { fps: 10, qrbox: 250 },
                 onScanSuccess
-            ).catch(err => {
+            ).then(() => {
+                scannerAtivo = true;
+                btnStart.textContent = "🛑 Parar Scanner";
+                btnStart.className = "btn btn-warning";
+            }).catch(err => {
                 erro.innerText = "Erro ao iniciar câmera!";
                 console.error(err);
-                btnStart.disabled = false;
+                scannerAtivo = false;
             });
+        }
+
+        // parar scanner manualmente
+        function pararScanner() {
+            if (html5QrcodeScanner) {
+                html5QrcodeScanner.stop().then(() => {
+                    html5QrcodeScanner.clear();
+                    readerDiv.style.display = "none";
+                    scannerAtivo = false;
+                    btnStart.textContent = "📷 Iniciar Scanner";
+                    btnStart.className = "btn btn-primary";
+                }).catch(err => {
+                    console.error("Erro ao parar scanner:", err);
+                });
+            }
+        }
+
+        // clique do botão
+        btnStart.addEventListener("click", () => {
+            if (scannerAtivo) {
+                pararScanner();
+            } else {
+                iniciarScanner();
+            }
         });
     </script>
 </body>
