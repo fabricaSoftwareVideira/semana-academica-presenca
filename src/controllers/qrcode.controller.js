@@ -1,9 +1,11 @@
 const path = require("path");
 const fs = require("fs");
+const archiver = require("archiver");
 const { readJson } = require("../utils/file.utils");
 const { gerarQrCodeComTexto } = require("../services/qrcode.service");
 const ALUNO_DATA_FILE = path.join(__dirname, "../data/alunos.json");
 const qrCodesDir = path.join(__dirname, "../../qrcodes");
+const zipPath = path.join(__dirname, "../../qrcodes.zip");
 
 async function gerarQRCodeAluno(matricula) {
     try {
@@ -21,7 +23,6 @@ async function gerarQRCodeAluno(matricula) {
     }
 }
 
-// Gerar QR Codes em lote para todos os alunos e armazenar as imagens em arquivos na pasta ./qrcodes
 async function gerarQRCodeEmLote() {
     try {
         if (!fs.existsSync(qrCodesDir)) {
@@ -36,15 +37,40 @@ async function gerarQRCodeEmLote() {
             const payload = JSON.stringify(aluno.matricula);
             const qrCodeDataUrl = await gerarQrCodeComTexto(payload, aluno);
             const base64Data = qrCodeDataUrl.replace(/^data:image\/png;base64,/, "");
-            const outputFile = path.join(qrCodesDir, `${aluno.matricula}.png`);
+
+            // Criar pasta da turma se não existir
+            const turmaDir = path.join(qrCodesDir, aluno.turma);
+            if (!fs.existsSync(turmaDir)) {
+                fs.mkdirSync(turmaDir, { recursive: true });
+            }
+
+            const outputFile = path.join(turmaDir, `${aluno.matricula}.png`);
             fs.writeFileSync(outputFile, base64Data, "base64");
+
             aluno.qrcodeGerado = true;
             aluno.qrCodeGeradoEm = new Date().toISOString();
             gerados++;
-            console.log(`QR Code gerado para ${aluno.matricula} (${gerados}/${total})`);
+            console.log(`QR Code gerado para ${aluno.matricula} (turma ${aluno.turma}) (${gerados}/${total})`);
         }
 
-        return { message: `QR Codes gerados para ${gerados} alunos. Arquivos salvos em um diretório chamado 'qrcodes' na raiz do projeto.` };
+        // Criar ZIP agrupando todas as turmas
+        await new Promise((resolve, reject) => {
+            const output = fs.createWriteStream(zipPath);
+            const archive = archiver("zip", { zlib: { level: 9 } });
+
+            output.on("close", resolve);
+            archive.on("error", reject);
+
+            archive.pipe(output);
+            archive.directory(qrCodesDir, false); // inclui subpastas (turmas)
+            archive.finalize();
+        });
+
+        return {
+            message: `QR Codes gerados para ${gerados} alunos em ${[...new Set(alunos.map(a => a.turma))].length} turmas. Arquivo compactado disponível em 'qrcodes.zip'.`,
+            zipFile: "qrcodes.zip"
+        };
+
     } catch (error) {
         throw new Error(`Erro ao gerar QR Codes em lote: ${error.message}`);
     }
