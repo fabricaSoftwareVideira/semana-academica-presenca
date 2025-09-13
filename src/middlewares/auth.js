@@ -7,7 +7,6 @@ function ensureAuthenticated(req, res, next) {
 
 function checkRole(role) {
     return function (req, res, next) {
-        console.log(req.user);
         if (req.isAuthenticated() && req.user.role === role) {
             return next();
         }

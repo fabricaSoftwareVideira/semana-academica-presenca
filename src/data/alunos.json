@@ -250,9 +250,14 @@
         "id": 5,
         "nome": "Gincana Acadêmica",
         "data": "2025-09-13T11:38:48.099Z"
+      },
+      {
+        "id": 1,
+        "nome": "Oficina de Programação",
+        "data": "2025-09-13T12:09:40.837Z"
       }
     ],
-    "pontos": 1
+    "pontos": 2
   },
   {
     "matricula": "2025317483",

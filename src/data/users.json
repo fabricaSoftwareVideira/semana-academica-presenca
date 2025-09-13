@@ -8,13 +8,13 @@
     {
         "id": 2,
         "username": "fabio.pinheiro",
-        "password": "$2b$10$5c7H9u1J9hJX1o2z0Wj8M.7z8J3k9F3yB8aZk1tMZxQh1H8wH4a2G",
+        "password": "$2a$12$nqWfKBdXoRve2y0sJrVfEOyApBzXiBZJKus1AiidF8Jooa3sNIFey",
         "role": "organizador"
     },
     {
         "id": 3,
         "username": "ana.silva",
-        "password": "$2b$10$3nF8k1J9hJX1o2z0Wj8M.7z8J3k9F3yB8aZk1tMZxQh1H8wH4a2G",
+        "password": "$2a$12$nqWfKBdXoRve2y0sJrVfEOyApBzXiBZJKus1AiidF8Jooa3sNIFey",
         "role": "convidado"
     }
 ]

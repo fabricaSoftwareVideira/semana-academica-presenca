@@ -6,94 +6,12 @@
     <title>Registrar / Cancelar Participação - Semana Acadêmica</title>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        .page-title {
-            text-align: center;
-            margin-bottom: 1.5rem;
-            font-size: 1.8rem;
-            font-weight: 600;
-            color: #2c3e50;
-        }
-
-        .card {
-            background: #fff;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
-            padding: 2rem;
-            max-width: 500px;
-            margin: 0 auto;
-        }
-
-        .form-group {
-            margin-bottom: 1rem;
-        }
-
-        select {
-            width: 100%;
-            padding: 12px;
-            font-size: 16px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
-        }
-
-        .btn {
-            width: 100%;
-            padding: 14px;
-            font-size: 16px;
-            font-weight: bold;
-            border-radius: 8px;
-            border: none;
-            cursor: pointer;
-            margin-bottom: 12px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary {
-            background-color: #2196F3;
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: #0b7dda;
-        }
-
-        .btn-success {
-            background-color: #4CAF50;
-            color: white;
-        }
-
-        .btn-success:hover {
-            background-color: #45a049;
-        }
-
-        .btn-danger {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .btn-danger:hover {
-            background-color: #da190b;
-        }
-
-        .btn-warning {
-            background-color: #ff9800;
-            color: white;
-        }
-
-        .btn-warning:hover {
-            background-color: #e68a00;
-        }
-
-        .btn-info {
-            background-color: #00bcd4;
-            color: white;
-        }
-
-        .btn-info:hover {
-            background-color: #009bb3;
-        }
-
         #reader {
             width: 100%;
             max-width: 300px;
@@ -116,32 +34,48 @@
             text-align: center;
             font-weight: 500;
         }
-
-        @media (max-width: 480px) {
-            .card {
-                padding: 1.2rem;
-            }
-
-            .page-title {
-                font-size: 1.5rem;
-            }
-        }
     </style>
 </head>
 
 <body>
-    <h1 class="page-title">Registrar / Cancelar Participação</h1>
+    <header class="header">
+        <h1>
+            <a href="/" class="logo">Semana Acadêmica</a>
+        </h1>
+        <nav class="user-info">
+            <span id="userName">
+                <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                    (<%= typeof user !=='undefined' ? user.role : '' %>)
+            </span>
+            <a href="auth/logout" class="logout-btn">Sair</a>
+        </nav>
+    </header>
+
+    <div class="container">
+        <h2 class="page-title">
+            Registrar / Cancelar Participação
+        </h2>
+    </div>
 
     <div class="card">
         <div class="form-group">
-            <select id="eventoSelect">
-                <option value="">-- Escolha o evento --</option>
-                <% eventos.forEach(e=> { %>
-                    <option value="<%= e.id %>">
-                        <%= e.nome %>
-                    </option>
-                    <% }) %>
-            </select>
+            <!-- se eventos tiver mais que um, use select -->
+            <% if (eventos.length> 1) { %>
+                <select id="eventoSelect">
+                    <option value="">-- Escolha o evento --</option>
+                    <% eventos.forEach(e=> { %>
+                        <option value="<%= e.id %>">
+                            <%= e.nome %>
+                        </option>
+                        <% }) %>
+                </select>
+                <% } else if (eventos.length===1) { %>
+                    <input type="hidden" id="eventoSelect" value="<%= eventos[0].id %>">
+                    <p>Evento: <%= eventos[0].nome %>
+                    </p>
+                    <% } else { %>
+                        <p>Nenhum evento disponível.</p>
+                        <% } %>
         </div>
 
         <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
@@ -153,144 +87,46 @@
         <div id="erro"></div>
     </div>
 
-    <script>
-        const resultado = document.getElementById("resultado");
-        const erro = document.getElementById("erro");
-        const eventoSelect = document.getElementById("eventoSelect");
-        const btnStart = document.getElementById("btnStart");
-        const btnToggle = document.getElementById("btnToggle");
-        const readerDiv = document.getElementById("reader");
+    <footer role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
 
-        let html5QrcodeScanner;
-        let modo = "registrar";
-        let scannerAtivo = false; // novo controle
+                <!-- Informações do site -->
+                <div class="footer-info">
+                    <h3>Semana Acadêmica</h3>
+                    <p>&copy; 2025 Semana Acadêmica</p>
+                    <div class="footer-logo">
+                        <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                        <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                    </div>
+                </div>
 
-        // alterna registrar/cancelar
-        btnToggle.addEventListener("click", () => {
-            if (modo === "registrar") {
-                modo = "cancelar";
-                btnToggle.textContent = "🔴 Modo: Cancelar Participação";
-                btnToggle.className = "btn btn-danger";
-            } else {
-                modo = "registrar";
-                btnToggle.textContent = "🔵 Modo: Registrar Participação";
-                btnToggle.className = "btn btn-success";
-            }
-        });
+                <!-- Contato -->
+                <div class="footer-contact">
+                    <h3>Contato</h3>
+                    <p>
+                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br">fabricadesoftware.videira@ifc.edu.br</a>
+                    </p>
+                    <p>Rodovia SC 135, km 125 - Bairro Campo Experimental</p>
+                    <p>CEP 89564-590 - Videira - SC</p>
+                    <p>(49) 3533-4900</p>
+                </div>
 
-        function registrarOuCancelar(matricula, eventoId) {
-            if (!eventoId) {
-                erro.innerText = "Selecione o evento!";
-                return;
-            }
-            const url = `/participacao/${matricula}/${eventoId}`;
-            const method = modo === "registrar" ? "POST" : "DELETE";
+                <!-- Redes sociais -->
+                <div class="footer-social">
+                    <h3>Siga-nos</h3>
+                    <ul>
+                        <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a></li>
+                    </ul>
+                </div>
 
-            fetch(url, {
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                method,
-            })
-                .then(res => {
-                    if (res.status === 401) throw new Error("Você precisa estar logado.");
-                    return res.json();
-                })
-                .then(data => {
-                    if (data.error) {
-                        erro.innerText = data.error;
-                        resultado.innerText = "";
-                    } else {
-                        const acao = modo === "registrar" ? "Registrado" : "Cancelado";
-                        resultado.innerText = `${acao}: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
-                        erro.innerText = "";
-                    }
-                })
-                .catch(e => {
-                    erro.innerText = e.message || "Erro na requisição";
-                    resultado.innerText = "";
-                    console.error(e);
-                });
-        }
+            </div>
+        </div>
+    </footer>
 
-        let processingScan = false;
 
-        function onScanSuccess(decodedText) {
-            if (processingScan) return;
-            processingScan = true;
-
-            const eventoId = eventoSelect.value;
-            try {
-                let payload = decodedText;
-                try { payload = JSON.parse(decodedText); } catch { }
-
-                if (payload) {
-                    registrarOuCancelar(payload, eventoId);
-
-                    pararScanner(); // fecha scanner automaticamente após leitura
-                    processingScan = false;
-                } else {
-                    erro.innerText = "QR Code inválido!";
-                    processingScan = false;
-                }
-            } catch (e) {
-                erro.innerText = "Erro ao ler QR Code!";
-                console.error(e);
-                processingScan = false;
-            }
-        }
-
-        // inicia scanner
-        function iniciarScanner() {
-            if (!eventoSelect.value) {
-                erro.innerText = "Selecione o evento antes de iniciar!";
-                return;
-            }
-
-            resultado.innerText = "";
-            erro.innerText = "";
-
-            readerDiv.style.display = "block";
-
-            html5QrcodeScanner = new Html5Qrcode("reader");
-            html5QrcodeScanner.start(
-                { facingMode: "environment" },
-                { fps: 10, qrbox: 250 },
-                onScanSuccess
-            ).then(() => {
-                scannerAtivo = true;
-                btnStart.textContent = "🛑 Parar Scanner";
-                btnStart.className = "btn btn-warning";
-            }).catch(err => {
-                erro.innerText = "Erro ao iniciar câmera!";
-                console.error(err);
-                scannerAtivo = false;
-            });
-        }
-
-        // parar scanner manualmente
-        function pararScanner() {
-            if (html5QrcodeScanner) {
-                html5QrcodeScanner.stop().then(() => {
-                    html5QrcodeScanner.clear();
-                    readerDiv.style.display = "none";
-                    scannerAtivo = false;
-                    btnStart.textContent = "📷 Iniciar Scanner";
-                    btnStart.className = "btn btn-primary";
-                }).catch(err => {
-                    console.error("Erro ao parar scanner:", err);
-                });
-            }
-        }
-
-        // clique do botão
-        btnStart.addEventListener("click", () => {
-            if (scannerAtivo) {
-                pararScanner();
-            } else {
-                iniciarScanner();
-            }
-        });
-    </script>
+    <script src="/js/registrar-participacao.js"></script>
 </body>
 
 </html>
