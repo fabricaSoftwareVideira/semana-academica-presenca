@@ -157,12 +157,6 @@
         <div id="erro"></div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
-    <script>
-        Clerk.load({ frontendApi: '<%= process.env.CLERK_PUBLISHABLE_KEY %>' });
-    </script>
-
-
     <script>
         const resultado = document.getElementById("resultado");
         const erro = document.getElementById("erro");
@@ -197,10 +191,16 @@
             const method = modo === "registrar" ? "POST" : "DELETE";
 
             fetch(url, {
-                headers: { "Content-Type": "application/json", "Authorization": `Bearer ${Clerk.session.getToken()}` },
+                headers: { "Content-Type": "application/json" },
+                credentials: "same-origin", // inclui cookies para autenticação
                 method
             })
-                .then(res => res.json())
+                .then(res => {
+                    if (res.status === 401) {
+                        throw new Error("Você precisa estar logado.");
+                    }
+                    return res.json();
+                })
                 .then(data => {
                     if (data.error) {
                         erro.innerText = data.error;
@@ -212,16 +212,28 @@
                     }
                 })
                 .catch(e => {
-                    erro.innerText = "Erro na requisição";
+                    erro.innerText = e.message || "Erro na requisição";
                     resultado.innerText = "";
                     console.error(e);
                 });
         }
 
+
+        let processingScan = false;
+
         function onScanSuccess(decodedText, decodedResult) {
+            if (processingScan) return; // ignora scans extras
+            processingScan = true;
+
             const eventoId = eventoSelect.value;
             try {
-                let payload = JSON.parse(decodedText);
+                let payload;
+                try {
+                    payload = JSON.parse(decodedText);
+                } catch {
+                    payload = decodedText.trim(); // assume string simples
+                }
+
 
                 if (payload) {
                     registrarOuCancelar(payload, eventoId);
@@ -231,15 +243,22 @@
                         html5QrcodeScanner.clear();
                         readerDiv.style.display = "none";
                         btnStart.disabled = false;
-                    }).catch(err => console.error("Erro ao parar scanner:", err));
+                        processingScan = false; // libera para próximo uso
+                    }).catch(err => {
+                        console.error("Erro ao parar scanner:", err);
+                        processingScan = false;
+                    });
                 } else {
                     erro.innerText = "QR Code inválido!";
+                    processingScan = false;
                 }
             } catch (e) {
                 erro.innerText = "Erro ao ler QR Code!";
                 console.error(e);
+                processingScan = false;
             }
         }
+
 
         btnStart.addEventListener("click", () => {
             if (!eventoSelect.value) {

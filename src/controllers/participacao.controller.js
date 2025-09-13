@@ -19,7 +19,7 @@ function registrarParticipacao(matricula, eventoId) {
     }
 
     if (aluno.participacoes && aluno.participacoes.find((p) => p.id === evento.id)) {
-        return { error: "Participação já registrada" };
+        return { error: "Participação já registrada", aluno };
     }
 
     const participacao = {
@@ -27,6 +27,8 @@ function registrarParticipacao(matricula, eventoId) {
         nome: evento.nome,
         data: new Date().toISOString()
     };
+
+    console.log(participacao);
 
     if (!aluno.participacoes) aluno.participacoes = [];
     aluno.participacoes.push(participacao);
@@ -44,7 +46,7 @@ function participarHandler(req, res) {
         return res.status(400).json({ error: resultado.error });
     }
 
-    res.json(resultado.aluno);
+    res.json(resultado);
 }
 
 // Registrar vitória para a turma em um evento com base nisso
@@ -112,6 +114,8 @@ function registrarVitoriaHandler(req, res) {
 }
 
 function cancelarParticipacao(matricula, eventoId) {
+    console.log(`Cancelando participação do aluno ${matricula} no evento ${eventoId}`);
+
     const alunos = readJson(ALUNOS_FILE);
     const eventos = readJson(EVENTOS_FILE);
 
@@ -122,13 +126,13 @@ function cancelarParticipacao(matricula, eventoId) {
 
     const evento = eventos.find((e) => e.id === parseInt(eventoId));
     if (!evento) {
-        return { error: "Evento não encontrado" };
+        return { error: "Evento não encontrado", aluno };
     }
 
     if (!aluno.participacoes) aluno.participacoes = [];
     const participacaoIndex = aluno.participacoes.findIndex((p) => p.id === evento.id);
     if (participacaoIndex === -1) {
-        return { error: "Aluno não participou deste evento" };
+        return { error: "Aluno não participou deste evento", aluno };
     }
 
     aluno.participacoes.splice(participacaoIndex, 1);
@@ -168,13 +172,20 @@ function cancelarVitoria(turmaId, eventoId, posicao) {
 
 function cancelarParticipacaoHandler(req, res) {
     const { matricula, eventoId } = req.params;
+    const alunos = readJson(ALUNOS_FILE);
+    const aluno = alunos.find((a) => a.matricula === matricula);
+    if (!aluno) {
+        return res.status(400).json({ error: "Aluno não encontrado" });
+    }
     const resultado = cancelarParticipacao(matricula, eventoId);
+    console.log(`Resultado do cancelamento: ${JSON.stringify(resultado)}`);
+
 
     if (resultado && resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
 
-    res.json({ success: true });
+    res.json({ success: true, aluno });
 }
 
 function cancelarVitoriaHandler(req, res) {
@@ -188,4 +199,10 @@ function cancelarVitoriaHandler(req, res) {
     res.json(resultado.turma);
 }
 
-module.exports = { participarHandler, registrarVitoriaHandler, cancelarParticipacaoHandler, cancelarVitoriaHandler };
+function registrarParticipacaoPage(req, res) {
+    const alunos = readJson(ALUNOS_FILE);
+    const eventos = readJson(EVENTOS_FILE);
+    res.render("registrar-participacao", { user: req.user, alunos, eventos });
+}
+
+module.exports = { participarHandler, registrarVitoriaHandler, cancelarParticipacaoHandler, cancelarVitoriaHandler, registrarParticipacaoPage };
