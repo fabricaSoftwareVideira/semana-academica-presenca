@@ -4,7 +4,9 @@ const qrcodeController = require('../controllers/qrcode.controller');
 const { ensureAuthenticated, checkRole } = require('../middlewares/auth');
 
 router.get('/', (req, res) => {
-    res.render('gerar-qrcode');
+    const user = req.user;
+    const isAuthenticated = req.isAuthenticated();
+    res.render('gerar-qrcode', { user, isAuthenticated });
 });
 
 router.post('/gerar', async (req, res) => {
@@ -24,9 +26,12 @@ router.post('/gerar', async (req, res) => {
 
 router.post('/gerar-lote', ensureAuthenticated, checkRole('admin'), async (req, res) => {
     try {
+        const user = req.user;
+        const isAuthenticated = req.isAuthenticated();
         const result = await qrcodeController.gerarQRCodeEmLote();
         // res.json(result);
-        res.render('gerar-qrcode', { message: result.message });
+        res.render('gerar-qrcode', { message: result.message, user, isAuthenticated });
+        // res.redirect('/qrcode');
     } catch (error) {
         // res.status(500).json({ error: error.message });
         res.render('gerar-qrcode', { error: error.message });
