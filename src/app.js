@@ -28,9 +28,10 @@ app.use("/participacao", participacaoRoutes);
 app.use("/ranking", rankingRoutes);
 app.use("/qrcode", qrcodeRoutes);
 
-// Rota para página não encontrada
+// Rota para página não encontrada e renderizar uma view 404.ejs
 app.use((req, res) => {
     res.status(404).render("404");
+
 });
 
 module.exports = app;
