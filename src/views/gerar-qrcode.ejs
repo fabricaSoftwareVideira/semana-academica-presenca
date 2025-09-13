@@ -41,6 +41,11 @@
             width: 100%;
         }
 
+        .message {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: var(--success-color);
+        }
 
         /* Resultado QR Code */
         #resultado {
@@ -57,13 +62,6 @@
             width: auto;
             padding: 10px 20px;
             margin-top: 10px;
-        }
-
-        /* Mensagens de erro */
-        #erro {
-            margin-top: 15px;
-            color: var(--btn-danger);
-            font-weight: bold;
         }
 
         @media (max-width: 480px) {
@@ -111,6 +109,17 @@
         <h1>
             <a href="/" class="logo">Semana Acadêmica</a>
         </h1>
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
+                <span id="userName">
+                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                        (<%= typeof user !=='undefined' ? user.role : '' %>)
+                </span>
+                <a href="/auth/logout" class="logout-btn">Sair</a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
     </nav>
 
     <main class="qrcode-container">
@@ -118,45 +127,48 @@
         <p class="info-text">Digite sua matrícula para gerar seu QR Code de participação.</p>
 
         <form action="/qrcode/gerar" method="POST">
-            <input type="text" id="matricula" name="matricula" placeholder="Digite sua matrícula" value="2025318749"
-                required />
+            <input type="number" id="matricula" name="matricula" placeholder="Digite sua matrícula" required
+                autofocus />
             <button type="submit" class="card-btn">Gerar QR Code</button>
         </form>
 
-        <hr>
+        <% if(typeof user !=='undefined' && user.role==='admin' ) { %>
+            <hr>
+            <p class="info-text">Como administrador, você pode gerar QR Codes em lote para todos os alunos.</p>
 
-        <form action="/qrcode/gerar-lote" method="POST">
-            <button type="submit" class="link-primary">
-                <i class="fas fa-lock"></i>
-                Gerar QR Codes em Lote (Admin)
-            </button>
-            <p class="message">
-                <% if (typeof message !=='undefined' ) { %>
-                    <%= message %>
+            <form action="/qrcode/gerar-lote" method="POST">
+                <button type="submit" class="link-primary">
+                    <i class="fas fa-lock"></i>
+                    Gerar QR Codes em Lote
+                </button>
+                <p class="message">
+                    <% if (typeof message !=='undefined' ) { %>
+                        <%= message %>
+                            <% } %>
+                </p>
+            </form>
+            <% } %>
+
+                <div id="resultado">
+                    <% if (typeof qrCodeDataURL !=='undefined' && typeof aluno !=='undefined' ) { %>
+                        <img src="<%= qrCodeDataURL %>" alt="QR Code" />
+                        <div>
+                            <strong>
+                                <%= aluno.nome %>
+                            </strong><br>
+                            Turma: <%= aluno.turma %>
+                        </div>
+                        <a href="<%= qrCodeDataURL %>" download="<%= aluno.nome %>_qrcode.png">
+                            <button class="btn-success">Baixar QR Code</button>
+                        </a>
                         <% } %>
-            </p>
-        </form>
-
-        <div id="resultado">
-            <% if (typeof qrCodeDataURL !=='undefined' && typeof aluno !=='undefined' ) { %>
-                <img src="<%= qrCodeDataURL %>" alt="QR Code" />
-                <div>
-                    <strong>
-                        <%= aluno.nome %>
-                    </strong><br>
-                    Turma: <%= aluno.turma %>
                 </div>
-                <a href="<%= qrCodeDataURL %>" download="<%= aluno.nome %>_qrcode.png">
-                    <button class="btn-success">Baixar QR Code</button>
-                </a>
-                <% } %>
-        </div>
 
-        <div id="erro">
-            <% if (typeof error !=='undefined' ) { %>
-                <%= error %>
-                    <% } %>
-        </div>
+                <div id="erro">
+                    <% if (typeof error !=='undefined' ) { %>
+                        <%= error %>
+                            <% } %>
+                </div>
     </main>
 
     <footer>

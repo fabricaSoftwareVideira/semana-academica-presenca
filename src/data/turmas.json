@@ -21,16 +21,6 @@
   },
   {
     "id": "3B",
-    "nome": "Turma 3B",
-    "vitorias": [
-      {
-        "eventoId": 5,
-        "eventoNome": "Gincana Acadêmica",
-        "posicao": 3,
-        "pontos": 3,
-        "data": "2025-09-12T18:34:16.021Z"
-      }
-    ],
-    "pontos": 3
+    "nome": "Turma 3B"
   }
 ]

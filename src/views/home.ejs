@@ -107,19 +107,66 @@
             }
         }
 
-        .jumbotron {
-            /* background: var(--secondary-color); */
-            background-image: url('https://static.vecteezy.com/system/resources/previews/001/971/264/non_2x/beautiful-cherry-blossom-with-bokeh-lights-background-concept-free-vector.jpg');
+        /* background-image: url('https://static.vecteezy.com/system/resources/previews/001/971/264/non_2x/beautiful-cherry-blossom-with-bokeh-lights-background-concept-free-vector.jpg'); */
+
+        /* .jumbotron {
+            background: var(--secondary-color);
             background-size: cover;
             background-position: center;
             color: var(--text-color);
             padding: 60px;
             text-align: center;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        } */
+
+        .jumbotron {
+            position: relative;
+            background: linear-gradient(-45deg, #ff6ec7, #845ec2, #00c9a7, #f9f871);
+            background-size: 400% 400%;
+            /* animation: gradientShift 12s ease infinite; */
+            color: var(--text-color);
+            padding: 60px;
+            text-align: center;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
         }
+
+        /* @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        } */
+
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .jumbotron-content {
+            position: relative;
+            z-index: 1;
+        }
+
 
         .jumbotron .page-title {
             font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .jumbotron p {
+            font-size: 0.9rem;
             margin-bottom: 10px;
         }
 
@@ -174,6 +221,12 @@
             margin-bottom: 5px;
         }
 
+        hr {
+            border: none;
+            border-top: 1px solid var(--gray-light);
+            margin: 10px 0;
+        }
+
         @media (max-width: 480px) {
             .jumbotron {
                 padding: 30px 15px;
@@ -211,49 +264,64 @@
 
     <header>
         <div class="jumbotron">
-            <h2 class="page-title">Bem-vindo, <%= typeof user !=='undefined' ? user.username : 'Visitante' %>!</h2>
-            <p>Explore as funcionalidades disponíveis e participe da Semana Acadêmica!</p>
+            <canvas id="particle-canvas"></canvas>
+            <div class="jumbotron-content">
+                <!-- <h2 class="page-title">Bem-vindo, <%= typeof user !=='undefined' ? user.username : 'Visitante' %>!</h2> -->
+                <h2 class="page-title">Semana Acadêmica 2025</h2>
+                <p>Semana Acadêmica do Curso de Técnico em Informática do IFC - <i>Campus Videira</i> que acontecerá de
+                    <br /><b>10 a 12 de novembro de 2025</b>.
+                </p>
+                <a href="/qrcode" class="btn btn-warning">Gerar Meu QR Code</a>
+            </div>
         </div>
     </header>
 
-    <div class="container">
+    <div class=" container">
         <!-- Mostrar a turma que está em primeiro lugar e um link para acessar o ranking completo -->
         <section class="top-ranking">
             <h2>🏆 Primeira Colocação</h2>
-            <% if (ranking && ranking.length> 0) { %>
-                <p>A turma <strong>
-                        <%= ranking[0].nome %>
-                    </strong> está em primeiro lugar com <strong>
-                        <%= ranking[0].pontosTotal %>
-                    </strong> pontos!</p>
-                <a href="/ranking/publico" class="card-btn">Ver Ranking Completo</a>
-                <% } %>
+            <% if (rankingExistePontuacao) { %>
+                <% if (ranking && ranking.length> 0) { %>
+                    <p>A turma <strong>
+                            <%= ranking[0].nome %>
+                        </strong> está em primeiro lugar com <strong>
+                            <%= ranking[0].pontosTotal %>
+                        </strong> pontos!</p>
+                    <a href="/ranking/publico" class="card-btn">Ver Ranking Completo</a>
+                    <% } %>
+                        <% } else { %>
+                            <p>Nenhuma pontuação registrada ainda. Participe dos eventos para ganhar pontos!</p>
+                            <% } %>
         </section>
 
         <!-- Listar detalhes sobre os eventos -->
         <section class="eventos">
             <h2>📅 Programação Completa</h2>
-            <% if (eventosPorTipo && eventosPorTipo.length> 0) { %>
+            <% if (eventosPorTipo) { %>
                 <div class="eventos-list">
-                    <% eventos.forEach(evento=> { %>
+                    <% eventosPorTipo.forEach(tipo=> { %>
                         <div class="eventos-item">
                             <h3 class="eventos-title">
-                                <%= evento.nome %>
+                                <%= tipo.tipo %>
                             </h3>
-                            <p class="eventos-desc">
-                                <%= evento.descricao %>
-                            </p>
-                            <p class="eventos-date">
-                                Data: <%= new Date(evento.data).toLocaleDateString("pt-BR") %>
-                            </p>
-                            <p class="eventos-time">
-                                Horário: <%= evento.horario %>
-                            </p>
-                            <p class="eventos-location">
-                                Local: <%= evento.local %>
-                            </p>
+                            <% if (tipo.eventos.length> 0) { %>
+                                <% tipo.eventos.forEach(evento=> { %>
+                                    <p class="eventos-desc"><strong>
+                                            <%= evento.nome %>
+                                        </strong></p>
+                                    <p class="eventos-date">Data: <%= new Date(evento.data).toLocaleDateString('pt-BR')
+                                            %>
+                                    </p>
+                                    <p class="eventos-time">Horário: <%= evento.horario %>
+                                    </p>
+                                    <p class="eventos-location">Local: <%= evento.local %>
+                                    </p>
+                                    <hr>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <p>Nenhum evento disponível para este tipo.</p>
+                                            <% } %>
                         </div>
-
                         <% }) %>
                 </div>
                 <% } else { %>
@@ -314,6 +382,45 @@
         </div>
     </footer>
 
+    <script>
+        const canvas = document.getElementById("particle-canvas");
+        const ctx = canvas.getContext("2d");
+        const jumbotron = document.querySelector(".jumbotron");
+
+        function resizeCanvas() {
+            canvas.width = jumbotron.offsetWidth;
+            canvas.height = jumbotron.offsetHeight;
+        }
+        window.addEventListener("resize", resizeCanvas);
+        resizeCanvas();
+
+        const emojis = ["💻", "🚀", "🤖", "🎮", "🕹️", "📱", "✨", "🧙‍♂️", "🧝‍♀️", "🧛", "🦸‍♂️", "🦹‍♀️"];
+
+        let particles = Array.from({ length: 20 }, () => ({
+            x: Math.random() * canvas.width,
+            y: Math.random() * canvas.height,
+            dx: (Math.random() - 0.5) * 1.2,
+            dy: (Math.random() - 0.5) * 1.2,
+            emoji: emojis[Math.floor(Math.random() * emojis.length)],
+            size: Math.random() * 14 + 14 // tamanho do emoji
+        }));
+
+        function drawParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                ctx.font = `${p.size}px Arial`;
+                ctx.fillText(p.emoji, p.x, p.y);
+
+                p.x += p.dx;
+                p.y += p.dy;
+
+                if (p.x < 0 || p.x > canvas.width) p.dx *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.dy *= -1;
+            });
+            requestAnimationFrame(drawParticles);
+        }
+        drawParticles();
+    </script>
 
 
 </body>

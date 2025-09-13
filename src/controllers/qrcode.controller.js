@@ -10,14 +10,14 @@ async function gerarQRCodeAluno(matricula) {
         const alunos = readJson(ALUNO_DATA_FILE);
         const aluno = alunos.find((a) => a.matricula === matricula);
         if (!aluno) {
-            throw new Error("Aluno não encontrado");
+            throw new Error(`Aluno com matrícula ${matricula} não encontrado.`);
         }
         const qrCodeDataUrl = await gerarQrCodeComTexto(matricula, aluno);
         aluno.qrcodeGerado = true;
         aluno.qrCodeGeradoEm = new Date().toISOString();
         return { aluno, qrCodeDataUrl };
     } catch (error) {
-        throw new Error(`Erro ao gerar QR Code: ${error.message}`);
+        throw new Error(error.message);
     }
 }
 
