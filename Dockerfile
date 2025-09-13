@@ -1,19 +1,31 @@
 FROM node:20
 
-# Defina o diretório de trabalho dentro do container
+# Definir diretório de trabalho
 WORKDIR /usr/src/app
 
-# Copie package.json e package-lock.json
+# Instalar dependências do sistema necessárias para o canvas
+RUN apt-get update && apt-get install -y \
+    python3 \
+    make \
+    g++ \
+    libcairo2-dev \
+    libpango1.0-dev \
+    libjpeg-dev \
+    libgif-dev \
+    librsvg2-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+# Copiar package.json e package-lock.json
 COPY package*.json ./
 
-# Instale as dependências
+# Instalar dependências Node.js
 RUN npm install
 
-# Copie todo o restante do código
+# Copiar código restante
 COPY . .
 
-# Expõe a porta definida
+# Expor porta
 EXPOSE 3000
 
-# Comando para rodar a aplicação
+# Rodar app
 CMD ["npm", "start"]
