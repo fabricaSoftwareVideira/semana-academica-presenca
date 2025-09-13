@@ -50,7 +50,6 @@ app.get("/dashboard", (req, res) => {
         res.redirect("/auth/login");
     }
 });
-
 app.use("/alunos", alunosRoutes);
 app.use("/eventos", eventosRoutes);
 app.use("/turmas", turmasRoutes);
