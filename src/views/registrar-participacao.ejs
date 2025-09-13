@@ -192,8 +192,9 @@
 
             fetch(url, {
                 headers: { "Content-Type": "application/json" },
-                credentials: "same-origin", // inclui cookies para autenticação
-                method
+                credentials: "include",
+                method,
+
             })
                 .then(res => {
                     if (res.status === 401) {

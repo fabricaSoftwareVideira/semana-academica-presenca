@@ -245,14 +245,8 @@
     "matricula": "2025300790",
     "nome": "JULIA RAFAELA LIDANI",
     "turma": "1B",
-    "participacoes": [
-      {
-        "id": 1,
-        "nome": "Oficina de Programação",
-        "data": "2025-09-13T10:24:58.673Z"
-      }
-    ],
-    "pontos": 1
+    "participacoes": [],
+    "pontos": 0
   },
   {
     "matricula": "2025317483",
