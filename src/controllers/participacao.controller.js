@@ -206,7 +206,6 @@ function registrarParticipacaoPage(req, res) {
     if (req.user.role !== "admin") {
         eventos = eventos.filter((e) => e.users && e.users.includes(req.user.username));
     }
-    console.log(`Eventos disponíveis para ${req.user.username}: ${JSON.stringify(eventos)}`);
     res.render("registrar-participacao", { user: req.user, alunos, eventos });
 }
 
