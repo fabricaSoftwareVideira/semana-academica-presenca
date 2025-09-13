@@ -16,6 +16,7 @@ const rankingRoutes = require("./routes/ranking.routes");
 const qrcodeRoutes = require("./routes/qrcode.routes");
 const authRoutes = require("./routes/auth.route");
 const usersRoutes = require("./routes/users.routes");
+const homeRoutes = require("./routes/home.routes");
 
 const app = express();
 
@@ -42,14 +43,23 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Rotas
-app.get("/", (req, res) => res.redirect("/auth/login"));
+// app.get("/", (req, res) => res.redirect("/auth/login"));
+// app.get("/dashboard", (req, res) => {
+//     if (req.isAuthenticated()) {
+//         res.render("dashboard", { user: req.user });
+//     } else {
+//         res.redirect("/auth/login");
+//     }
+// });
+app.get("/", (req, res) => res.redirect("/home"));
 app.get("/dashboard", (req, res) => {
     if (req.isAuthenticated()) {
         res.render("dashboard", { user: req.user });
     } else {
-        res.redirect("/auth/login");
+        res.redirect("/home");
     }
 });
+app.use("/home", homeRoutes);
 app.use("/alunos", alunosRoutes);
 app.use("/eventos", eventosRoutes);
 app.use("/turmas", turmasRoutes);

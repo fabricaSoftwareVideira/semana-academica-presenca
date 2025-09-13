@@ -13,8 +13,13 @@
     <link rel="stylesheet" href="/css/style.css">
     <style>
         .ranking-list {
-            display: flex;
+            /* display: flex;
             flex-direction: column;
+            gap: 15px;
+            margin-top: 20px; */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            /* grid-template-columns: 1fr 1fr; */
             gap: 15px;
             margin-top: 20px;
         }
@@ -25,17 +30,40 @@
             background: white;
             padding: 15px 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s;
+            border: 2px solid transparent;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        /* first ranking-card */
+        .ranking-card:first-child {
+            border: 2px solid gold;
+            box-shadow: 0 4px 12px rgba(255, 215, 0, 0.3);
+            background: #fffbea;
+        }
+
+        .ranking-card:nth-child(2) {
+            border: 2px solid silver;
+            box-shadow: 0 4px 12px rgba(192, 192, 192, 0.3);
+            background: #f9f9fb;
+        }
+
+        .ranking-card:nth-child(3) {
+            border: 2px solid #cd7f32;
+            box-shadow: 0 4px 12px rgba(205, 127, 50, 0.3);
+            background: #fff5e6;
         }
 
         .ranking-position {
             font-size: 1.5rem;
             font-weight: bold;
-            color: var(--primary-color);
             margin-right: 20px;
             min-width: 40px;
+            min-height: 40px;
             text-align: center;
+            background: var(--primary-color);
+            color: var(--secondary-color);
+            border-radius: 50%;
         }
 
         .ranking-info {
@@ -54,17 +82,39 @@
             display: block;
             font-size: 0.9rem;
             color: #666;
+            text-align: right;
+        }
+
+        .ranking-points .total {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 1rem;
+        }
+
+        .legenda {
+            margin-top: 20px;
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+            font-size: 0.85rem;
+        }
+
+        .legenda h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .legenda ul {
+            list-style-type: disc;
+            padding-left: 20px;
+            color: #555;
         }
 
         /* Mobile */
         @media (max-width: 480px) {
-            .ranking-card {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-
-            .ranking-position {
-                margin-bottom: 8px;
+            .ranking-grid {
+                grid-template-columns: 1fr;
             }
 
             .ranking-points span {
@@ -76,20 +126,22 @@
 
 <body>
 
-    <div class="header">
+    <nav>
         <h1>
             <a href="/" class="logo">Semana Acadêmica</a>
         </h1>
-        <% if (typeof user!=='undefined' ) { %>
-            <div class="user-info">
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
                 <span id="userName">
-                    <%= user.username %>
-                        (<%= user.role %>)
+                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                        (<%= typeof user !=='undefined' ? user.role : '' %>)
                 </span>
                 <a href="/auth/logout" class="logout-btn">Sair</a>
-            </div>
-            <% } %>
-    </div>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
+    </nav>
 
     <div class="container">
         <h2 class="page-title">Ranking de Participações</h2>
@@ -106,11 +158,19 @@
                         <div class="ranking-points">
                             <span>Pontos Vitórias: <%= item.pontosVitorias %></span>
                             <span>Pontos Alunos: <%= item.pontosTotalAlunos %></span>
-                            <span>Total: <%= item.pontosTotal %></span>
+                            <span class="total">Total: <%= item.pontosTotal %></span>
                         </div>
                     </div>
                 </div>
                 <% }) %>
+        </div>
+        <div class="legenda">
+            <h3>Legenda:</h3>
+            <ul>
+                <li><strong>Pontos Vitórias:</strong> Pontos da turma acumulados por vitórias em competições.</li>
+                <li><strong>Pontos Alunos:</strong> Pontos acumulados por participação de alunos nas atividades.</li>
+                <li><strong>Total:</strong> Soma dos pontos de vitórias em equipe e pontos de alunos.</li>
+            </ul>
         </div>
     </div>
 

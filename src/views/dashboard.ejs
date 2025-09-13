@@ -111,7 +111,7 @@
 
 <body>
 
-    <div class="header">
+    <nav>
         <h1>
             <a href="/" class="logo">Semana Acadêmica</a>
         </h1>
@@ -122,7 +122,7 @@
             </span>
             <a href="/auth/logout" class="logout-btn">Sair</a>
         </div>
-    </div>
+    </nav>
 
     <div class="container">
         <% if (user.role==='admin' || user.role==='organizador' || user.role==='convidado' ) { %>

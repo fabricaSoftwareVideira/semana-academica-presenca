@@ -3,9 +3,9 @@ const { readJson, writeJson } = require("../utils/file.utils");
 
 const DATA_FILE = path.join(__dirname, "../data/eventos.json");
 
-function listar(req, res) {
+function listar() {
     const eventos = readJson(DATA_FILE);
-    res.json(eventos);
+    return eventos;
 }
 
 function cadastrar(req, res) {
@@ -26,4 +26,18 @@ function cadastrar(req, res) {
     res.json(novoEvento);
 }
 
-module.exports = { listar, cadastrar };
+// Agrupar eventos por tipo (palestra, oficina, etc.) - Exemplo simples
+function agruparPorTipo() {
+    const eventos = readJson(DATA_FILE);
+    const agrupados = eventos.reduce((acc, evento) => {
+        const tipo = evento.tipo || "outros";
+        if (!acc[tipo]) {
+            acc[tipo] = [];
+        }
+        acc[tipo].push(evento);
+        return acc;
+    }, {});
+    return agrupados;
+}
+
+module.exports = { listar, cadastrar, agruparPorTipo };
