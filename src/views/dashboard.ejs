@@ -129,109 +129,68 @@
         <div class="user-info">
             <span id="userName">
                 <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                    (<%= typeof user !=='undefined' ? user.role : '' %>)
             </span>
             <a href="auth/logout" class="logout-btn">Sair</a>
         </div>
     </div>
 
     <div class="container">
-        <div id="loading" style="text-align: center; padding: 40px;">
-            <p>Verificando permissões...</p>
-        </div>
+        <% if (user.role==='admin' || user.role==='organizador' ) { %>
+            <div class="card-grid">
+                <div class="card">
+                    <h3>Gerenciar Usuários</h3>
+                    <p>Adicione, remova ou edite usuários do sistema.</p>
+                    <a href="/users" class="card-btn">Ir para Usuários</a>
+                </div>
+                <div class="card">
+                    <h3>Gerenciar Eventos</h3>
+                    <p>Crie e organize eventos acadêmicos.</p>
+                    <a href="/eventos" class="card-btn">Ir para Eventos</a>
+                </div>
+                <div class="card">
+                    <h3>Ranking Alunos</h3>
+                    <p>Visualize e gerencie o ranking dos alunos participantes.</p>
+                    <a href="/ranking/alunos" class="card-btn">Ver Ranking (Alunos)</a>
+                </div>
+                <div class="card">
+                    <h3>Ranking Turmas</h3>
+                    <p>Visualize o ranking das turmas participantes.</p>
+                    <a href="/ranking/turmas" class="card-btn">Ver Ranking (Turmas)</a>
+                </div>
 
-        <div id="roleInfo" class="role-info" style="display: none;">
-            <strong>Seu papel:</strong> <span id="userRole"></span>
-        </div>
-
-        <div id="accessDenied" class="access-denied" style="display: none;">
-            <strong>Acesso Restrito:</strong> Apenas administradores e organizadores podem acessar estas
-            funcionalidades.
-            Entre em contato com o administrador do sistema para solicitar permissões.
-        </div>
-
-        <div id="dashboard" class="card-grid" style="display: none;">
-            <div class="card">
-                <h3>📋 Registrar Participação</h3>
-                <p>Escaneie QR codes dos alunos para registrar participação em eventos da semana acadêmica.</p>
-                <a href="/registrar-participacao" class="card-btn">Iniciar Scanner</a>
             </div>
+            <% } %>
+                <% if (user.role==='admin' || user.role==='organizador' || user.role==='convidado' ) { %>
+                    <div class="card-grid">
+                        <div class="card">
+                            <h3>Registrar Participação</h3>
+                            <p>Registre a participação nos eventos.</p>
+                            <a href="/participacao" class="card-btn">Registrar Participação</a>
+                        </div>
+                        <% } else { %>
+                            <div class="card-grid">
+                                <div class="card">
+                                    <h3>Ranking Geral</h3>
+                                    <p>Visualize o ranking geral dos participantes.</p>
+                                    <a href="/ranking/publico" class="card-btn">Ver Ranking</a>
+                                </div>
+                            </div>
+                            <% } %>
 
-            <div class="card">
-                <h3>🏆 Registrar Vitórias</h3>
-                <p>Registre as vitórias das turmas em competições e eventos com pontuação por posição.</p>
-                <a href="/registrar-vitorias" class="card-btn">Registrar Vitórias</a>
-            </div>
 
-            <div class="card">
-                <h3>📊 Rankings</h3>
-                <p>Visualize os rankings atualizados de alunos e turmas com suas pontuações.</p>
-                <a href="/rankings" class="card-btn">Ver Rankings</a>
-            </div>
 
-            <div class="card">
-                <h3>⚙️ Gerenciar Dados</h3>
-                <p>Cadastre novos alunos, eventos e turmas no sistema da semana acadêmica.</p>
-                <a href="/gerenciar" class="card-btn">Gerenciar</a>
-            </div>
-        </div>
-    </div>
+                    </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"></script>
-    <script>
-        // Substitua por sua chave pública do Clerk
-        const CLERK_PUBLISHABLE_KEY = '<?= process.env.CLERK_PUBLISHABLE_KEY ?>';
+                    <div class="container">
+                        <footer style="text-align: center; margin-top: 40px; color: #888;">
+                            &copy; 2025 Semana Acadêmica. Todos os direitos reservados.
+                        </footer>
 
-        let clerk;
+                    </div>
 
-        // async function initDashboard() {
-        //     try {
-        //         clerk = window.Clerk;
-        //         await clerk.load({ publishableKey: CLERK_PUBLISHABLE_KEY });
 
-        //         // Verificar se está logado
-        //         if (!clerk.user) {
-        //             window.location.href = '/login';
-        //             return;
-        //         }
 
-        //         // Mostrar nome do usuário
-        //         document.getElementById('userName').textContent =
-        //             clerk.user.firstName || clerk.user.emailAddresses[0].emailAddress;
-
-        //         // Verificar role
-        //         const role = clerk.user.publicMetadata.role;
-        //         document.getElementById('userRole').textContent = role || 'Não definido';
-        //         document.getElementById('roleInfo').style.display = 'block';
-
-        //         // Verificar permissões
-        //         const rolesAllowed = ['admin', 'organizador'];
-        //         if (!role || !rolesAllowed.includes(role)) {
-        //             document.getElementById('accessDenied').style.display = 'block';
-        //             document.getElementById('loading').style.display = 'none';
-        //         } else {
-        //             document.getElementById('dashboard').style.display = 'grid';
-        //             document.getElementById('loading').style.display = 'none';
-        //         }
-
-        //     } catch (error) {
-        //         console.error('Erro ao carregar dashboard:', error);
-        //         document.getElementById('loading').innerHTML =
-        //             '<p style="color: red;">Erro ao carregar. Recarregue a página.</p>';
-        //     }
-        // }
-
-        // async function logout() {
-        //     try {
-        //         await clerk.signOut();
-        //         window.location.href = '/login';
-        //     } catch (error) {
-        //         console.error('Erro ao fazer logout:', error);
-        //     }
-        // }
-
-        // Inicializar quando a página carregar
-        // document.addEventListener('DOMContentLoaded', initDashboard);
-    </script>
 </body>
 
 </html>

@@ -1,5 +1,6 @@
 const express = require("express");
 const path = require("path");
+require("dotenv").config();
 const session = require("express-session");
 
 const passport = require("passport");
@@ -14,6 +15,7 @@ const participacaoRoutes = require("./routes/participacao.routes");
 const rankingRoutes = require("./routes/ranking.routes");
 const qrcodeRoutes = require("./routes/qrcode.routes");
 const authRoutes = require("./routes/auth.route");
+const usersRoutes = require("./routes/users.routes");
 
 const app = express();
 
@@ -27,7 +29,11 @@ app.set("views", path.join(__dirname, "views"));
 app.use(session({
     secret: process.env.SESSION_SECRET || "segredo",
     resave: false,
-    saveUninitialized: false
+    saveUninitialized: false,
+    cookie: {
+        maxAge: 1000 * 60 * 60, // 1 hora
+        sameSite: 'lax'          // importante para cookies com fetch
+    }
 }));
 
 app.use(passport.initialize());
@@ -39,7 +45,7 @@ app.get("/dashboard", (req, res) => {
     if (req.isAuthenticated()) {
         res.render("dashboard", { user: req.user });
     } else {
-        res.redirect("/login");
+        res.redirect("/auth/login");
     }
 });
 
@@ -50,6 +56,7 @@ app.use("/participacao", participacaoRoutes);
 app.use("/ranking", rankingRoutes);
 app.use("/qrcode", qrcodeRoutes);
 app.use("/auth", authRoutes);
+app.use("/users", usersRoutes);
 
 // Carregar usuários do JSON
 function getUsers() {
@@ -79,6 +86,8 @@ passport.serializeUser((user, done) => done(null, user.id));
 passport.deserializeUser((id, done) => {
     const users = getUsers();
     const user = users.find(u => u.id === id);
+    console.log("Deserializando usuário:", user);
+
     done(null, user);
 });
 
