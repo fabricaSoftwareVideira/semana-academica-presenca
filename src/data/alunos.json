@@ -245,8 +245,14 @@
     "matricula": "2025300790",
     "nome": "JULIA RAFAELA LIDANI",
     "turma": "1B",
-    "participacoes": [],
-    "pontos": 0
+    "participacoes": [
+      {
+        "id": 5,
+        "nome": "Gincana Acadêmica",
+        "data": "2025-09-13T11:38:48.099Z"
+      }
+    ],
+    "pontos": 1
   },
   {
     "matricula": "2025317483",
@@ -304,7 +310,9 @@
   {
     "matricula": "2025308027",
     "nome": "MURILO JUNGERMANN SIMIONATTO",
-    "turma": "1B"
+    "turma": "1B",
+    "participacoes": [],
+    "pontos": 0
   },
   {
     "matricula": "2025314356",
