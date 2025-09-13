@@ -57,5 +57,15 @@
         "primeiroLugar": 10,
         "segundoLugar": 5,
         "terceiroLugar": 3
+    },
+    {
+        "id": 6,
+        "nome": "Mesa Redonda: O Futuro da Educação",
+        "descricao": "Discussão sobre as tendências e desafios na educação.",
+        "data": "2025-11-12",
+        "horario": "14:00 - 15:30",
+        "local": "Auditório Principal",
+        "tipo": "mesa redonda",
+        "pontos": 1
     }
 ]
