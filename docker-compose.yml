@@ -6,8 +6,6 @@ services:
       - "${PORT}:${PORT}"
     env_file:
       - .env
-    volumes:
-      - .:/usr/src/app
     restart: unless-stopped
     networks:
       - fabrica-network
