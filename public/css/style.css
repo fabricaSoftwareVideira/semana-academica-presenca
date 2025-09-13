@@ -18,8 +18,8 @@
   --success-hover: #52bc57;
   --danger-color: #f44336;            /* Vermelho erro */
   --danger-hover: #da190b;
-  --warning-color: #ff9800;           /* Laranja alerta */
-  --warning-hover: #e68a00;
+  --warning-color: #f9f871;           /* Laranja alerta */
+  --warning-hover: #e6d30b;
   --info-color: #2196f3;              /* Azul informação */
   --info-hover: #0b7dda;
 
@@ -130,6 +130,18 @@ button:hover, .btn:hover, .card-btn:hover, .logout-btn:hover {
   background-color: #da190b;
 }
 
+.link {
+  display: inline-block;
+  color: var(--link-color);
+  text-decoration: none;
+  transition: var(--link-transition);
+}
+
+.link:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
 .logout-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -207,7 +219,7 @@ select {
 }
 
 .btn {
-    width: 100%;
+    /* width: 100%; */
     padding: 14px;
     font-size: 16px;
     font-weight: bold;

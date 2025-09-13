@@ -51,15 +51,15 @@ app.use(passport.session());
 //         res.redirect("/auth/login");
 //     }
 // });
-app.get("/", (req, res) => res.redirect("/home"));
+// app.get("/", (req, res) => res.redirect("/home"));
 app.get("/dashboard", (req, res) => {
     if (req.isAuthenticated()) {
         res.render("dashboard", { user: req.user });
     } else {
-        res.redirect("/home");
+        res.redirect("/");
     }
 });
-app.use("/home", homeRoutes);
+app.use("/", homeRoutes);
 app.use("/alunos", alunosRoutes);
 app.use("/eventos", eventosRoutes);
 app.use("/turmas", turmasRoutes);

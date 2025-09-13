@@ -26,18 +26,23 @@ function cadastrar(req, res) {
     res.json(novoEvento);
 }
 
-// Agrupar eventos por tipo (palestra, oficina, etc.) - Exemplo simples
+// Agrupar uma lista de eventos por tipo (palestra, oficina, etc.) - Exemplo simples
 function agruparPorTipo() {
     const eventos = readJson(DATA_FILE);
-    const agrupados = eventos.reduce((acc, evento) => {
-        const tipo = evento.tipo || "outros";
+    const eventosPorTipo = eventos.reduce((acc, evento) => {
+        const tipo = evento.tipo || "Outros";
         if (!acc[tipo]) {
             acc[tipo] = [];
         }
         acc[tipo].push(evento);
         return acc;
     }, {});
-    return agrupados;
+
+    // Converter o objeto em um array para facilitar a iteração na view
+    return Object.keys(eventosPorTipo).map((tipo) => ({
+        tipo,
+        eventos: eventosPorTipo[tipo],
+    }));
 }
 
 module.exports = { listar, cadastrar, agruparPorTipo };
