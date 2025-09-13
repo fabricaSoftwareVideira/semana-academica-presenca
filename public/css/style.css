@@ -78,6 +78,22 @@ nav {
 
 nav h1 {
   font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    color: #fff;
+    gap: 10px;
+    
+}
+
+.logo-img {
+    width: 28px;  /* Ajuste o tamanho conforme necessário */
+    height: auto;
+    border-radius: 5px; /* Opcional: cantos arredondados */
 }
 
 .user-info {
@@ -528,6 +544,11 @@ footer {
 
 /* Responsividade */
 @media (max-width: 480px) {
+
+  .logo-img {
+    width: 24px;  /* Ajuste o tamanho conforme necessário */
+  }
+    
   .footer-content {
     grid-template-columns: 1fr;
     text-align: center;
