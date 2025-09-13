@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    container_name: semana-academica
+    ports:
+      - "${PORT}:${PORT}"
+    env_file:
+      - .env
+    volumes:
+      - .:/usr/src/app
+    restart: unless-stopped
+    networks:
+      - fabrica-network
+
+networks:
+  fabrica-network:
+    external: true
