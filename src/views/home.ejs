@@ -1,0 +1,321 @@
+<!-- src/views/dashboard.ejs -->
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Dashboard - Semana Acadêmica</title>
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* Lista de ações */
+        .action-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+        }
+
+        .action-list li {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            /* força espaço entre conteúdo e botões */
+            background: var(--secondary-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s, transform 0.2s;
+            min-height: 100px;
+        }
+
+        .action-list li:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        .action-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .action-desc {
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .action-list .card-btn {
+            align-self: flex-start;
+            padding: 8px 16px;
+            font-size: 0.9rem;
+        }
+
+        .action-list .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+
+        section {
+            margin-bottom: 20px;
+            background: var(--background-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        section h2 {
+            margin-bottom: 15px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .action-list {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .action-list li {
+                padding: 12px 15px;
+            }
+
+            .action-title {
+                font-size: 1rem;
+            }
+
+            .action-desc {
+                font-size: 0.9rem;
+            }
+
+            .action-list .card-btn {
+                font-size: 0.85rem;
+                padding: 6px 12px;
+            }
+        }
+
+        .jumbotron {
+            /* background: var(--secondary-color); */
+            background-image: url('https://static.vecteezy.com/system/resources/previews/001/971/264/non_2x/beautiful-cherry-blossom-with-bokeh-lights-background-concept-free-vector.jpg');
+            background-size: cover;
+            background-position: center;
+            color: var(--text-color);
+            padding: 60px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .jumbotron .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .top-ranking {
+            background: var(--secondary-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .top-ranking h2 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .top-ranking p {
+            margin-bottom: 15px;
+        }
+
+        .eventos-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .eventos-item {
+            background: var(--secondary-color);
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+        }
+
+        .eventos-title {
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .eventos-desc {
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+        }
+
+        .eventos-date,
+        .eventos-time,
+        .eventos-location {
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .jumbotron {
+                padding: 30px 15px;
+            }
+
+            .jumbotron .page-title {
+                font-size: 1.5rem;
+            }
+
+            .eventos-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav>
+        <h1>
+            <a href="/" class="logo">Semana Acadêmica</a>
+        </h1>
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
+                <span id="userName">
+                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                        (<%= typeof user !=='undefined' ? user.role : '' %>)
+                </span>
+                <a href="/auth/logout" class="logout-btn">Sair</a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
+    </nav>
+
+    <header>
+        <div class="jumbotron">
+            <h2 class="page-title">Bem-vindo, <%= typeof user !=='undefined' ? user.username : 'Visitante' %>!</h2>
+            <p>Explore as funcionalidades disponíveis e participe da Semana Acadêmica!</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Mostrar a turma que está em primeiro lugar e um link para acessar o ranking completo -->
+        <section class="top-ranking">
+            <h2>🏆 Primeira Colocação</h2>
+            <% if (ranking && ranking.length> 0) { %>
+                <p>A turma <strong>
+                        <%= ranking[0].nome %>
+                    </strong> está em primeiro lugar com <strong>
+                        <%= ranking[0].pontosTotal %>
+                    </strong> pontos!</p>
+                <a href="/ranking/publico" class="card-btn">Ver Ranking Completo</a>
+                <% } %>
+        </section>
+
+        <!-- Listar detalhes sobre os eventos -->
+        <section class="eventos">
+            <h2>📅 Programação Completa</h2>
+            <% if (eventosPorTipo && eventosPorTipo.length> 0) { %>
+                <div class="eventos-list">
+                    <% eventos.forEach(evento=> { %>
+                        <div class="eventos-item">
+                            <h3 class="eventos-title">
+                                <%= evento.nome %>
+                            </h3>
+                            <p class="eventos-desc">
+                                <%= evento.descricao %>
+                            </p>
+                            <p class="eventos-date">
+                                Data: <%= new Date(evento.data).toLocaleDateString("pt-BR") %>
+                            </p>
+                            <p class="eventos-time">
+                                Horário: <%= evento.horario %>
+                            </p>
+                            <p class="eventos-location">
+                                Local: <%= evento.local %>
+                            </p>
+                        </div>
+
+                        <% }) %>
+                </div>
+                <% } else { %>
+                    <p>Nenhum evento disponível no momento.</p>
+                    <% } %>
+        </section>
+
+
+        <!-- <h2 class="page-title">Ranking de Participações</h2>
+        <div class="ranking-list">
+            <% ranking.forEach((item, index)=> { %>
+                <div class="ranking-card">
+                    <div class="ranking-position">
+                        <%= index + 1 %>
+                    </div>
+                    <div class="ranking-info">
+                        <div class="ranking-name">
+                            <%= item.nome %>
+                        </div>
+                        <div class="ranking-points">
+                            <span>Pontos Vitórias: <%= item.pontosVitorias %></span>
+                            <span>Pontos Alunos: <%= item.pontosTotalAlunos %></span>
+                            <span>Total: <%= item.pontosTotal %></span>
+                        </div>
+                    </div>
+                </div>
+                <% }) %> -->
+    </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+
+            <!-- Informações do site -->
+            <div class="footer-info">
+                <h3>Semana Acadêmica</h3>
+                <div class="footer-logo">
+                    <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                    <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                </div>
+
+            </div>
+
+            <!-- Redes sociais -->
+            <div class="footer-social">
+                <h3>Siga-nos</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
+                    <li>
+                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                class="fa fa-envelope"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+    </footer>
+
+
+
+</body>
+
+</html>

@@ -27,7 +27,9 @@
 
         .login-box h2 {
             margin-bottom: 20px;
+            color: var(--primary-color);
         }
+
 
         .login-box label {
             display: block;
@@ -44,17 +46,35 @@
             border: 1px solid var(--gray-light);
             font-size: 16px;
         }
+
+        .text-info {
+            color: var(--gray-dark);
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 
 <body>
-    <header class="header">
+    <nav>
         <h1>
             <a href="/" class="logo">Semana Acadêmica</a>
         </h1>
-    </header>
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
+                <span id="userName">
+                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                        (<%= typeof user !=='undefined' ? user.role : '' %>)
+                </span>
+                <a href="/auth/logout" class="logout-btn">Sair</a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
+    </nav>
     <div class="login-box">
         <h2>🔑 Acesse sua conta</h2>
+        <p class="text-info">Acesso restrito a organizadores e convidados.</p>
 
         <% if (typeof error !=='undefined' ) { %>
             <div id="erro">

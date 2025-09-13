@@ -38,18 +38,22 @@
 </head>
 
 <body>
-    <header class="header">
+    <nav>
         <h1>
             <a href="/" class="logo">Semana Acadêmica</a>
         </h1>
-        <nav class="user-info">
-            <span id="userName">
-                <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
-                    (<%= typeof user !=='undefined' ? user.role : '' %>)
-            </span>
-            <a href="auth/logout" class="logout-btn">Sair</a>
-        </nav>
-    </header>
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
+                <span id="userName">
+                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                        (<%= typeof user !=='undefined' ? user.role : '' %>)
+                </span>
+                <a href="/auth/logout" class="logout-btn">Sair</a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
+    </nav>
 
     <div class="container">
 
