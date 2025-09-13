@@ -7,7 +7,10 @@
         "horario": "10:00 - 12:00",
         "local": "Laboratório de Informática",
         "tipo": "oficina",
-        "pontos": 1
+        "pontos": 1,
+        "users": [
+            "fabio.pinheiro"
+        ]
     },
     {
         "id": 2,
@@ -17,7 +20,10 @@
         "horario": "14:00 - 16:00",
         "local": "Laboratório de Informática",
         "tipo": "oficina",
-        "pontos": 1
+        "pontos": 1,
+        "users": [
+            "fabio.pinheiro"
+        ]
     },
     {
         "id": 3,

@@ -201,7 +201,12 @@ function cancelarVitoriaHandler(req, res) {
 
 function registrarParticipacaoPage(req, res) {
     const alunos = readJson(ALUNOS_FILE);
-    const eventos = readJson(EVENTOS_FILE);
+    let eventos = readJson(EVENTOS_FILE);
+    // Filtrar eventos que são relacionados ao usuário logado ou todos se for admin
+    if (req.user.role !== "admin") {
+        eventos = eventos.filter((e) => e.users && e.users.includes(req.user.username));
+    }
+    console.log(`Eventos disponíveis para ${req.user.username}: ${JSON.stringify(eventos)}`);
     res.render("registrar-participacao", { user: req.user, alunos, eventos });
 }
 
