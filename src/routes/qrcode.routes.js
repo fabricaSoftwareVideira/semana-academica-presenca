@@ -22,12 +22,14 @@ router.post('/gerar', async (req, res) => {
     }
 });
 
-router.post('/gerar-lote', ensureAuthenticated, checkRole('admin'), (req, res) => {
+router.post('/gerar-lote', ensureAuthenticated, checkRole('admin'), async (req, res) => {
     try {
-        const result = qrcodeController.gerarQRCodeEmLote();
-        res.json(result);
+        const result = await qrcodeController.gerarQRCodeEmLote();
+        // res.json(result);
+        res.render('gerar-qrcode', { message: result.message });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        // res.status(500).json({ error: error.message });
+        res.render('gerar-qrcode', { error: error.message });
     }
 });
 

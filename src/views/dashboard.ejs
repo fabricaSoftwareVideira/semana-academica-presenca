@@ -25,12 +25,15 @@
         .action-list li {
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            /* força espaço entre conteúdo e botões */
             background: var(--secondary-color);
             border-left: 4px solid var(--primary-color);
             padding: 15px 20px;
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
             transition: box-shadow 0.3s, transform 0.2s;
+            min-height: 100px;
         }
 
         .action-list li:hover {
@@ -40,7 +43,7 @@
         .action-title {
             font-weight: 600;
             color: var(--primary-color);
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             margin-bottom: 5px;
         }
 
@@ -56,8 +59,20 @@
             font-size: 0.9rem;
         }
 
+        .action-list .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: auto;
+        }
+
+
         section {
-            margin-bottom: 30px;
+            margin-bottom: 20px;
+            background: var(--background-color);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         section h2 {
@@ -65,13 +80,6 @@
             border-bottom: 2px solid var(--primary-color);
             padding-bottom: 5px;
             color: var(--primary-color);
-        }
-
-        .admin-section {
-            background: var(--background-color);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
         }
 
         @media (max-width: 768px) {
@@ -119,49 +127,70 @@
     <div class="container">
         <% if (user.role==='admin' || user.role==='organizador' || user.role==='convidado' ) { %>
             <section class="section">
+                <h2>Ações Disponíveis</h2>
                 <ul class="action-list">
                     <li>
                         <span class="action-title">Registrar Participação</span>
                         <p class="action-desc">Registre a participação nos eventos.</p>
-                        <a href="/participacao" class="card-btn">Registrar Participação</a>
+                        <div class="button-group">
+                            <a href="/participacao" class="card-btn btn-primary">Registrar Participação</a>
+                        </div>
                     </li>
                     <li>
                         <span class="action-title">Ranking Público</span>
                         <p class="action-desc">Visualize o ranking geral dos participantes.</p>
-                        <a href="/ranking/publico" class="card-btn">Ver Ranking</a>
+                        <div class="button-group">
+                            <a href="/ranking/publico" class="card-btn">Ver Ranking</a>
+                        </div>
                     </li>
                     <li>
                         <span class="action-title">Gerar QR Code</span>
                         <p class="action-desc">Gere seu QR Code para participar dos eventos.</p>
-                        <a href="/qrcode" class="card-btn">Gerar QR Code</a>
+                        <div class="button-group">
+                            <a href="/qrcode" class="card-btn">Gerar QR Code</a>
+                        </div>
                     </li>
                 </ul>
             </section>
             <% } %>
                 <% if (user.role==='admin' ) { %>
-                    <section class="section admin-section">
+                    <section class="section">
                         <h2>Área Administrativa</h2>
                         <ul class="action-list">
                             <li>
                                 <span class="action-title">Gerenciar Usuários</span>
                                 <p class="action-desc">Adicione, remova ou edite usuários do sistema.</p>
-                                <a href="/users" class="card-btn">Ir para Usuários</a>
+                                <div class="button-group">
+                                    <a href="/users" class="card-btn">Ir para Usuários</a>
+                                </div>
                             </li>
                             <li>
                                 <span class="action-title">Gerenciar Eventos</span>
                                 <p class="action-desc">Crie e organize eventos acadêmicos.</p>
-                                <a href="/eventos" class="card-btn">Ir para Eventos</a>
+                                <div class="button-group">
+                                    <a href="/eventos" class="card-btn">Ir para Eventos</a>
+                                </div>
                             </li>
                             <li>
-                                <span class="action-title">Ranking Alunos</span>
-                                <p class="action-desc">Visualize e gerencie o ranking dos alunos participantes.</p>
-                                <a href="/ranking/alunos" class="card-btn">Ver Ranking (Alunos)</a>
+                                <span class="action-title">Ranking</span>
+                                <p class="action-desc">Visualize e gerencie o ranking dos alunos e turmas.</p>
+                                <div class="button-group">
+                                    <a href="/ranking/alunos" class="card-btn">Ver Ranking (Alunos)</a>
+                                    <a href="/ranking/turmas" class="card-btn">Ver Ranking (Turmas)</a>
+                                </div>
                             </li>
-                            <li>
+                            <!-- <li>
                                 <span class="action-title">Ranking Turmas</span>
                                 <p class="action-desc">Visualize o ranking das turmas participantes.</p>
                                 <a href="/ranking/turmas" class="card-btn">Ver Ranking (Turmas)</a>
-                            </li>
+                            </li> -->
+                            <!-- <li>
+                                <span class="action-title">Gerar QR Code - Lote</span>
+                                <p class="action-desc">Gere QR Codes em lote para os alunos.</p>
+                                <form action="/qrcode/gerar-lote" method="POST">
+                                    <button type="submit" class="card-btn">Gerar QR Codes</button>
+                                </form>
+                            </li> -->
                         </ul>
                     </section>
                     <% } %>

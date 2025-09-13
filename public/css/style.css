@@ -1,18 +1,45 @@
 :root {
-  /* Cores */
-  --primary-color: #860083;
-  --primary-color-hover: #a300a0;
-  --secondary-color: white;
+  /* Cores primárias */
+  --primary-color: #860083;           /* Roxo principal */
+  --primary-color-hover: #a300a0;     /* Hover primário */
+
+  /* Cores secundárias */
+  --secondary-color: #f0f0f0;         /* Cinza claro para fundos */
   --secondary-text-color: var(--primary-color);
   --secondary-hover-bg: var(--primary-color);
   --secondary-hover-text: white;
+
+  /* Cores terciárias */
+  --tertiary-color: #00bcd4;          /* Azul turquesa para destaques */
+  --tertiary-hover: #009bb3;
+
+  /* Alertas / feedback */
+  --success-color: #4caf50;           /* Verde sucesso */
+  --success-hover: #52bc57;
+  --danger-color: #f44336;            /* Vermelho erro */
+  --danger-hover: #da190b;
+  --warning-color: #ff9800;           /* Laranja alerta */
+  --warning-hover: #e68a00;
+  --info-color: #2196f3;              /* Azul informação */
+  --info-hover: #0b7dda;
+
+  /* Textos e fundo */
   --text-color: #333;
   --background-color: #f8f9fa;
   --header-bg: white;
   --header-shadow: rgba(0, 0, 0, 0.1);
+
+  /* Bordas / tons neutros */
   --border-color: var(--primary-color);
   --gray-dark: #555;
   --gray-light: #ddd;
+  --gray-medium: #888;
+
+  /* Outros */
+  --link-color: var(--primary-color);
+  --link-hover: var(--primary-color-hover);
+  --container-width: 1200px;
+  --link-transition: all 0.3s ease;
 }
 
 /* Reset básico */
