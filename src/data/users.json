@@ -1,0 +1,12 @@
+[
+    {
+        "email": "fabricio.bizotto@ifc.edu.br",
+        "password": "$2b$10$0bM3FxuWjz1bY9k1JxN2heRkMHDGxeJwZt3mCjcTzq7MC7C5Ck4mC",
+        "role": "admin"
+    },
+    {
+        "email": "fabio.pinheiro@ifc.edu.br",
+        "password": "$2b$10$5c7H9u1J9hJX1o2z0Wj8M.7z8J3k9F3yB8aZk1tMZxQh1H8wH4a2G",
+        "role": "organizador"
+    }
+]
