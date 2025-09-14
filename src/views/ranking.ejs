@@ -14,7 +14,7 @@
     <style>
         .ranking-list {
             display: grid;
-            grid-template-columns: repeat(3, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 15px;
             margin-top: 20px;
         }
@@ -22,12 +22,20 @@
         .ranking-card {
             display: flex;
             align-items: center;
+            justify-content: flex-start;
+            flex-grow: 1;
+            flex-wrap: wrap;
             background: white;
             padding: 15px 20px;
             border-radius: 10px;
             transition: transform 0.2s;
             border: 2px solid transparent;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .ranking-card .emoji {
+            margin-left: auto;
+            font-size: 2rem;
         }
 
         /* 1º lugar */
@@ -110,9 +118,9 @@
         }
 
         /* Responsividade */
-        @media (max-width: 1024px) {
+        @media (max-width: 768px) {
             .ranking-list {
-                grid-template-columns: repeat(2, 1fr);
+                grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
             }
         }
 
@@ -219,86 +227,97 @@
                             <span>Pontos Alunos: <%= item.pontosTotalAlunos %></span>
                             <span class="total">Total: <%= item.pontosTotal %></span>
                         </div>
-
+                    </div>
+                    <div class="emoji">
+                        <% if (index===0) { %>
+                            🥇
+                            <% } else if (index===1) { %>
+                                🥈
+                                <% } else if (index===2) { %>
+                                    🥉
+                                    <% } %>
                     </div>
                 </div>
                 <% }) %>
-        </div>
 
-        <div class="legenda">
-            <h3>Legenda:</h3>
-            <ul>
-                <li><strong>Pontos Vitórias:</strong> Pontos da turma acumulados por vitórias em competições.</li>
-                <li><strong>Pontos Alunos:</strong> Pontos acumulados por participação de alunos nas atividades.</li>
-                <li><strong>Total:</strong> Soma dos pontos de vitórias em equipe e pontos de alunos.</li>
-            </ul>
-        </div>
-    </div>
-
-    <div class="container">
-        <h2 class="page-title">Vitórias por Turma</h2>
-        <div class="vitorias-container">
-            <% ranking.forEach(item=> { %>
-                <div class="vitorias-card">
-
-                    <div class="vitorias-turma-card">
-                        <h3>
-                            <%= item.nome %>
-                        </h3>
-                        <% if (item.vitorias.length> 0) { %>
-                            <ul>
-                                <% item.vitorias.forEach(v=> {
-                                    let medalha = '';
-                                    if(v.posicao === 1) medalha = '🥇';
-                                    else if(v.posicao === 2) medalha = '🥈';
-                                    else if(v.posicao === 3) medalha = '🥉';
-                                    %>
-                                    <li>
-                                        <%= medalha %>
-                                            <%= v.eventoNome %> - <%= v.posicao %>º lugar (+<%= v.pontos %> pts)
-                                    </li>
-                                    <% }) %>
-                            </ul>
-                            <% } else { %>
-                                <p>Sem vitórias registradas.</p>
-                                <% } %>
+                    <div class="legenda">
+                        <h3>Legenda:</h3>
+                        <ul>
+                            <li><strong>Pontos Vitórias:</strong> Pontos da turma acumulados por vitórias em
+                                competições.
+                            </li>
+                            <li><strong>Pontos Alunos:</strong> Pontos acumulados por participação de alunos nas
+                                atividades.
+                            </li>
+                            <li><strong>Total:</strong> Soma dos pontos de vitórias em equipe e pontos de alunos.</li>
+                        </ul>
                     </div>
-                </div>
-                <% }) %>
         </div>
 
-    </div>
+        <div class="container">
+            <h2 class="page-title">Vitórias por Turma</h2>
+            <div class="vitorias-container">
+                <% ranking.forEach(item=> { %>
+                    <div class="vitorias-card">
+
+                        <div class="vitorias-turma-card">
+                            <h3>
+                                <%= item.nome %>
+                            </h3>
+                            <% if (item.vitorias.length> 0) { %>
+                                <ul>
+                                    <% item.vitorias.forEach(v=> {
+                                        let medalha = '';
+                                        if(v.posicao === 1) medalha = '🥇';
+                                        else if(v.posicao === 2) medalha = '🥈';
+                                        else if(v.posicao === 3) medalha = '🥉';
+                                        %>
+                                        <li>
+                                            <%= medalha %>
+                                                <%= v.eventoNome %> - <%= v.posicao %>º lugar (+<%= v.pontos %> pts)
+                                        </li>
+                                        <% }) %>
+                                </ul>
+                                <% } else { %>
+                                    <p>Sem vitórias registradas.</p>
+                                    <% } %>
+                        </div>
+                    </div>
+                    <% }) %>
+            </div>
+
+        </div>
 
 
-    <footer role="contentinfo">
-        <div class="footer-content">
+        <footer role="contentinfo">
+            <div class="footer-content">
 
-            <!-- Informações do site -->
-            <div class="footer-info">
-                <h3>Semana Acadêmica</h3>
-                <div class="footer-logo">
-                    <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
-                    <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                <!-- Informações do site -->
+                <div class="footer-info">
+                    <h3>Semana Acadêmica</h3>
+                    <div class="footer-logo">
+                        <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                        <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                    </div>
+
+                </div>
+
+                <!-- Redes sociais -->
+                <div class="footer-social">
+                    <h3>Siga-nos</h3>
+                    <ul>
+                        <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a></li>
+                        <li>
+                            <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                    class="fa fa-envelope"></i>
+                            </a>
+                        </li>
+                    </ul>
                 </div>
 
             </div>
-
-            <!-- Redes sociais -->
-            <div class="footer-social">
-                <h3>Siga-nos</h3>
-                <ul>
-                    <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
-                                class="fab fa-instagram"></i></a></li>
-                    <li>
-                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
-                                class="fa fa-envelope"></i>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-        </div>
-    </footer>
+        </footer>
 
 </body>
 
