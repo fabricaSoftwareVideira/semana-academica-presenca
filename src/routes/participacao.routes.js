@@ -11,7 +11,7 @@ router.use(checkAnyRole(['admin', 'organizador', 'convidado']));
 router.get('/', participacaoController.registrarParticipacaoPage);
 router.post('/:matricula/:eventoId', participacaoController.participarHandler);
 router.delete('/:matricula/:eventoId', participacaoController.cancelarParticipacaoHandler);
-router.post('/vitoria/:turmaId/:eventoId/:posicao', participacaoController.registrarVitoriaHandler);
-router.delete('/vitoria/:turmaId/:eventoId/:posicao', participacaoController.cancelarVitoriaHandler);
+router.post('/vitoria/:matricula/:eventoId/:posicao', participacaoController.registrarVitoriaHandler);
+router.delete('/vitoria/:matricula/:eventoId/:posicao', participacaoController.cancelarVitoriaHandler);
 
 module.exports = router;
