@@ -67,5 +67,22 @@
         "local": "Auditório Principal",
         "tipo": "mesa_redonda",
         "pontos": 1
+    },
+    {
+        "id": 7,
+        "nome": "Maratona de Programação",
+        "descricao": "Competições de programação em equipe.",
+        "data": "2025-11-11",
+        "horario": "10:00 - 12:00",
+        "local": "Laboratório de Informática",
+        "tipo": "maratona",
+        "pontos": 1,
+        "primeiroLugar": 10,
+        "segundoLugar": 5,
+        "terceiroLugar": 3,
+        "users": [
+            "fabio.pinheiro",
+            "fabricio.bizotto"
+        ]
     }
 ]

@@ -696,7 +696,7 @@ section h2 {
 }
 
 hr {
-    margin: 20px 0;
+    margin: 10px 0;
     border: none;
     border-top: 1px solid var(--gray-light);
 }
