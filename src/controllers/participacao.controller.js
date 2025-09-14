@@ -1,9 +1,18 @@
+const jwt = require("jsonwebtoken");
 const path = require("path");
 const { readJson, writeJson } = require("../utils/file.utils");
 
 const ALUNOS_FILE = path.join(__dirname, "../data/alunos.json");
 const EVENTOS_FILE = path.join(__dirname, "../data/eventos.json");
 const TURMAS_FILE = path.join(__dirname, "../data/turmas.json");
+
+function verificarToken(token) {
+    try {
+        return jwt.verify(token, process.env.JWT_SECRET);
+    } catch (err) {
+        throw new Error("QR Code inválido ou expirado.");
+    }
+}
 
 function registrarParticipacao(matricula, eventoId) {
     const alunos = readJson(ALUNOS_FILE);
@@ -38,15 +47,16 @@ function registrarParticipacao(matricula, eventoId) {
 }
 
 function participarHandler(req, res) {
-    const { matricula, eventoId } = req.params;
-    const resultado = registrarParticipacao(matricula, eventoId);
+    const { eventoId } = req.params;
+    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
 
+    const resultado = registrarParticipacao(matricula, eventoId);
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
-
     res.json(resultado);
 }
+
 
 function validarPosicao(posicao) {
     return ["1", "2", "3"].includes(posicao);
@@ -118,7 +128,8 @@ function registrarVitoria(matricula, eventoId, posicao) {
 }
 
 function registrarVitoriaHandler(req, res) {
-    const { matricula, eventoId, posicao } = req.params;
+    const { eventoId, posicao } = req.params;
+    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
     const resultado = registrarVitoria(matricula, eventoId, posicao);
 
     if (resultado.error) {
@@ -127,6 +138,7 @@ function registrarVitoriaHandler(req, res) {
 
     res.json(resultado.turma);
 }
+
 
 function cancelarParticipacao(matricula, eventoId) {
     console.log(`Cancelando participação do aluno ${matricula} no evento ${eventoId}`);
@@ -195,7 +207,8 @@ function cancelarVitoria(matricula, eventoId, posicao) {
 }
 
 function cancelarParticipacaoHandler(req, res) {
-    const { matricula, eventoId } = req.params;
+    const { eventoId } = req.params;
+    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
     const alunos = readJson(ALUNOS_FILE);
     const aluno = alunos.find((a) => a.matricula === matricula);
     if (!aluno) {
