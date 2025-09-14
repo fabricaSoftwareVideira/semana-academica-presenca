@@ -65,7 +65,7 @@
         "data": "2025-11-12",
         "horario": "14:00 - 15:30",
         "local": "Auditório Principal",
-        "tipo": "mesa redonda",
+        "tipo": "mesa_redonda",
         "pontos": 1
     }
 ]

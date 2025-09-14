@@ -9,6 +9,7 @@ router.get("/turmas", ensureAuthenticated, rankingController.rankingTurmasHandle
 router.get("/", (req, res) => {
     const user = req.user;
     const ranking = rankingController.rankingPublico();
+
     res.render("ranking", { ranking, user });
 });
 
