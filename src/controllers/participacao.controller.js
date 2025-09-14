@@ -29,8 +29,6 @@ function registrarParticipacao(matricula, eventoId) {
         data: new Date().toISOString()
     };
 
-    console.log(participacao);
-
     if (!aluno.participacoes) aluno.participacoes = [];
     aluno.participacoes.push(participacao);
     aluno.pontos = (aluno.pontos || 0) + 1;
@@ -157,6 +155,7 @@ function cancelarParticipacao(matricula, eventoId) {
     if (aluno.pontos < 0) aluno.pontos = 0;
 
     writeJson(ALUNOS_FILE, alunos);
+    return { success: true, aluno };
 }
 
 function cancelarVitoria(matricula, eventoId, posicao) {
@@ -210,7 +209,7 @@ function cancelarParticipacaoHandler(req, res) {
         return res.status(400).json({ error: resultado.error });
     }
 
-    res.json({ success: true, aluno });
+    return res.json(resultado);
 }
 
 function cancelarVitoriaHandler(req, res) {

@@ -191,18 +191,21 @@
                 Registrar / Cancelar Participação
             </h3>
             <div class="form-group">
-                <select id="eventoSelect" class="form-control">
+                <select id="eventoSelect" class="form-control evento-select" autofocus>
                     <option value="">-- Selecione o Evento --</option>
                     <% eventos.forEach(e=> { %>
-                        <option value="<%= e.id %>" data-primeiro="<%= e.primeiroLugar || 0 %>"
-                            data-segundo="<%= e.segundoLugar || 0 %>" data-terceiro="<%= e.terceiroLugar || 0 %>">
-                            <%= e.nome %>
+                        <option value="<%= e.id %>"
+                            class="<% if ((e.primeiroLugar||0) > 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) { %>com-medalha<% } %>"
+                            data-primeiro="<%= e.primeiroLugar || 0 %>" data-segundo="<%= e.segundoLugar || 0 %>"
+                            data-terceiro="<%= e.terceiroLugar || 0 %>">
+                            <% if ((e.primeiroLugar||0)> 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) {
+                                %>🏅<% } %>
+                                    <%= e.nome %>
                         </option>
                         <% }) %>
                 </select>
             </div>
 
-            <!-- Grupo de registro -->
             <!-- Grupo de registro -->
             <div id="registroGroup" style="display:none;">
                 <p><strong>Escolha o tipo de registro:</strong></p>
@@ -213,9 +216,6 @@
                 <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º Lugar</span></label>
                 <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º Lugar</span></label>
             </div>
-
-
-
 
             <div class="button-group">
                 <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>

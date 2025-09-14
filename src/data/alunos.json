@@ -279,44 +279,8 @@
     "matricula": "2025308896",
     "nome": "LAURA CORDEIRO MAFI",
     "turma": "1B",
-    "participacoes": [
-      {
-        "id": 2,
-        "nome": "Oficina de Design Gráfico",
-        "data": "2025-09-14T02:21:49.433Z"
-      },
-      {
-        "id": 3,
-        "nome": "Palestra: Inovações Tecnológicas",
-        "data": "2025-09-14T02:26:58.842Z"
-      },
-      {
-        "id": 4,
-        "nome": "Palestra: Carreiras em TI",
-        "data": "2025-09-14T02:27:04.154Z"
-      },
-      {
-        "id": 6,
-        "nome": "Mesa Redonda: O Futuro da Educação",
-        "data": "2025-09-14T02:28:18.301Z"
-      },
-      {
-        "id": 7,
-        "nome": "Maratona de Programação",
-        "data": "2025-09-14T02:28:22.073Z"
-      },
-      {
-        "id": 5,
-        "nome": "Gincana Acadêmica",
-        "data": "2025-09-14T02:39:43.359Z"
-      },
-      {
-        "id": 1,
-        "nome": "Oficina de Programação",
-        "data": "2025-09-14T02:42:57.177Z"
-      }
-    ],
-    "pontos": 7
+    "participacoes": [],
+    "pontos": 0
   },
   {
     "matricula": "2025306096",
