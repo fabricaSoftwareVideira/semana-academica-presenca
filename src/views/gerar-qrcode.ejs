@@ -99,7 +99,6 @@
 </head>
 
 <body>
-
     <nav>
         <h1>
             <a href="/" class="logo">
@@ -109,6 +108,10 @@
         </h1>
         <div class="user-info">
             <% if (typeof user !=='undefined' ) { %>
+                <div class="floating-btn" id="topBtn" title="Registrar Participação"
+                    onclick="window.location.href='/participacao'">
+                    <i class="fa fa-plus"></i>
+                </div>
                 <span id="userName">
                     <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
                         (<%= typeof user !=='undefined' ? user.role : '' %>)
@@ -119,6 +122,14 @@
                     <% } %>
         </div>
     </nav>
+
+    <header>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Início</a> &gt; <span>Gerar QR Code</span>
+            </div>
+        </div>
+    </header>
 
     <main class="qrcode-container">
         <h1>Gerar QR Code</h1>

@@ -12,38 +12,6 @@
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Título da página */
-        .page-title {
-            font-size: 2rem;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .breadcrumgb {
-            background: #f9f9f9;
-            margin-bottom: 20px;
-            font-size: 0.8rem;
-        }
-
-        .breadcrumgb a {
-            color: #007bff;
-            text-decoration: none;
-        }
-
-        .breadcrumgb a:hover {
-            text-decoration: underline;
-        }
-
-        .breadcrumgb span {
-            color: #555;
-        }
-
-        .breadcrumgb a,
-        .breadcrumgb span {
-            margin-right: 5px;
-        }
-
-
         /* Grid de eventos */
         .evento-grid {
             display: grid;
@@ -122,6 +90,10 @@
         </h1>
         <div class="user-info">
             <% if (typeof user !=='undefined' ) { %>
+                <div class="floating-btn" id="topBtn" title="Registrar Participação"
+                    onclick="window.location.href='/participacao'">
+                    <i class="fa fa-plus"></i>
+                </div>
                 <span id="userName">
                     <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
                         (<%= typeof user !=='undefined' ? user.role : '' %>)
@@ -135,7 +107,7 @@
 
     <header>
         <div class="container">
-            <div class="breadcrumgb">
+            <div class="breadcrumb">
                 <a href="/">Início</a> &gt; <span>Eventos</span>
             </div>
         </div>

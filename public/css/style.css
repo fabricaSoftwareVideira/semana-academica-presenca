@@ -69,7 +69,7 @@ body {
 /* Layout principal */
 .container {
   max-width: var(--container-width);
-  margin: 20px auto;
+  margin: 10px auto;
   padding: 0 20px;
   width: 100%;
   /* min-height: calc(100vh - 60px); */
@@ -170,6 +170,11 @@ button, .btn, .card-btn, .logout-btn {
   background-color: var(--tertiary-hover);
 }
 
+.btn-small {
+  padding: 8px 14px;
+  font-size: 14px;
+}
+
 .logout-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -226,7 +231,7 @@ a {
 
 .card h3 {
   margin-bottom: 15px;
-  color: #667eea;
+  color: var(--primary-color);
   font-size: 1.3rem;
 }
 
@@ -537,9 +542,9 @@ footer {
 }
 
 section {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     background: var(--background-color);
-    padding: 20px;
+    padding: 10px 20px;
     border-radius: 12px;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -708,4 +713,53 @@ hr {
     .eventos-list {
         grid-template-columns: 1fr;
     }
+}
+
+.breadcrumb {
+    background: var(--secondary-color);
+    /* margin-bottom: 20px; */
+    font-size: 0.8rem;
+    padding: 8px 12px;
+}
+
+.breadcrumb a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.breadcrumb a:hover {
+    text-decoration: underline;
+}
+
+.breadcrumb span {
+    color: #555;
+}
+
+.breadcrumb a,
+.breadcrumb span {
+    margin-right: 5px;
+}
+
+/* botão/link flutuante fixo na parte inferior direita */
+.floating-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--success-color);
+    color: var(--secondary-color);
+    border-radius: 50%;
+    width: 46px;
+    height: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background 0.3s ease, transform 0.2s ease;
+    z-index: 1000;
+    cursor: pointer;
+}
+
+.floating-btn:hover {
+    background: var(--success-hover);
+    transform: scale(1.1);
 }

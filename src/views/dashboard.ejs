@@ -66,22 +66,6 @@
             margin-top: auto;
         }
 
-
-        section {
-            margin-bottom: 20px;
-            background: var(--background-color);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-        }
-
-        section h2 {
-            margin-bottom: 15px;
-            border-bottom: 2px solid var(--primary-color);
-            padding-bottom: 5px;
-            color: var(--primary-color);
-        }
-
         @media (max-width: 768px) {
             .action-list {
                 flex-direction: column;
@@ -119,13 +103,29 @@
             </a>
         </h1>
         <div class="user-info">
-            <span id="userName">
-                <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
-                    (<%= typeof user !=='undefined' ? user.role : '' %>)
-            </span>
-            <a href="/auth/logout" class="logout-btn">Sair</a>
+            <% if (typeof user !=='undefined' ) { %>
+                <div class="floating-btn" id="topBtn" title="Registrar Participação"
+                    onclick="window.location.href='/participacao'">
+                    <i class="fa fa-plus"></i>
+                </div>
+                <span id="userName">
+                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
+                        (<%= typeof user !=='undefined' ? user.role : '' %>)
+                </span>
+                <a href="/auth/logout" class="logout-btn">Sair</a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
         </div>
     </nav>
+
+    <header>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Início</a> &gt; <span>Dashboard</span>
+            </div>
+        </div>
+    </header>
 
     <div class="container">
         <% if (user.role==='admin' || user.role==='organizador' || user.role==='convidado' ) { %>
