@@ -114,6 +114,45 @@
             /* bronze */
             font-weight: bold;
         }
+
+        #registroGroup {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            font-size: 0.95rem;
+        }
+
+        #registroGroup p {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        #registroGroup label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            padding: 5px 8px;
+            border-radius: 5px;
+            transition: background 0.2s;
+        }
+
+        #registroGroup label:hover {
+            background: rgba(0, 0, 0, 0.03);
+        }
+
+        #registroGroup input[type="radio"] {
+            accent-color: var(--primary-color);
+        }
+
+        #registroGroup .texto {
+            font-weight: 500;
+            color: #444;
+        }
     </style>
 </head>
 
@@ -163,12 +202,20 @@
                 </select>
             </div>
 
-            <!-- Grupo de posições -->
-            <div id="posicoesGroup">
+            <!-- Grupo de registro -->
+            <!-- Grupo de registro -->
+            <div id="registroGroup" style="display:none;">
+                <p><strong>Escolha o tipo de registro:</strong></p>
+                <label><input type="radio" name="posicao" value="participacao"><span class="texto">📌
+                        Participação</span></label>
+                <hr>
                 <label><input type="radio" name="posicao" value="1"><span class="texto">🥇 1º Lugar</span></label>
                 <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º Lugar</span></label>
                 <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º Lugar</span></label>
             </div>
+
+
+
 
             <div class="button-group">
                 <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>

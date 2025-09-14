@@ -11,6 +11,13 @@ let scannerAtivo = false; // controle do scanner
 let processingScan = false;
 let posicaoSelecionada = null;
 
+// Resetar posição selecionada
+function resetPosicaoSelecionada() {
+    posicaoSelecionada = null;
+    // Limpa seleção visual dos radios
+    document.querySelectorAll("#registroGroup input[name=posicao]").forEach(radio => radio.checked = false);
+}
+
 // alterna registrar/cancelar
 btnToggle.addEventListener("click", () => {
     if (modo === "registrar") {
@@ -22,28 +29,53 @@ btnToggle.addEventListener("click", () => {
         btnToggle.textContent = "🔵 Modo: Registrar Participação / Vitória";
         btnToggle.className = "btn btn-success";
     }
-});
-
-// mostrar/esconder radio group de posições
-document.getElementById("eventoSelect").addEventListener("change", function () {
-    const selected = this.options[this.selectedIndex];
-    const temPremiacao = selected.dataset.primeiro > 0 || selected.dataset.segundo > 0 || selected.dataset.terceiro > 0;
-    const group = document.getElementById("posicoesGroup");
-
-    if (temPremiacao) {
-        group.style.display = "block";
-    } else {
-        group.style.display = "none";
-        posicaoSelecionada = null;
-    }
+    resetPosicaoSelecionada(); // reset ao trocar modo
 });
 
 // Atualizar posição selecionada
-document.querySelectorAll("#posicoesGroup input[name=posicao]").forEach(radio => {
+document.querySelectorAll("#registroGroup input[name=posicao]").forEach(radio => {
     radio.addEventListener("change", function () {
         posicaoSelecionada = this.value;
     });
 });
+
+eventoSelect.addEventListener("change", function () {
+    resetPosicaoSelecionada(); // reset ao mudar evento
+    const selected = this.options[this.selectedIndex];
+    const temPremiacao = selected.dataset.primeiro > 0 || selected.dataset.segundo > 0 || selected.dataset.terceiro > 0;
+    const registroGroup = document.getElementById("registroGroup");
+
+    if (temPremiacao) {
+        registroGroup.style.display = "block";
+        posicaoSelecionada = null; // resetar
+    } else {
+        registroGroup.style.display = "none";
+        posicaoSelecionada = "participacao"; // apenas participação
+        // marcar radio automaticamente
+        document.querySelector("#registroGroup input[value='participacao']").checked = true;
+    }
+});
+
+// mostrar/esconder radio group de posições
+// document.getElementById("eventoSelect").addEventListener("change", function () {
+//     const selected = this.options[this.selectedIndex];
+//     const temPremiacao = selected.dataset.primeiro > 0 || selected.dataset.segundo > 0 || selected.dataset.terceiro > 0;
+//     const group = document.getElementById("posicoesGroup");
+
+//     if (temPremiacao) {
+//         group.style.display = "block";
+//     } else {
+//         group.style.display = "none";
+//     }
+//     resetPosicaoSelecionada(); // reset ao mudar evento
+// });
+
+// Atualizar posição selecionada
+// document.querySelectorAll("#posicoesGroup input[name=posicao]").forEach(radio => {
+//     radio.addEventListener("change", function () {
+//         posicaoSelecionada = this.value;
+//     });
+// });
 
 // Registrar ou cancelar participação
 function registrarOuCancelar(matricula, eventoId) {
@@ -116,9 +148,11 @@ function onScanSuccess(decodedText) {
         let payload = decodedText;
         try { payload = JSON.parse(decodedText); } catch { }
         console.log(payload);
+        console.log(posicaoSelecionada);
+
 
         if (payload) {
-            if (posicaoSelecionada) {
+            if (posicaoSelecionada && posicaoSelecionada !== "participacao") {
                 registrarVitoriaParaTurma(payload, eventoId);
             } else {
                 registrarOuCancelar(payload, eventoId);
