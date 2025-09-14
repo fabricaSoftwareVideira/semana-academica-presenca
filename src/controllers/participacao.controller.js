@@ -230,6 +230,12 @@ function registrarParticipacaoPage(req, res) {
     if (req.user.role !== "admin") {
         eventos = eventos.filter((e) => e.users && e.users.includes(req.user.username));
     }
+
+    // Verificar se há eventos na lista. Se não houver, renderizar a página mas não permitir registro.
+    if (eventos.length === 0) {
+        return res.render("registrar-participacao", { user: req.user, error: true, message: "Nenhum evento disponível para registro.", alunos: [], eventos: [] });
+    }
+
     res.render("registrar-participacao", { user: req.user, alunos, eventos });
 }
 
