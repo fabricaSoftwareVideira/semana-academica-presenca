@@ -59,7 +59,8 @@ function rankingPublico() {
         nome: turma.nome,
         pontosVitorias: turma.pontosVitorias,
         pontosTotalAlunos: turma.pontosTotalAlunos,
-        pontosTotal: turma.pontosTotal
+        pontosTotal: turma.pontosTotal,
+        vitorias: turma.vitorias || []
     }));
     return ranking;
 }

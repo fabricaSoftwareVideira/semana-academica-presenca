@@ -6,18 +6,26 @@
       {
         "eventoId": 5,
         "eventoNome": "Gincana Acadêmica",
-        "posicao": 1,
-        "pontos": 10,
-        "data": "2025-09-14T00:42:49.159Z"
+        "posicao": 3,
+        "pontos": 3,
+        "data": "2025-09-14T01:50:58.351Z"
       }
     ],
-    "pontos": 10
+    "pontos": 3
   },
   {
     "id": "1B",
     "nome": "Turma 1B",
-    "vitorias": [],
-    "pontos": 0
+    "vitorias": [
+      {
+        "eventoId": 5,
+        "eventoNome": "Gincana Acadêmica",
+        "posicao": 2,
+        "pontos": 5,
+        "data": "2025-09-14T01:48:25.004Z"
+      }
+    ],
+    "pontos": 5
   },
   {
     "id": "2A",

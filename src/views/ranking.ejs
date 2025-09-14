@@ -126,6 +126,46 @@
                 font-size: 0.85rem;
             }
         }
+
+        /* Container de vitórias */
+        .vitorias-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .vitorias-turma-card {
+            background: #fefefe;
+            border-radius: 10px;
+            padding: 15px 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .vitorias-turma-card h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .vitorias-turma-card ul {
+            padding-left: 18px;
+            list-style-type: disc;
+            color: #555;
+        }
+
+        .vitorias-turma-card ul li {
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .vitorias-container {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 
@@ -168,10 +208,12 @@
                             <span>Pontos Alunos: <%= item.pontosTotalAlunos %></span>
                             <span class="total">Total: <%= item.pontosTotal %></span>
                         </div>
+
                     </div>
                 </div>
                 <% }) %>
         </div>
+
         <div class="legenda">
             <h3>Legenda:</h3>
             <ul>
@@ -180,6 +222,40 @@
                 <li><strong>Total:</strong> Soma dos pontos de vitórias em equipe e pontos de alunos.</li>
             </ul>
         </div>
+    </div>
+
+    <div class="container">
+        <h2 class="page-title">Vitórias por Turma</h2>
+        <div class="vitorias-container">
+            <% ranking.forEach(item=> { %>
+                <div class="vitorias-card">
+
+                    <div class="vitorias-turma-card">
+                        <h3>
+                            <%= item.nome %>
+                        </h3>
+                        <% if (item.vitorias.length> 0) { %>
+                            <ul>
+                                <% item.vitorias.forEach(v=> {
+                                    let medalha = '';
+                                    if(v.posicao === 1) medalha = '🥇';
+                                    else if(v.posicao === 2) medalha = '🥈';
+                                    else if(v.posicao === 3) medalha = '🥉';
+                                    %>
+                                    <li>
+                                        <%= medalha %>
+                                            <%= v.eventoNome %> - <%= v.posicao %>º lugar (+<%= v.pontos %> pts)
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                            <% } else { %>
+                                <p>Sem vitórias registradas.</p>
+                                <% } %>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+
     </div>
 
 
