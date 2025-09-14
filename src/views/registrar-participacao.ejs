@@ -190,42 +190,53 @@
             <h3 class="page-title">
                 Registrar / Cancelar Participação
             </h3>
-            <div class="form-group">
-                <select id="eventoSelect" class="form-control evento-select" autofocus>
-                    <option value="">-- Selecione o Evento --</option>
-                    <% eventos.forEach(e=> { %>
-                        <option value="<%= e.id %>"
-                            class="<% if ((e.primeiroLugar||0) > 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) { %>com-medalha<% } %>"
-                            data-primeiro="<%= e.primeiroLugar || 0 %>" data-segundo="<%= e.segundoLugar || 0 %>"
-                            data-terceiro="<%= e.terceiroLugar || 0 %>">
-                            <% if ((e.primeiroLugar||0)> 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) {
-                                %>🏅<% } %>
-                                    <%= e.nome %>
-                        </option>
-                        <% }) %>
-                </select>
-            </div>
+            <% if (typeof error !=='undefined' && error) { %>
+                <div class="alert alert-danger" role="alert" style="text-align: center;">
+                    <%= message %>
+                </div>
+                <% } else { %>
+                    <div class="form-group">
+                        <select id="eventoSelect" class="form-control evento-select" autofocus>
+                            <option value="">-- Selecione o Evento --</option>
+                            <% eventos.forEach(e=> { %>
+                                <option value="<%= e.id %>"
+                                    class="<% if ((e.primeiroLugar||0) > 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) { %>com-medalha<% } %>"
+                                    data-primeiro="<%= e.primeiroLugar || 0 %>"
+                                    data-segundo="<%= e.segundoLugar || 0 %>"
+                                    data-terceiro="<%= e.terceiroLugar || 0 %>">
+                                    <% if ((e.primeiroLugar||0)> 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) >
+                                        0) {
+                                        %>🏅<% } %>
+                                            <%= e.nome %>
+                                </option>
+                                <% }) %>
+                        </select>
+                    </div>
 
-            <!-- Grupo de registro -->
-            <div id="registroGroup" style="display:none;">
-                <p><strong>Escolha o tipo de registro:</strong></p>
-                <label><input type="radio" name="posicao" value="participacao"><span class="texto">📌
-                        Participação</span></label>
-                <hr>
-                <label><input type="radio" name="posicao" value="1"><span class="texto">🥇 1º Lugar</span></label>
-                <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º Lugar</span></label>
-                <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º Lugar</span></label>
-            </div>
+                    <!-- Grupo de registro -->
+                    <div id="registroGroup" style="display:none;">
+                        <p><strong>Escolha o tipo de registro:</strong></p>
+                        <label><input type="radio" name="posicao" value="participacao"><span class="texto">📌
+                                Participação</span></label>
+                        <hr>
+                        <label><input type="radio" name="posicao" value="1"><span class="texto">🥇 1º
+                                Lugar</span></label>
+                        <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º
+                                Lugar</span></label>
+                        <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º
+                                Lugar</span></label>
+                    </div>
 
-            <div class="button-group">
-                <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
-                <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
-            </div>
+                    <div class="button-group">
+                        <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
+                        <button id="btnStart" class="btn btn-primary">📷 Iniciar Scanner</button>
+                    </div>
 
-            <div id="reader"></div>
+                    <div id="reader"></div>
 
-            <div id="resultado"></div>
-            <div id="erro"></div>
+                    <div id="resultado"></div>
+                    <div id="erro"></div>
+                    <% } %>
         </div>
 
 
