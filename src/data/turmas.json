@@ -1,11 +1,23 @@
 [
   {
     "id": "1A",
-    "nome": "Turma 1A"
+    "nome": "Turma 1A",
+    "vitorias": [
+      {
+        "eventoId": 5,
+        "eventoNome": "Gincana Acadêmica",
+        "posicao": 1,
+        "pontos": 10,
+        "data": "2025-09-14T00:42:49.159Z"
+      }
+    ],
+    "pontos": 10
   },
   {
     "id": "1B",
-    "nome": "Turma 1B"
+    "nome": "Turma 1B",
+    "vitorias": [],
+    "pontos": 0
   },
   {
     "id": "2A",

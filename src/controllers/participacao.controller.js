@@ -3,6 +3,7 @@ const { readJson, writeJson } = require("../utils/file.utils");
 
 const ALUNOS_FILE = path.join(__dirname, "../data/alunos.json");
 const EVENTOS_FILE = path.join(__dirname, "../data/eventos.json");
+const TURMAS_FILE = path.join(__dirname, "../data/turmas.json");
 
 function registrarParticipacao(matricula, eventoId) {
     const alunos = readJson(ALUNOS_FILE);
@@ -49,11 +50,22 @@ function participarHandler(req, res) {
     res.json(resultado);
 }
 
-// Registrar vitória para a turma em um evento com base nisso
-function registrarVitoria(turmaId, eventoId, posicao) {
-    const turmas = readJson(path.join(__dirname, "../data/turmas.json"));
-    const eventos = readJson(EVENTOS_FILE);
+function validarPosicao(posicao) {
+    return ["1", "2", "3"].includes(posicao);
+}
 
+// Registrar vitória para a turma em um evento com base nisso
+function registrarVitoria(matricula, eventoId, posicao) {
+    const turmas = readJson(TURMAS_FILE);
+    const eventos = readJson(EVENTOS_FILE);
+    const alunos = readJson(ALUNOS_FILE);
+
+    const aluno = alunos.find((a) => a.matricula === matricula);
+    if (!aluno) {
+        return { error: "Aluno não encontrado" };
+    }
+
+    const turmaId = aluno.turma;
     const turma = turmas.find((t) => t.id === turmaId);
     if (!turma) {
         return { error: "Turma não encontrada" };
@@ -64,7 +76,7 @@ function registrarVitoria(turmaId, eventoId, posicao) {
         return { error: "Evento não encontrado" };
     }
 
-    if (!["1", "2", "3"].includes(posicao)) {
+    if (!validarPosicao(posicao)) {
         return { error: "Posição inválida. Use 1, 2 ou 3." };
     }
 
@@ -79,7 +91,12 @@ function registrarVitoria(turmaId, eventoId, posicao) {
 
     const todasVitorias = turmas.flatMap((t) => t.vitorias || []);
     if (todasVitorias.find((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao))) {
-        return { error: "Outra turma já registrou vitória nesta posição para este evento" };
+        return { error: `Vitória para posição ${posicao} já registrada na turma ${turma.id}` };
+    }
+
+    if (turma.vitorias.find((v) => v.eventoId === evento.id)) {
+        const posicaoVitoria = turma.vitorias.find((v) => v.eventoId === evento.id).posicao;
+        return { error: `Turma já registrou vitória para este evento na posição ${posicaoVitoria}` };
     }
 
     let pontos = 0;
@@ -103,8 +120,8 @@ function registrarVitoria(turmaId, eventoId, posicao) {
 }
 
 function registrarVitoriaHandler(req, res) {
-    const { turmaId, eventoId, posicao } = req.body;
-    const resultado = registrarVitoria(turmaId, eventoId, posicao);
+    const { matricula, eventoId, posicao } = req.params;
+    const resultado = registrarVitoria(matricula, eventoId, posicao);
 
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
@@ -142,9 +159,17 @@ function cancelarParticipacao(matricula, eventoId) {
     writeJson(ALUNOS_FILE, alunos);
 }
 
-function cancelarVitoria(turmaId, eventoId, posicao) {
-    const turmas = readJson(path.join(__dirname, "../data/turmas.json"));
+function cancelarVitoria(matricula, eventoId, posicao) {
+    const turmas = readJson(TURMAS_FILE);
     const eventos = readJson(EVENTOS_FILE);
+    const alunos = readJson(ALUNOS_FILE);
+
+    const aluno = alunos.find((a) => a.matricula === matricula);
+    if (!aluno) {
+        return { error: "Aluno não encontrado" };
+    }
+
+    const turmaId = aluno.turma;
     const turma = turmas.find((t) => t.id === turmaId);
     if (!turma) {
         return { error: "Turma não encontrada" };
@@ -189,8 +214,8 @@ function cancelarParticipacaoHandler(req, res) {
 }
 
 function cancelarVitoriaHandler(req, res) {
-    const { turmaId, eventoId, posicao } = req.body;
-    const resultado = cancelarVitoria(turmaId, eventoId, posicao);
+    const { matricula, eventoId, posicao } = req.params;
+    const resultado = cancelarVitoria(matricula, eventoId, posicao);
 
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
