@@ -12,45 +12,57 @@
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        /* Login box */
+        /* Responsividade */
         .login-box {
             background: var(--secondary-color);
-            padding: 40px;
+            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 90%;
+            width: 92%;
             max-width: 400px;
-            margin: auto;
-            margin-top: 10vh;
+            margin: 10vh auto;
         }
 
+        /* Textos bem legíveis em telas pequenas */
         .login-box h2 {
-            margin-bottom: 20px;
-            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
         }
 
-
-        .login-box label {
-            display: block;
-            text-align: left;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
+        /* Inputs maiores e com contraste acessível */
         .login-box input {
             width: 100%;
             padding: 12px;
-            margin-bottom: 15px;
+            margin-bottom: 0.5rem;
             border-radius: 8px;
             border: 1px solid var(--gray-light);
-            font-size: 16px;
+            font-size: 1rem;
+        }
+
+        /* Foco visível para acessibilidade */
+        .login-box input:focus,
+        .btn-primary:focus {
+            outline: 3px solid var(--primary-color);
+            outline-offset: 2px;
         }
 
         .text-info {
             color: var(--gray-dark);
             margin-bottom: 20px;
             font-size: 0.9rem;
+        }
+
+        /* Melhor espaçamento em telas muito pequenas */
+        @media (max-width: 480px) {
+            .login-box {
+                margin-top: 5vh;
+                padding: 20px;
+            }
+
+            .login-box h2 {
+                font-size: 1.2rem;
+            }
         }
     </style>
 </head>
@@ -85,20 +97,24 @@
             </div>
             <% } %>
 
-                <form action="/auth/login" method="POST">
+                <form action="/auth/login" method="POST" novalidate>
                     <div class="form-group">
                         <label for="username">Usuário:</label>
                         <input id="username" type="text" name="username" required placeholder="Digite seu usuário"
-                            autofocus>
+                            autocomplete="username" inputmode="text" autofocus value="fabricio.bizotto">
                     </div>
 
                     <div class="form-group">
                         <label for="password">Senha:</label>
-                        <input id="password" type="password" name="password" required placeholder="Digite sua senha">
+                        <input id="password" type="password" name="password" required placeholder="Digite sua senha"
+                            autocomplete="current-password" value="admin123">
                     </div>
 
-                    <button type="submit" class="btn-primary">Entrar</button>
+                    <button type="submit" class="btn-primary" aria-label="Entrar na conta da Semana Acadêmica">
+                        Entrar
+                    </button>
                 </form>
+
     </div>
 
     <footer role="contentinfo">
