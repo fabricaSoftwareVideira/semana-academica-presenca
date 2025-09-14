@@ -9,13 +9,22 @@ let html5QrcodeScanner;
 let modo = "registrar";
 let scannerAtivo = false; // controle do scanner
 let processingScan = false;
-let posicaoSelecionada = null;
+let posicaoSelecionada = 'participacao';
 
 // Resetar posição selecionada
 function resetPosicaoSelecionada() {
-    posicaoSelecionada = null;
+    posicaoSelecionada = 'participacao';
     // Limpa seleção visual dos radios
     document.querySelectorAll("#registroGroup input[name=posicao]").forEach(radio => radio.checked = false);
+    marcarPosicaoSelecionada(posicaoSelecionada);
+}
+
+function marcarPosicaoSelecionada(valor) {
+    const radio = document.querySelector(`#registroGroup input[value='${valor}']`);
+    if (radio) {
+        radio.checked = true;
+        posicaoSelecionada = valor;
+    }
 }
 
 // alterna registrar/cancelar
@@ -47,35 +56,10 @@ eventoSelect.addEventListener("change", function () {
 
     if (temPremiacao) {
         registroGroup.style.display = "block";
-        posicaoSelecionada = null; // resetar
     } else {
         registroGroup.style.display = "none";
-        posicaoSelecionada = "participacao"; // apenas participação
-        // marcar radio automaticamente
-        document.querySelector("#registroGroup input[value='participacao']").checked = true;
     }
 });
-
-// mostrar/esconder radio group de posições
-// document.getElementById("eventoSelect").addEventListener("change", function () {
-//     const selected = this.options[this.selectedIndex];
-//     const temPremiacao = selected.dataset.primeiro > 0 || selected.dataset.segundo > 0 || selected.dataset.terceiro > 0;
-//     const group = document.getElementById("posicoesGroup");
-
-//     if (temPremiacao) {
-//         group.style.display = "block";
-//     } else {
-//         group.style.display = "none";
-//     }
-//     resetPosicaoSelecionada(); // reset ao mudar evento
-// });
-
-// Atualizar posição selecionada
-// document.querySelectorAll("#posicoesGroup input[name=posicao]").forEach(radio => {
-//     radio.addEventListener("change", function () {
-//         posicaoSelecionada = this.value;
-//     });
-// });
 
 // Registrar ou cancelar participação
 function registrarOuCancelar(matricula, eventoId) {
@@ -206,6 +190,8 @@ function pararScanner() {
             scannerAtivo = false;
             btnStart.textContent = "📷 Iniciar Scanner";
             btnStart.className = "btn btn-primary";
+            resetPosicaoSelecionada(); // resetar posição ao parar
+            marcarPosicaoSelecionada(posicaoSelecionada); // marcar radio novamente
         }).catch(err => {
             console.error("Erro ao parar scanner:", err);
         });
