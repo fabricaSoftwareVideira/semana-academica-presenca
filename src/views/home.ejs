@@ -110,8 +110,19 @@
             <div class="ranking-highlight">
                 <div class="ranking-trophy">🏆</div>
                 <h2>Primeira Colocação</h2>
-                <p>A turma <strong>3º INFO A</strong> está liderando com <strong>1.250</strong> pontos!</p>
-                <a href="/ranking" class="btn" style="margin-top: 15px; animation: none;">Ver Ranking Completo</a>
+                <% if (rankingExistePontuacao) { %>
+                    <% if (ranking && ranking.length> 0) { %>
+                        <p>A turma <strong>
+                                <%= ranking[0].nome %>
+                            </strong> está em primeiro lugar com <strong>
+                                <%= ranking[0].pontosTotal %>
+                            </strong> pontos!</p>
+                        <a href="/ranking" class="btn" style="margin-top: 15px; animation: none;">Ver Ranking
+                            Completo</a>
+                        <% } %>
+                            <% } else { %>
+                                <p>Nenhuma pontuação registrada ainda. Participe dos eventos para ganhar pontos!</p>
+                                <% } %>
             </div>
         </section>
 
@@ -123,84 +134,48 @@
                 </div>
                 Programação Completa
             </h2>
+            <% if (eventosPorTipo) { %>
+                <div class="eventos-grid">
+                    <% eventosPorTipo.forEach(tipo=> { %>
+                        <div class="evento-card">
+                            <div class="evento-tipo">
+                                <%= tipo.tipo %>
+                            </div>
+                            <% if (tipo.eventos.length> 0) { %>
+                                <% tipo.eventos.forEach(evento=> { %>
+                                    <hr>
 
-            <div class="eventos-grid">
-                <div class="evento-card">
-                    <div class="evento-tipo">Palestras</div>
-                    <div class="evento-nome">Inteligência Artificial no Mercado</div>
-                    <div class="evento-detalhes">
-                        <div class="detalhe">
-                            <i class="fas fa-calendar"></i>
-                            <span>10 de Novembro, 2025</span>
+                                    <div class="evento-nome">
+                                        <%= evento.nome %>
+                                    </div>
+                                    <p class="detalhe">
+                                        <i class="fas fa-calendar"></i>
+                                        <span>
+                                            <%= new Date(evento.data).toLocaleDateString('pt-BR') %>
+                                        </span>
+                                    </p>
+                                    <p class="detalhe">
+                                        <i class="fas fa-clock"></i>
+                                        <span>
+                                            <%= evento.horario %>
+                                        </span>
+                                    </p>
+                                    <p class="detalhe">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        <span>
+                                            <%= evento.local %>
+                                        </span>
+                                    </p>
+                                    <% }) %>
+                                        <% } else { %>
+                                            <p>Nenhum evento disponível para este tipo.</p>
+                                            <% } %>
                         </div>
-                        <div class="detalhe">
-                            <i class="fas fa-clock"></i>
-                            <span>14:00 - 15:30</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Auditório Principal</span>
-                        </div>
-                    </div>
+                        <% }) %>
                 </div>
-
-                <div class="evento-card">
-                    <div class="evento-tipo">Workshop</div>
-                    <div class="evento-nome">Desenvolvimento Web Moderno</div>
-                    <div class="evento-detalhes">
-                        <div class="detalhe">
-                            <i class="fas fa-calendar"></i>
-                            <span>11 de Novembro, 2025</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-clock"></i>
-                            <span>09:00 - 12:00</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Laboratório de Informática</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="evento-card">
-                    <div class="evento-tipo">Competição</div>
-                    <div class="evento-nome">Hackathon Estudantil</div>
-                    <div class="evento-detalhes">
-                        <div class="detalhe">
-                            <i class="fas fa-calendar"></i>
-                            <span>12 de Novembro, 2025</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-clock"></i>
-                            <span>08:00 - 18:00</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Salas 101-105</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="evento-card">
-                    <div class="evento-tipo">Mesa Redonda</div>
-                    <div class="evento-nome">Carreiras em TI</div>
-                    <div class="evento-detalhes">
-                        <div class="detalhe">
-                            <i class="fas fa-calendar"></i>
-                            <span>12 de Novembro, 2025</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-clock"></i>
-                            <span>15:00 - 16:30</span>
-                        </div>
-                        <div class="detalhe">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>Sala de Conferências</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <% } else { %>
+                    <p>Nenhum evento disponível no momento.</p>
+                    <% } %>
         </section>
     </div>
 

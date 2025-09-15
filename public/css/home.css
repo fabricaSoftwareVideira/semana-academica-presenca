@@ -7,6 +7,21 @@
     --warning-color: #f9f871;
     --text-color: #333;
     --background-color: #f8f9fa;
+    
+      /* Bordas / tons neutros */
+    --border-color: var(--primary-color);
+    --gray-dark: #555;
+    --gray-light: #ddd;
+    --gray-medium: #888;
+
+    /* Links e transições */
+    --link-color: var(--primary-color);
+    --link-hover: var(--primary-color-hover);
+    --link-transition: all 0.3s ease;
+
+    /* Layout */
+    --container-width: 1200px;
+    
 }
 
 * {
@@ -105,7 +120,7 @@ a {
 /* Header melhorado com destaque para a informática */
 .jumbotron {
     position: relative;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #860083 0%, #764ba2 100%);
     color: white;
     padding: 80px 40px;
     text-align: center;
@@ -252,7 +267,7 @@ a {
 }
 
 .btn:hover {
-    transform: translateY(-2px);
+    /* transform: translateY(-2px); */
     box-shadow: 0 6px 20px rgba(249, 248, 113, 0.6);
 }
 
@@ -275,14 +290,14 @@ a {
 }
 
 /* Seções do conteúdo */
-.content-section {
+/* .content-section {
     background: white;
     margin: 30px 0;
     padding: 30px;
     border-radius: 15px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
     border-left: 5px solid var(--primary-color);
-}
+} */
 
 .section-title {
     display: flex;
@@ -313,6 +328,7 @@ a {
     padding: 25px;
     border-radius: 15px;
     margin-bottom: 20px;
+    margin-top: 20px;
 }
 
 .ranking-trophy {
@@ -337,7 +353,7 @@ a {
 }
 
 .evento-card:hover {
-    transform: translateY(-5px);
+    /* transform: translateY(-5px); */
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
 }
 
@@ -414,7 +430,7 @@ footer {
 
 .footer-social a:hover {
     color: var(--primary-color-hover);
-    transform: scale(1.2);
+    /* transform: scale(1.2); */
 }
 
 .footer-logo img {
@@ -464,4 +480,9 @@ footer {
         margin: 20px 0;
         padding: 20px;
     }
+}
+hr {
+    margin: 10px 0;
+    border: none;
+    border-top: 1px solid var(--gray-light);
 }
