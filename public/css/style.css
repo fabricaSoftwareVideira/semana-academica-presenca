@@ -58,9 +58,10 @@ html, body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-}
-
-body {
+    padding-bottom: 80px; /* Espaço para o footer fixo */
+  }
+  
+  body {
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -348,7 +349,7 @@ select, .login-box input {
 footer {
     background-color: var(--header-bg);
     color: var(--text-color);
-    padding: 40px 20px 30px;
+    padding: 20px 20px 20px;
     border-top: 2px solid var(--border-color);
     box-shadow: 0 -4px 10px var(--header-shadow);
     flex-shrink: 0; /* Não deixa o footer encolher */
@@ -452,6 +453,25 @@ footer {
   object-fit: contain;
 }
 
+.footer-fixed {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    z-index: 100;
+}
+
+@media (max-width: 768px) {
+  
+  html, body {
+    padding-bottom: 0;
+  }
+
+    .footer-fixed {
+        position: static;
+    }
+}
+
 /* Animação de pulsar */
 @keyframes pulse {
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 193, 7, 0.7); }
@@ -470,6 +490,14 @@ footer {
 }
 
 /* Responsividade */
+@media (max-width: 768px) {
+
+  nav {
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
 @media (max-width: 480px) {
 
   button, .btn, .card-btn { font-size: 14px; padding: 10px 14px; }
@@ -480,8 +508,6 @@ footer {
 
   .footer-content { grid-template-columns: 1fr; text-align: center; gap: 20px; }
   .footer-info, .footer-contact, .footer-logo, .footer-social { align-items: center; }
-
-  nav { flex-direction: column; gap: 15px; }
 }
 
 
@@ -541,11 +567,11 @@ footer {
 }
 
 section {
-    margin-bottom: 10px;
-    background: var(--background-color);
+    margin-bottom: 20px;
+    /* background: var(--background-color);
     padding: 10px 20px;
     border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); */
 }
 
 section h2 {

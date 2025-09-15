@@ -15,8 +15,7 @@
         .ranking-list {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            gap: 5px;
         }
 
         .ranking-card {
@@ -98,7 +97,6 @@
         }
 
         .legenda {
-            margin-top: 20px;
             background: var(--secondary-color);
             padding: 20px;
             border-radius: 10px;
@@ -141,6 +139,11 @@
             grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 10px;
             margin-bottom: 40px;
+            align-items: stretch;
+        }
+
+        .vitorias-card {
+            display: flex;
         }
 
         .vitorias-turma-card {
@@ -149,6 +152,7 @@
             padding: 15px 20px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
             transition: transform 0.2s, box-shadow 0.2s;
+            flex: 1;
         }
 
         .vitorias-turma-card h3 {
@@ -244,56 +248,61 @@
                 </div>
                 <% }) %>
 
-                    <div class="legenda">
-                        <h3>Legenda:</h3>
-                        <ul>
-                            <li><strong>Pontos Vitórias:</strong> Pontos da turma acumulados por vitórias em
-                                competições.
-                            </li>
-                            <li><strong>Pontos Alunos:</strong> Pontos acumulados por participação de alunos nas
-                                atividades.
-                            </li>
-                            <li><strong>Total:</strong> Soma dos pontos de vitórias em equipe e pontos de alunos.</li>
-                        </ul>
-                    </div>
-        </div>
-
-        <div class="container">
-            <h2 class="page-title">Vitórias por Turma</h2>
-            <div class="vitorias-container">
-                <% ranking.forEach(item=> { %>
-                    <div class="vitorias-card">
-
-                        <div class="vitorias-turma-card">
-                            <h3>
-                                <%= item.nome %>
-                            </h3>
-                            <% if (item.vitorias.length> 0) { %>
-                                <ul>
-                                    <% item.vitorias.forEach(v=> {
-                                        let medalha = '';
-                                        if(v.posicao === 1) medalha = '🥇';
-                                        else if(v.posicao === 2) medalha = '🥈';
-                                        else if(v.posicao === 3) medalha = '🥉';
-                                        %>
-                                        <li>
-                                            <%= medalha %>
-                                                <%= v.eventoNome %> - <%= v.posicao %>º lugar (+<%= v.pontos %> pts)
-                                        </li>
-                                        <% }) %>
-                                </ul>
-                                <% } else { %>
-                                    <p>Sem vitórias registradas.</p>
-                                    <% } %>
-                        </div>
-                    </div>
-                    <% }) %>
-            </div>
-
         </div>
     </div>
 
-    <footer>
+    <div class="container">
+        <div class="legenda">
+            <h3>Legenda:</h3>
+            <ul>
+                <li><strong>Pontos Vitórias:</strong> Pontos da turma acumulados por vitórias em
+                    competições.
+                </li>
+                <li><strong>Pontos Alunos:</strong> Pontos acumulados por participação de alunos nas
+                    atividades.
+                </li>
+                <li><strong>Total:</strong> Soma dos pontos de vitórias em equipe e pontos de alunos.</li>
+            </ul>
+        </div>
+    </div>
+
+
+    <div class="container">
+        <h2 class="page-title">Vitórias por Turma</h2>
+        <div class="vitorias-container">
+            <% ranking.forEach(item=> { %>
+                <div class="vitorias-card">
+
+                    <div class="vitorias-turma-card">
+                        <h3>
+                            <%= item.nome %>
+                        </h3>
+                        <% if (item.vitorias.length> 0) { %>
+                            <ul>
+                                <% item.vitorias.forEach(v=> {
+                                    let medalha = '';
+                                    if(v.posicao === 1) medalha = '🥇';
+                                    else if(v.posicao === 2) medalha = '🥈';
+                                    else if(v.posicao === 3) medalha = '🥉';
+                                    %>
+                                    <li>
+                                        <%= medalha %>
+                                            <%= v.eventoNome %> - <%= v.posicao %>º lugar (+<%= v.pontos %> pts)
+                                    </li>
+                                    <% }) %>
+                            </ul>
+                            <% } else { %>
+                                <p>Sem vitórias registradas.</p>
+                                <% } %>
+                    </div>
+                </div>
+                <% }) %>
+        </div>
+
+    </div>
+    </div>
+
+    <footer class="footer-fixed">
         <div class="footer-content">
 
             <!-- Informações do site -->
