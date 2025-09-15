@@ -1,7 +1,7 @@
 // Nenhum fetch interceptado
 
 
-const CACHE_NAME = "semana-academica-v1";
+const CACHE_NAME = "semana-academica-v2";
 const STATIC_ASSETS = [
     "/css/style.css",
     "/img/favicon.svg",
