@@ -1,8 +1,7 @@
-// Nenhum fetch interceptado
-
-
-const CACHE_NAME = "semana-academica-v2";
+const CACHE_NAME = "semana-academica-v5";
 const STATIC_ASSETS = [
+    "/",
+    "/offline.html", // nova página offline
     "/css/style.css",
     "/img/favicon.svg",
     "/img/ifc.webp",
@@ -40,34 +39,31 @@ self.addEventListener("activate", (event) => {
 });
 
 // Fetch - servir do cache ou buscar na rede
-// self.addEventListener("fetch", (event) => {
-//     const { request } = event;
+self.addEventListener("fetch", (event) => {
+    const { request } = event;
 
-//     // Ignorar requests cross-origin (redirecionamentos externos)
-//     if (!request.url.startsWith(self.location.origin)) return;
+    // Ignorar requests cross-origin
+    if (!request.url.startsWith(self.location.origin)) return;
 
-//     event.respondWith(
-//         caches.match(request).then((cachedResponse) => {
-//             if (cachedResponse) {
-//                 return cachedResponse;
-//             }
-//             return fetch(request, { redirect: "follow" }).then((networkResponse) => {
-//                 // Só cacheia respostas válidas
-//                 if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
-//                     return networkResponse;
-//                 }
-//                 // Clonar a resposta porque a Response é um stream
-//                 const responseToCache = networkResponse.clone();
-//                 caches.open(CACHE_NAME).then((cache) => {
-//                     cache.put(request, responseToCache);
-//                 });
-//                 return networkResponse;
-//             }).catch(() => {
-//                 // Fallback offline
-//                 if (request.destination === "document") {
-//                     return caches.match("/"); // página inicial offline
-//                 }
-//             });
-//         })
-//     );
-// });
+    event.respondWith(
+        caches.match(request).then((cachedResponse) => {
+            if (cachedResponse) return cachedResponse;
+
+            return fetch(request, { redirect: "follow" }).then((networkResponse) => {
+                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
+                    return networkResponse;
+                }
+
+                const responseToCache = networkResponse.clone();
+                caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
+
+                return networkResponse;
+            }).catch(() => {
+                // Fallback offline para páginas HTML
+                if (request.destination === "document") {
+                    return caches.match("/offline.html");
+                }
+            });
+        })
+    );
+});
