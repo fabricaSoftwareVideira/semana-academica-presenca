@@ -6,14 +6,150 @@
     <title>Offline - Semana Acadêmica</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="/css/style.css">
+    <style>
+        /* ==== Variáveis de Cores ==== */
+        :root {
+            --primary-color: #860083;
+            --primary-color-hover: #a300a0;
+            --gray-dark: #333;
+            --gray-light: #f8f9fa;
+            --white: #fff;
+        }
+
+        /* ==== Reset & Base ==== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--gray-light);
+            color: var(--gray-dark);
+            line-height: 1.6;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* ==== Layout Offline ==== */
+        .offline-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .offline-card {
+            background: var(--white);
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+            max-width: 420px;
+            width: 100%;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        .offline-card h1 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .offline-card p {
+            color: var(--gray-dark);
+            margin-bottom: 25px;
+            font-size: 1rem;
+        }
+
+        .offline-icon {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            animation: pulseIcon 2s infinite;
+        }
+
+        /* ==== Botões ==== */
+        .btn {
+            display: inline-block;
+            padding: 12px 22px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-color-hover);
+        }
+
+        .animated-btn {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .animated-btn::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transition: left 0.4s ease;
+        }
+
+        .animated-btn:hover::after {
+            left: 0;
+        }
+
+        /* ==== Animações ==== */
+        @keyframes pulseIcon {
+
+            0%,
+            100% {
+                transform: scale(1);
+                color: var(--primary-color);
+            }
+
+            50% {
+                transform: scale(1.1);
+                color: var(--primary-color-hover);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div style="text-align:center; padding:50px;">
-        <h1>😕 Você está offline</h1>
-        <p>Não foi possível acessar esta página. Verifique sua conexão.</p>
-        <a href="/" class="btn btn-primary">Voltar para a página inicial</a>
+    <div class="offline-container">
+        <div class="offline-card">
+            <h2>Semana Acadêmica 2025</h2>
+            <div class="offline-icon">😕</div>
+            <h1>Você está offline</h1>
+            <p>Não foi possível acessar esta página.<br>Verifique sua conexão com a internet.</p>
+            <a href="/" class="btn btn-primary animated-btn">Voltar para a página inicial</a>
+        </div>
     </div>
 </body>
 
