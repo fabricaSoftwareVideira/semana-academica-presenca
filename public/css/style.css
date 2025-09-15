@@ -277,7 +277,6 @@ a {
 .login-btn:hover::after {
   width: 100%;
 }
-  
 
 select, .login-box input {
   width: 100%;
@@ -472,9 +471,6 @@ footer {
 
 /* Responsividade */
 @media (max-width: 480px) {
-  .logo-img { width: 24px; }
-
-  .header { flex-direction: column; text-align: center; gap: 10px; }
 
   button, .btn, .card-btn { font-size: 14px; padding: 10px 14px; }
 
@@ -766,12 +762,12 @@ hr {
     background: var(--success-hover);
     transform: scale(1.1);
 }
-.user-info {
+/* .user-info {
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
-}
+} */
 
 /* Username */
 .username {
@@ -779,35 +775,30 @@ hr {
     color: var(--secondary-color);
 }
 
-/* Links do usuário */
-.user-link {
+.user-link,
+.logout-link {
     display: flex;
     align-items: center;
-    gap: 5px; /* espaço entre ícone e texto */
+    gap: 5px;
     padding: 6px 12px;
-    border-radius: var(--border-radius, 8px);
+    border-radius: 8px;
     background-color: var(--tertiary-color);
     color: white;
     text-decoration: none;
     font-size: 14px;
-    transition: background-color 0.3s ease;
+    transition: all 0.3s ease;
 }
 
-.user-link:hover {
-    background-color: var(--tertiary-hover);
-}
-
-/* Logout destacado */
 .logout-link {
-    background-color: var(--danger-color);
+    background-color: #f44336;
 }
 
 .logout-link:hover {
-    background-color: var(--danger-hover);
+    background-color: #da190b;
 }
 
 /* Responsividade: telas pequenas */
-@media (max-width: 600px) {
+@media (max-width: 480px) {
     .user-info {
         justify-content: flex-end;
         gap: 5px;
