@@ -29,14 +29,35 @@
     padding: 0;
 }
 
-body {
+html, body {
     font-family: "Arial", sans-serif;
     background: var(--background-color);
     color: var(--text-color);
     min-height: 100vh;
-    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
 }
 
+body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; /* Faz o main ocupar o espaço disponível, empurrando o footer para baixo */
+}
+
+/* Layout principal */
+.container {
+  max-width: var(--container-width);
+  margin: 10px auto;
+  padding: 0 20px;
+  width: 100%;
+  /* min-height: calc(100vh - 60px); */
+}
+
+/* Cabeçalho */
 nav {
   background: var(--primary-color);
   color: var(--secondary-color);
@@ -45,6 +66,31 @@ nav {
   justify-content: space-around;
   align-items: center;
   box-shadow: 0 4px 10px var(--header-shadow);
+}
+
+nav h1 {
+  font-size: 1.6rem;
+  line-height: 1.2;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: #fff;
+  gap: 10px;
+}
+
+.logo-img {
+  width: 28px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 a {
@@ -92,6 +138,11 @@ a {
     display: flex;
     align-items: center;
     gap: 15px;
+}
+
+.username {
+    font-weight: bold;
+    color: var(--secondary-color);
 }
 
 .user-link,
@@ -514,4 +565,19 @@ hr {
 .floating-btn:hover {
     background: var(--success-hover);
     transform: scale(1.1);
+}
+
+/* Responsividade: telas pequenas */
+@media (max-width: 480px) {
+    .user-info {
+        justify-content: flex-end;
+        gap: 5px;
+    }
+    .user-link, .logout-link {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+    .username {
+        font-size: 14px;
+    }
 }
