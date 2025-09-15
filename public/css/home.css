@@ -437,15 +437,35 @@ footer {
     margin: 0 10px;
 }
 
-/* Responsividade */
+/* Responsividade (celular) */
 @media (max-width: 768px) {
     .event-title {
         font-size: 2rem;
     }
 
+    .jumbotron {
+        padding: 40px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .eventos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .content-section {
+        margin: 20px 0;
+        padding: 20px;
+    }
+    
     .event-info {
         flex-direction: column;
         gap: 15px;
+    }
+
+    .info-item {
+        width: 100%;
+        justify-content: center;
     }
 
     .countdown-timer {
@@ -464,22 +484,8 @@ footer {
         flex-direction: column;
         gap: 15px;
     }
-
-    .jumbotron {
-        padding: 40px 20px;
-    }
 }
 
-@media (max-width: 480px) {
-    .eventos-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .content-section {
-        margin: 20px 0;
-        padding: 20px;
-    }
-}
 hr {
     margin: 10px 0;
     border: none;
