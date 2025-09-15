@@ -19,7 +19,6 @@ function login(req, res) {
     if (!user) {
         return res.status(401).json({ error: "Credenciais inválidas" });
     }
-
     // Aqui você pode implementar a lógica de sessão ou token
     res.json({ message: "Login bem-sucedido", user });
 }
