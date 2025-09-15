@@ -1,56 +1,45 @@
-self.addEventListener("install", (event) => {
-    console.log("Service Worker instalado.");
-    self.skipWaiting(); // ativa imediatamente
-});
-
-self.addEventListener("activate", (event) => {
-    console.log("Service Worker ativado.");
-    self.clients.claim(); // assume controle de todas as tabs abertas
-});
-
 // Nenhum fetch interceptado
 
 
-// const CACHE_NAME = "semana-academica-v1";
-// const STATIC_ASSETS = [
-//     "/",
-//     "/css/style.css",
-//     "/img/favicon.svg",
-//     "/img/ifc.webp",
-//     "/manifest.json",
-// ];
+const CACHE_NAME = "semana-academica-v1";
+const STATIC_ASSETS = [
+    "/css/style.css",
+    "/img/favicon.svg",
+    "/img/ifc.webp",
+    "/manifest.json",
+];
 
-// // Install - pré-cache dos arquivos estáticos
-// self.addEventListener("install", (event) => {
-//     console.log("[ServiceWorker] Install");
-//     event.waitUntil(
-//         caches.open(CACHE_NAME).then((cache) => {
-//             console.log("[ServiceWorker] Caching static assets");
-//             return cache.addAll(STATIC_ASSETS);
-//         })
-//     );
-//     self.skipWaiting();
-// });
+// Install - pré-cache dos arquivos estáticos
+self.addEventListener("install", (event) => {
+    console.log("[ServiceWorker] Install");
+    event.waitUntil(
+        caches.open(CACHE_NAME).then((cache) => {
+            console.log("[ServiceWorker] Caching static assets");
+            return cache.addAll(STATIC_ASSETS);
+        })
+    );
+    self.skipWaiting();
+});
 
-// // Activate - limpar caches antigos
-// self.addEventListener("activate", (event) => {
-//     console.log("[ServiceWorker] Activate");
-//     event.waitUntil(
-//         caches.keys().then((keys) => {
-//             return Promise.all(
-//                 keys.map((key) => {
-//                     if (key !== CACHE_NAME) {
-//                         console.log("[ServiceWorker] Removing old cache:", key);
-//                         return caches.delete(key);
-//                     }
-//                 })
-//             );
-//         })
-//     );
-//     self.clients.claim();
-// });
+// Activate - limpar caches antigos
+self.addEventListener("activate", (event) => {
+    console.log("[ServiceWorker] Activate");
+    event.waitUntil(
+        caches.keys().then((keys) => {
+            return Promise.all(
+                keys.map((key) => {
+                    if (key !== CACHE_NAME) {
+                        console.log("[ServiceWorker] Removing old cache:", key);
+                        return caches.delete(key);
+                    }
+                })
+            );
+        })
+    );
+    self.clients.claim();
+});
 
-// // Fetch - servir do cache ou buscar na rede
+// Fetch - servir do cache ou buscar na rede
 // self.addEventListener("fetch", (event) => {
 //     const { request } = event;
 
