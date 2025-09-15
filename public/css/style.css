@@ -81,7 +81,7 @@ nav {
   color: var(--secondary-color);
   padding: 20px;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
   align-items: center;
   box-shadow: 0 4px 10px var(--header-shadow);
 }

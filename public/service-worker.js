@@ -1,4 +1,4 @@
-const CACHE_NAME = "semana-academica-v5";
+const CACHE_NAME = "semana-academica-v1.2";
 const STATIC_ASSETS = [
     "/",
     "/offline.html", // nova página offline
