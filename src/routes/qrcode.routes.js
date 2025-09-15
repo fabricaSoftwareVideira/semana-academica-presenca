@@ -19,7 +19,7 @@ router.post('/gerar', async (req, res) => {
     try {
         const result = await qrcodeController.gerarQRCodeAluno(matricula);
         // res.json(result);
-        res.render('gerar-qrcode', { qrCodeDataURL: result.qrCodeDataUrl, aluno: result.aluno });
+        res.render('gerar-qrcode', { qrCodeDataURL: result.qrCodeDataUrl, aluno: result.aluno, user: req.user, isAuthenticated: req.isAuthenticated() });
     } catch (error) {
         // res.status(500).json({ error: error.message });
         res.render('gerar-qrcode', { error: error.message });
