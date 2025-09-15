@@ -52,18 +52,22 @@
 }
 
 html, body {
-  font-family: "Arial", sans-serif;
-  background: var(--background-color);
-  color: var(--text-color);
-  min-height: 100vh;
-  line-height: 1.5;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+    font-family: "Arial", sans-serif;
+    background: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
 body {
-  flex: 1;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1; /* Faz o main ocupar o espaço disponível, empurrando o footer para baixo */
 }
 
 /* Layout principal */
@@ -342,14 +346,13 @@ select, .login-box input {
   color: var(--text-color);
 }
 
-/* Footer */
 footer {
-  background-color: var(--header-bg);
-  color: var(--text-color);
-  padding: 40px 20px 30px;
-  border-top: 2px solid var(--border-color);
-  box-shadow: 0 -4px 10px var(--header-shadow);
-  flex-shrink: 0;
+    background-color: var(--header-bg);
+    color: var(--text-color);
+    padding: 40px 20px 30px;
+    border-top: 2px solid var(--border-color);
+    box-shadow: 0 -4px 10px var(--header-shadow);
+    flex-shrink: 0; /* Não deixa o footer encolher */
 }
 
 .footer-content {
@@ -448,21 +451,6 @@ footer {
   height: 40px;
   width: auto;
   object-fit: contain;
-}
-
-footer.footer-fixed {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  left: 0;
-  z-index: 100;
-}
-
-/* footer fixed except for mobile */
-@media (max-width: 768px) {
-  footer.footer-fixed {
-    position: static;
-  }
 }
 
 /* Animação de pulsar */
