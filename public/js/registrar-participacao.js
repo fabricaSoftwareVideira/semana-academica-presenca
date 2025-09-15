@@ -38,7 +38,6 @@ btnToggle.addEventListener("click", () => {
         btnToggle.textContent = "🔵 Modo: Registrar Participação / Vitória";
         btnToggle.className = "btn btn-success";
     }
-    resetPosicaoSelecionada(); // reset ao trocar modo
 });
 
 // Atualizar posição selecionada
@@ -111,6 +110,7 @@ async function registrarVitoriaParaTurma(token, eventoId) {
     try {
         const res = await fetch(`/participacao/vitoria/${eventoId}/${posicaoSelecionada}`, {
             method,
+            credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token }) // 🔑 envia JWT
         });
@@ -188,7 +188,7 @@ function pararScanner() {
             scannerAtivo = false;
             btnStart.textContent = "📷 Iniciar Scanner";
             btnStart.className = "btn btn-primary";
-            resetPosicaoSelecionada(); // resetar posição ao parar
+            // resetPosicaoSelecionada(); // resetar posição ao parar
             marcarPosicaoSelecionada(posicaoSelecionada); // marcar radio novamente
         }).catch(err => {
             console.error("Erro ao parar scanner:", err);

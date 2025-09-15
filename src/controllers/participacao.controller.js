@@ -226,7 +226,8 @@ function cancelarParticipacaoHandler(req, res) {
 }
 
 function cancelarVitoriaHandler(req, res) {
-    const { matricula, eventoId, posicao } = req.params;
+    const { eventoId, posicao } = req.params;
+    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
     const resultado = cancelarVitoria(matricula, eventoId, posicao);
 
     if (resultado.error) {
