@@ -763,8 +763,8 @@ hr {
     background: var(--success-color);
     color: var(--secondary-color);
     border-radius: 50%;
-    width: 46px;
-    height: 46px;
+    width: 52px;
+    height: 52px;
     display: flex;
     align-items: center;
     justify-content: center;
