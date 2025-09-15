@@ -104,7 +104,8 @@ function registrarVitoria(matricula, eventoId, posicao) {
 
     if (turma.vitorias.find((v) => v.eventoId === evento.id)) {
         const posicaoVitoria = turma.vitorias.find((v) => v.eventoId === evento.id).posicao;
-        return { error: `Turma já registrou vitória para este evento na posição ${posicaoVitoria}` };
+        const posicaoTexto = posicaoVitoria === 1 ? "1º lugar" : posicaoVitoria === 2 ? "2º lugar" : "3º lugar";
+        return { error: `Turma já registrou vitória para este evento na posição ${posicaoTexto}` };
     }
 
     let pontos = 0;

@@ -1,25 +1,110 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
+    <title>Erro - Semana Acadêmica</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        Error
-    </title>
-    <link rel="stylesheet" href="/styles/404.css">
+
+    <!-- Ícones e estilos globais -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/style.css">
+
+    <style>
+        .error-box {
+            background: var(--secondary-color);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 92%;
+            max-width: 500px;
+            margin: 10vh auto;
+        }
+
+        .error-box h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .error-box p {
+            font-size: 1.1rem;
+            color: var(--gray-dark);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-back {
+            display: inline-block;
+            padding: 10px 20px;
+            background: var(--primary-color);
+            color: #fff;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background 0.3s ease;
+        }
+
+        .btn-back:hover {
+            background: var(--primary-color-hover);
+        }
+
+        @media (max-width: 480px) {
+            .error-box {
+                padding: 20px;
+            }
+
+            .error-box h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
 
 <body>
-    <div class="container">
+    <nav>
         <h1>
-            Algo deu errado
+            <a href="/" class="logo">
+                <img src="/img/ifc.webp" alt="Logo" class="logo-img">
+                Semana Acadêmica
+            </a>
         </h1>
+    </nav>
+
+    <div class="error-box" role="alert">
+        <h1>❌ Algo deu errado</h1>
         <p>
             <%= message %>
         </p>
-        <a href="/">Voltar</a>
+        <a href="/" class="btn-back"><i class="fa fa-arrow-left"></i> Voltar</a>
     </div>
+
+    <footer role="contentinfo" class="footer-fixed">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>Semana Acadêmica</h3>
+                    <div class="footer-logo">
+                        <img src="/img/favicon.svg" alt="Fábrica de Software" class="footer-logo">
+                        <img src="/img/ifc.webp" alt="IFC Videira" class="footer-logo">
+                    </div>
+                </div>
+
+                <div class="footer-social">
+                    <h3>Siga-nos</h3>
+                    <ul>
+                        <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a></li>
+                        <li><a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                    class="fa fa-envelope"></i></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
 </body>
 
 </html>
