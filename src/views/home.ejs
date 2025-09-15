@@ -11,6 +11,8 @@
     <title>Dashboard - Semana Acadêmica</title>
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#764ba2">
 </head>
 
 <body>
@@ -179,6 +181,14 @@
             requestAnimationFrame(drawParticles);
         }
         drawParticles();
+    </script>
+
+    <script>
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/service-worker.js")
+                .then(reg => console.log("Service Worker registrado:", reg))
+                .catch(err => console.error("Erro ao registrar Service Worker:", err));
+        }
     </script>
 
 
