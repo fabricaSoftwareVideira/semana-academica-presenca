@@ -26,15 +26,15 @@
         </h1>
         <div class="user-info">
             <% if (typeof user !=='undefined' ) { %>
-                <div class="floating-btn" id="topBtn" title="Registrar Participação"
-                    onclick="window.location.href='/participacao'">
-                    <i class="fa fa-plus"></i>
-                </div>
-                <span id="userName">
-                    <%= typeof user !=='undefined' ? user.username : 'Usuário' %>
-                        (<%= typeof user !=='undefined' ? user.role : '' %>)
+                <span class="username">
+                    <%= user.username %>
                 </span>
-                <a href="/auth/logout" class="logout-btn">Sair</a>
+                <a href="/dashboard" class="user-link">
+                    <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="/auth/logout" class="user-link logout-link">
+                    <i class="fa fa-sign-out-alt"></i> Sair
+                </a>
                 <% } else { %>
                     <a href="/auth/login" class="login-btn">Login</a>
                     <% } %>
