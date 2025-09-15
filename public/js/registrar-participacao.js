@@ -60,8 +60,6 @@ eventoSelect.addEventListener("change", function () {
     }
 });
 
-// Registrar ou cancelar participação
-// Registrar ou cancelar participação
 function registrarOuCancelar(token, eventoId) {
     if (!eventoId) {
         erro.innerText = "Selecione o evento!";
@@ -78,19 +76,22 @@ function registrarOuCancelar(token, eventoId) {
         method,
         body: JSON.stringify({ token }) // 🔑 envia JWT no body
     })
-        .then(res => {
-            if (res.status === 401) throw new Error("Você precisa estar logado.");
-            return res.json();
+        .then(async res => {
+            // Tenta extrair o JSON da resposta
+            const data = await res.json().catch(() => ({}));
+
+            if (!res.ok) {
+                // Usa a mensagem do servidor se existir
+                const msg = data.error || `Erro ${res.status}`;
+                throw new Error(msg);
+            }
+
+            return data;
         })
         .then(data => {
-            if (data.error) {
-                erro.innerText = data.error;
-                resultado.innerText = "";
-            } else {
-                const acao = modo === "registrar" ? "Registrado" : "Cancelado";
-                resultado.innerText = `${acao}: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
-                erro.innerText = "";
-            }
+            const acao = modo === "registrar" ? "Registrado" : "Cancelado";
+            resultado.innerText = `${acao}: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
+            erro.innerText = "";
         })
         .catch(e => {
             erro.innerText = e.message || "Erro na requisição";
@@ -98,6 +99,7 @@ function registrarOuCancelar(token, eventoId) {
             console.error(e);
         });
 }
+
 
 // Registrar ou cancelar vitória
 async function registrarVitoriaParaTurma(token, eventoId) {
