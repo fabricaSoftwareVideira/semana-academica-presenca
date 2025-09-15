@@ -778,3 +778,57 @@ hr {
     background: var(--success-hover);
     transform: scale(1.1);
 }
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Username */
+.username {
+    font-weight: bold;
+    color: var(--secondary-color);
+}
+
+/* Links do usuário */
+.user-link {
+    display: flex;
+    align-items: center;
+    gap: 5px; /* espaço entre ícone e texto */
+    padding: 6px 12px;
+    border-radius: var(--border-radius, 8px);
+    background-color: var(--tertiary-color);
+    color: white;
+    text-decoration: none;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+}
+
+.user-link:hover {
+    background-color: var(--tertiary-hover);
+}
+
+/* Logout destacado */
+.logout-link {
+    background-color: var(--danger-color);
+}
+
+.logout-link:hover {
+    background-color: var(--danger-hover);
+}
+
+/* Responsividade: telas pequenas */
+@media (max-width: 600px) {
+    .user-info {
+        justify-content: flex-end;
+        gap: 5px;
+    }
+    .user-link, .logout-link {
+        font-size: 13px;
+        padding: 5px 10px;
+    }
+    .username {
+        font-size: 14px;
+    }
+}

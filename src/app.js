@@ -1,78 +1,19 @@
-const express = require("express");
-const path = require("path");
 require("dotenv").config();
-const session = require("express-session");
+const app = require("./config/express");
+require("./config/passport")(app); // configura passport e sessão
 
-const passport = require("passport");
-const LocalStrategy = require("passport-local").Strategy;
-const bcrypt = require("bcrypt");
-const fs = require("fs");
+// Rotas
+app.use("/", require("./routes/home.routes"));
+app.use("/ranking", require("./routes/ranking.routes"));
+app.use("/alunos", require("./routes/alunos.routes"));
+app.use("/eventos", require("./routes/eventos.routes"));
+app.use("/turmas", require("./routes/turmas.routes"));
+app.use("/participacao", require("./routes/participacao.routes"));
+app.use("/qrcode", require("./routes/qrcode.routes"));
+app.use("/auth", require("./routes/auth.route"));
+app.use("/users", require("./routes/users.routes"));
 
-const alunosRoutes = require("./routes/alunos.routes");
-const eventosRoutes = require("./routes/eventos.routes");
-const turmasRoutes = require("./routes/turmas.routes");
-const participacaoRoutes = require("./routes/participacao.routes");
-const rankingRoutes = require("./routes/ranking.routes");
-const qrcodeRoutes = require("./routes/qrcode.routes");
-const authRoutes = require("./routes/auth.route");
-const usersRoutes = require("./routes/users.routes");
-const homeRoutes = require("./routes/home.routes");
-
-const app = express();
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(express.static("public"));
-
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "views"));
-
-app.use(session({
-    secret: process.env.SESSION_SECRET || "segredo",
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-        maxAge: 1000 * 60 * 60, // 1 hora
-        httpOnly: true,
-        secure: false,
-        sameSite: 'lax'
-    }
-}));
-
-app.use(passport.initialize());
-app.use(passport.session());
-
-// Carregar usuários do JSON
-function getUsers() {
-    const data = fs.readFileSync(path.join(__dirname, "./data/users.json"), "utf8");
-    return JSON.parse(data);
-}
-
-// Estratégia local
-passport.use(new LocalStrategy(
-    (username, password, done) => {
-        const users = getUsers();
-        const user = users.find(u => u.username === username);
-        if (!user) {
-            return done(null, false, { message: "Usuário não encontrado" });
-        }
-
-        bcrypt.compare(password, user.password, (err, isMatch) => {
-            if (err) return done(err);
-            if (!isMatch) return done(null, false, { message: "Senha incorreta" });
-            return done(null, user);
-        });
-    }
-));
-
-// Serialização
-passport.serializeUser((user, done) => done(null, user.id));
-passport.deserializeUser((id, done) => {
-    const users = getUsers();
-    const user = users.find(u => u.id === id);
-    done(null, user);
-});
-
+// Dashboard protegido
 app.get("/dashboard", (req, res) => {
     if (req.isAuthenticated()) {
         res.render("dashboard", { user: req.user });
@@ -80,17 +21,8 @@ app.get("/dashboard", (req, res) => {
         res.redirect("/");
     }
 });
-app.use("/", homeRoutes);
-app.use("/ranking", rankingRoutes);
-app.use("/alunos", alunosRoutes);
-app.use("/eventos", eventosRoutes);
-app.use("/turmas", turmasRoutes);
-app.use("/participacao", participacaoRoutes);
-app.use("/qrcode", qrcodeRoutes);
-app.use("/auth", authRoutes);
-app.use("/users", usersRoutes);
 
-// Rota para página não encontrada e renderizar uma view 404.ejs
+// 404
 app.use((req, res) => {
     res.status(404).render("404");
 });
