@@ -8,18 +8,9 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 
-const alunosRoutes = require("./routes/alunos.routes");
-const eventosRoutes = require("./routes/eventos.routes");
-const turmasRoutes = require("./routes/turmas.routes");
-const participacaoRoutes = require("./routes/participacao.routes");
-const rankingRoutes = require("./routes/ranking.routes");
-const qrcodeRoutes = require("./routes/qrcode.routes");
-const authRoutes = require("./routes/auth.route");
-const usersRoutes = require("./routes/users.routes");
-const homeRoutes = require("./routes/home.routes");
-
 const app = express();
 
+// Middlewares básicos
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
@@ -27,6 +18,7 @@ app.use(express.static("public"));
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+// CONFIGURAÇÃO DA SESSÃO E PASSPORT ANTES DAS ROTAS
 app.use(session({
     secret: process.env.SESSION_SECRET || "segredo",
     resave: false,
@@ -41,33 +33,6 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
-
-// Rotas
-// app.get("/", (req, res) => res.redirect("/auth/login"));
-// app.get("/dashboard", (req, res) => {
-//     if (req.isAuthenticated()) {
-//         res.render("dashboard", { user: req.user });
-//     } else {
-//         res.redirect("/auth/login");
-//     }
-// });
-// app.get("/", (req, res) => res.redirect("/home"));
-app.get("/dashboard", (req, res) => {
-    if (req.isAuthenticated()) {
-        res.render("dashboard", { user: req.user });
-    } else {
-        res.redirect("/");
-    }
-});
-app.use("/", homeRoutes);
-app.use("/ranking", rankingRoutes);
-app.use("/alunos", alunosRoutes);
-app.use("/eventos", eventosRoutes);
-app.use("/turmas", turmasRoutes);
-app.use("/participacao", participacaoRoutes);
-app.use("/qrcode", qrcodeRoutes);
-app.use("/auth", authRoutes);
-app.use("/users", usersRoutes);
 
 // Carregar usuários do JSON
 function getUsers() {
@@ -100,7 +65,40 @@ passport.deserializeUser((id, done) => {
     done(null, user);
 });
 
-// Rota para página não encontrada e renderizar uma view 404.ejs
+// IMPORTAR AS ROTAS APÓS A CONFIGURAÇÃO DO PASSPORT
+const alunosRoutes = require("./routes/alunos.routes");
+const eventosRoutes = require("./routes/eventos.routes");
+const turmasRoutes = require("./routes/turmas.routes");
+const participacaoRoutes = require("./routes/participacao.routes");
+const rankingRoutes = require("./routes/ranking.routes");
+const qrcodeRoutes = require("./routes/qrcode.routes");
+const authRoutes = require("./routes/auth.route");
+const usersRoutes = require("./routes/users.routes");
+const homeRoutes = require("./routes/home.routes");
+
+// Aplicar as rotas
+app.use("/home", homeRoutes);
+app.use("/ranking", rankingRoutes);
+app.use("/alunos", alunosRoutes);
+app.use("/eventos", eventosRoutes);
+app.use("/turmas", turmasRoutes);
+app.use("/participacao", participacaoRoutes);
+app.use("/qrcode", qrcodeRoutes);
+app.use("/auth", authRoutes);
+app.use("/users", usersRoutes);
+
+// Rota específica para dashboard
+app.get("/dashboard", (req, res) => {
+    if (req.isAuthenticated()) {
+        res.render("dashboard", { user: req.user });
+    } else {
+        res.redirect("/");
+    }
+});
+
+app.get("/", (req, res) => res.redirect("/home"));
+
+// Rota para página não encontrada
 app.use((req, res) => {
     res.status(404).render("404");
 });
