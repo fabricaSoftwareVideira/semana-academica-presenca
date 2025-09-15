@@ -458,6 +458,13 @@ footer.footer-fixed {
   z-index: 100;
 }
 
+/* footer fixed except for mobile */
+@media (max-width: 768px) {
+  footer.footer-fixed {
+    position: static;
+  }
+}
+
 /* Animação de pulsar */
 @keyframes pulse {
   0%, 100% { transform: scale(1); box-shadow: 0 0 0 rgba(255, 193, 7, 0.7); }
