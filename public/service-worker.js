@@ -1,20 +1,12 @@
-const CACHE_NAME = "semana-academica-v1.3";
-const STATIC_ASSETS = [
-    "/",
-    "/offline.html", // nova página offline
-    "/css/style.css",
-    "/img/favicon.svg",
-    "/img/ifc.webp",
-    "/manifest.json",
-];
+const CACHE_NAME = "semana-academica-v6";
+const OFFLINE_URL = "/offline.html";
 
-// Install - pré-cache dos arquivos estáticos
+// Install - pré-cache só da página offline
 self.addEventListener("install", (event) => {
     console.log("[ServiceWorker] Install");
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
-            console.log("[ServiceWorker] Caching static assets");
-            return cache.addAll(STATIC_ASSETS);
+            return cache.add(OFFLINE_URL);
         })
     );
     self.skipWaiting();
@@ -24,46 +16,26 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
     console.log("[ServiceWorker] Activate");
     event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
+        caches.keys().then((keys) =>
+            Promise.all(
                 keys.map((key) => {
                     if (key !== CACHE_NAME) {
-                        console.log("[ServiceWorker] Removing old cache:", key);
                         return caches.delete(key);
                     }
                 })
-            );
-        })
+            )
+        )
     );
     self.clients.claim();
 });
 
-// Fetch - servir do cache ou buscar na rede
+// Fetch - tenta rede, se falhar mostra offline.html
 self.addEventListener("fetch", (event) => {
-    const { request } = event;
-
-    // Ignorar requests cross-origin
-    if (!request.url.startsWith(self.location.origin)) return;
-
-    event.respondWith(
-        caches.match(request).then((cachedResponse) => {
-            if (cachedResponse) return cachedResponse;
-
-            return fetch(request, { redirect: "follow" }).then((networkResponse) => {
-                if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== "basic") {
-                    return networkResponse;
-                }
-
-                const responseToCache = networkResponse.clone();
-                caches.open(CACHE_NAME).then((cache) => cache.put(request, responseToCache));
-
-                return networkResponse;
-            }).catch(() => {
-                // Fallback offline para páginas HTML
-                if (request.destination === "document") {
-                    return caches.match("/offline.html");
-                }
-            });
-        })
-    );
+    if (event.request.mode === "navigate") {
+        event.respondWith(
+            fetch(event.request).catch(() =>
+                caches.open(CACHE_NAME).then((cache) => cache.match(OFFLINE_URL))
+            )
+        );
+    }
 });
