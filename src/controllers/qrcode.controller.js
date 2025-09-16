@@ -41,6 +41,7 @@ async function gerarQRCodeEmLote() {
 
         aluno.qrcodeGerado = true;
         aluno.qrCodeGeradoEm = new Date().toISOString();
+        console.log(`QR Code gerado para ${aluno.matricula} - ${aluno.nome}`);
     }
 
     writeJson(ALUNO_DATA_FILE, alunos);

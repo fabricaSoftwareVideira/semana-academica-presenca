@@ -1,14 +1,13 @@
-const jwt = require("jsonwebtoken");
-const path = require("path");
-const { readJson, writeJson } = require("../utils/file.utils");
 
-const ALUNOS_FILE = path.join(__dirname, "../data/alunos.json");
-const EVENTOS_FILE = path.join(__dirname, "../data/eventos.json");
-const TURMAS_FILE = path.join(__dirname, "../data/turmas.json");
+const jwt = require("jsonwebtoken");
+const AlunoModel = require("../models/aluno.model");
+const EventoModel = require("../models/evento.model");
+const TurmaModel = require("../models/turma.model");
+
 
 function registrarParticipacao(matricula, eventoId) {
-    const alunos = readJson(ALUNOS_FILE);
-    const eventos = readJson(EVENTOS_FILE);
+    const alunos = AlunoModel.getAllAlunos();
+    const eventos = EventoModel.getAllEventos();
 
     const aluno = alunos.find((a) => a.matricula === matricula);
     if (!aluno) {
@@ -34,7 +33,7 @@ function registrarParticipacao(matricula, eventoId) {
     aluno.participacoes.push(participacao);
     aluno.pontos = (aluno.pontos || 0) + 1;
 
-    writeJson(ALUNOS_FILE, alunos);
+    AlunoModel.saveAlunos(alunos);
     return { success: true, aluno };
 }
 
@@ -55,10 +54,11 @@ function validarPosicao(posicao) {
 }
 
 // Registrar vitória para a turma em um evento com base nisso
+
 function registrarVitoria(matricula, eventoId, posicao) {
-    const turmas = readJson(TURMAS_FILE);
-    const eventos = readJson(EVENTOS_FILE);
-    const alunos = readJson(ALUNOS_FILE);
+    const turmas = TurmaModel.getAllTurmas();
+    const eventos = EventoModel.getAllEventos();
+    const alunos = AlunoModel.getAllAlunos();
 
     const aluno = alunos.find((a) => a.matricula === matricula);
     if (!aluno) {
@@ -118,7 +118,7 @@ function registrarVitoria(matricula, eventoId, posicao) {
         data: new Date().toISOString()
     });
 
-    writeJson(path.join(__dirname, "../data/turmas.json"), turmas);
+    TurmaModel.saveTurmas(turmas);
     return { success: true, turma };
 }
 
@@ -135,11 +135,10 @@ function registrarVitoriaHandler(req, res) {
 }
 
 
-function cancelarParticipacao(matricula, eventoId) {
-    console.log(`Cancelando participação do aluno ${matricula} no evento ${eventoId}`);
 
-    const alunos = readJson(ALUNOS_FILE);
-    const eventos = readJson(EVENTOS_FILE);
+function cancelarParticipacao(matricula, eventoId) {
+    const alunos = AlunoModel.getAllAlunos();
+    const eventos = EventoModel.getAllEventos();
 
     const aluno = alunos.find((a) => a.matricula === matricula);
     if (!aluno) {
@@ -161,14 +160,15 @@ function cancelarParticipacao(matricula, eventoId) {
     aluno.pontos -= 1;
     if (aluno.pontos < 0) aluno.pontos = 0;
 
-    writeJson(ALUNOS_FILE, alunos);
+    AlunoModel.saveAlunos(alunos);
     return { success: true, aluno };
 }
 
+
 function cancelarVitoria(matricula, eventoId, posicao) {
-    const turmas = readJson(TURMAS_FILE);
-    const eventos = readJson(EVENTOS_FILE);
-    const alunos = readJson(ALUNOS_FILE);
+    const turmas = TurmaModel.getAllTurmas();
+    const eventos = EventoModel.getAllEventos();
+    const alunos = AlunoModel.getAllAlunos();
 
     const aluno = alunos.find((a) => a.matricula === matricula);
     if (!aluno) {
@@ -197,26 +197,23 @@ function cancelarVitoria(matricula, eventoId, posicao) {
     turma.pontos -= vitoria.pontos;
     if (turma.pontos < 0) turma.pontos = 0;
 
-    writeJson(path.join(__dirname, "../data/turmas.json"), turmas);
+    TurmaModel.saveTurmas(turmas);
     return { success: true, turma };
 }
+
 
 function cancelarParticipacaoHandler(req, res) {
     const { eventoId } = req.params;
     const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
-    const alunos = readJson(ALUNOS_FILE);
+    const alunos = AlunoModel.getAllAlunos();
     const aluno = alunos.find((a) => a.matricula === matricula);
     if (!aluno) {
         return res.status(400).json({ error: "Aluno não encontrado" });
     }
     const resultado = cancelarParticipacao(matricula, eventoId);
-    console.log(`Resultado do cancelamento: ${JSON.stringify(resultado)}`);
-
-
     if (resultado && resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
-
     return res.json(resultado);
 }
 
@@ -232,9 +229,10 @@ function cancelarVitoriaHandler(req, res) {
     res.json(resultado.turma);
 }
 
+
 function registrarParticipacaoPage(req, res) {
-    const alunos = readJson(ALUNOS_FILE);
-    let eventos = readJson(EVENTOS_FILE);
+    const alunos = AlunoModel.getAllAlunos();
+    let eventos = EventoModel.getAllEventos();
     // Filtrar eventos que são relacionados ao usuário logado ou todos se for admin
     if (req.user.role !== "admin") {
         eventos = eventos.filter((e) => e.users && e.users.includes(req.user.username));
