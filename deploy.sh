@@ -2,7 +2,7 @@
 set -e
 
 APP_NAME="semana-academica"
-DOCKER_COMPOSE="docker-compose -f docker-compose.yml"
+DOCKER_COMPOSE="docker compose -f docker-compose.yml"
 
 echo "🚀 Deploy da aplicação $APP_NAME iniciado..."
 
