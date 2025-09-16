@@ -1,29 +1,31 @@
-const passport = require("passport");
+const AuthService = require("../services/auth.service.js");
+const AuthValidation = require("../services/auth.validation.js");
 
 exports.loginPage = (req, res) => {
     res.render("login");
 };
 
 function efetuarLogin(req, res, next) {
-    passport.authenticate("local", (err, user, info) => {
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
+    AuthService.autenticarUsuario(
+        req, res, next,
+        (user) => {
+            if (AuthService.usuarioBloqueado(user)) {
+                return res.render("login", { error: "Usuário bloqueado. Contate o administrador." });
+            }
+            return res.redirect("/dashboard");
+        },
+        (info) => {
             return res.render("login", { error: info.message });
         }
-        req.logIn(user, (err) => {
-            if (err) {
-                return next(err);
-            }
-            // redirecionar para views/dashboard após login bem-sucedido
-            // return res.render("dashboard", { user });
-            return res.redirect("/dashboard");
-        });
-    })(req, res, next);
+    );
 }
 
 exports.login = (req, res, next) => {
+    const { username, password } = req.body;
+    const erroPayload = AuthValidation.validarLoginPayload({ username, password });
+    if (erroPayload.error) {
+        return res.render("login", { error: erroPayload.error });
+    }
     efetuarLogin(req, res, next);
 };
 
