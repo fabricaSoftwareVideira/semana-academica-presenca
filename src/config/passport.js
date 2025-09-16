@@ -14,13 +14,13 @@ module.exports = (app) => {
     // Sessão
     app.use(session({
         secret: process.env.SESSION_SECRET || "segredo",
-        resave: false,
-        saveUninitialized: false,
+        resave: false, // Não salvar sessão se não modificada
+        saveUninitialized: false, // Não salvar sessão se não modificada
         cookie: {
-            maxAge: 1000 * 60 * 60,
-            httpOnly: true,
-            secure: false,
-            sameSite: 'lax'
+            maxAge: 1000 * 60 * 60, // 1 hora
+            httpOnly: true, // Acessível apenas via HTTP
+            secure: process.env.NODE_ENV === 'production', // Apenas em produção
+            sameSite: 'lax' // Protege contra CSRF
         }
     }));
 
@@ -32,11 +32,11 @@ module.exports = (app) => {
         (username, password, done) => {
             const users = getUsers();
             const user = users.find(u => u.username === username);
-            if (!user) return done(null, false, { message: "Usuário não encontrado" });
+            if (!user) return done(null, false, { message: "Usuário ou senha incorretos" });
 
             bcrypt.compare(password, user.password, (err, isMatch) => {
                 if (err) return done(err);
-                if (!isMatch) return done(null, false, { message: "Senha incorreta" });
+                if (!isMatch) return done(null, false, { message: "Usuário ou senha incorretos" });
                 return done(null, user);
             });
         }
