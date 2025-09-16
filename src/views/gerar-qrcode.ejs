@@ -149,7 +149,7 @@
             </button>
         </form>
 
-        <% if(typeof user !=='undefined' && user.role==='admin' ) { %>
+        <% if(typeof user !=='undefined' && user.isAdmin ) { %>
             <hr>
             <p class="info-text">Como administrador, você pode gerar QR Codes em lote para todos os alunos.</p>
 

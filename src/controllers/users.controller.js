@@ -1,15 +1,11 @@
-
-
-
 const UserRepository = require("../repositories/user.repository.js");
 const UserService = require("../services/user.service.js");
-
+const { userView } = require('../utils/user-view.utils.js');
 
 function listar(req, res) {
     const users = UserRepository.getAll();
     res.json(users);
 }
-
 
 function login(req, res) {
     const { username, password } = req.body;
@@ -20,9 +16,8 @@ function login(req, res) {
     if (!user || user.password !== password) {
         return res.status(401).json({ error: "Credenciais inválidas" });
     }
-    res.json({ message: "Login bem-sucedido", user });
+    res.json({ message: "Login bem-sucedido", user: userView });
 }
-
 
 function cadastrar(req, res) {
     const { username, password, role } = req.body;

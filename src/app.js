@@ -12,15 +12,7 @@ app.use("/participacao", require("./routes/participacao.routes"));
 app.use("/qrcode", require("./routes/qrcode.routes"));
 app.use("/auth", require("./routes/auth.route"));
 app.use("/users", require("./routes/users.routes"));
-
-// Dashboard protegido
-app.get("/dashboard", (req, res) => {
-    if (req.isAuthenticated()) {
-        res.render("dashboard", { user: req.user });
-    } else {
-        res.redirect("/");
-    }
-});
+app.use("/dashboard", require("./routes/dashboard.routes"));
 
 // 404
 app.use((req, res) => {

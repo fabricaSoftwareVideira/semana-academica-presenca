@@ -130,7 +130,7 @@
     </header>
 
     <div class="container">
-        <% if (user.role==='admin' || user.role==='organizador' || user.role==='convidado' ) { %>
+        <% if (user.isAdmin || user.isOrganizador || user.isConvidado) { %>
             <section class="section">
                 <!-- <h2>Ações Disponíveis</h2> -->
                 <ul class="action-list">
@@ -151,7 +151,7 @@
                 </ul>
             </section>
             <% } %>
-                <% if (user.role==='admin' ) { %>
+                <% if (user.isAdmin) { %>
                     <section class="section">
                         <h2>Área Administrativa</h2>
                         <ul class="action-list">

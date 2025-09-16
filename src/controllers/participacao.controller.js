@@ -4,7 +4,8 @@ const TurmaRepository = require("../repositories/turma.repository.js");
 const ValidacaoService = require('../services/validacao.service.js');
 const { validarCancelamentoVitoriaChain } = require('../services/vitoria.validation.js');
 const { validarVitoriaChain } = require('../services/vitoria.validation.js');
-const { isAdmin } = require('../utils/auth.utils.js');
+const { userView } = require('../utils/user-view.utils.js');
+const { isAdmin, isOrganizador, isConvidado } = require('../utils/auth.utils.js');
 
 function adicionarParticipacao(aluno, evento) {
     const alunos = AlunoRepository.getAll();
@@ -120,6 +121,7 @@ function cancelarVitoriaHandler(req, res) {
     const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
     const resultado = cancelarVitoria(matricula, eventoId, posicao);
 
+
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
@@ -139,7 +141,7 @@ function registrarParticipacaoPage(req, res) {
 
     if (!Array.isArray(eventos) || eventos.length === 0) {
         return res.render("registrar-participacao", {
-            user: req.user,
+            user: userView(req.user),
             error: true,
             message: "Nenhum evento disponível para registro.",
             alunos: [],
@@ -147,7 +149,7 @@ function registrarParticipacaoPage(req, res) {
         });
     }
 
-    res.render("registrar-participacao", { user: req.user, alunos, eventos });
+    res.render("registrar-participacao", { user: userView, alunos, eventos });
 }
 
 module.exports = { participarHandler, registrarVitoriaHandler, cancelarParticipacaoHandler, cancelarVitoriaHandler, registrarParticipacaoPage };
