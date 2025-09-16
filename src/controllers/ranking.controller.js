@@ -1,12 +1,11 @@
-const path = require("path");
-const { readJson, writeJson } = require("../utils/file.utils");
 
-const ALUNOS_FILE = path.join(__dirname, "../data/alunos.json");
-const TURMAS_FILE = path.join(__dirname, "../data/turmas.json");
+const AlunoRepository = require("../repositories/aluno.repository.js");
+const TurmaRepository = require("../repositories/turma.repository.js");
+
 
 // Listar ranking de alunos baseado nos pontos
 function listarRankingDosAlunos() {
-    const alunos = readJson(ALUNOS_FILE);
+    const alunos = AlunoRepository.getAll();
     return alunos
         .sort((a, b) => (b.pontos || 0) - (a.pontos || 0))
         .map((aluno) => ({
@@ -17,15 +16,17 @@ function listarRankingDosAlunos() {
         }));
 }
 
+
 function rankingAlunosHandler(req, res) {
     const ranking = listarRankingDosAlunos();
     res.json(ranking);
 }
 
+
 // Listar ranking de turmas baseado nos pontos dos alunos
 function listarRankingDasTurmas() {
-    const alunos = readJson(ALUNOS_FILE);
-    const turmas = readJson(TURMAS_FILE);
+    const alunos = AlunoRepository.getAll();
+    const turmas = TurmaRepository.getAll();
 
     // Calcular pontos totais por turma
     const ranking = turmas.map(turma => {

@@ -2,17 +2,17 @@
 const path = require("path");
 const fs = require("fs");
 const archiver = require("archiver");
-const { readJson, writeJson } = require("../utils/file.utils");
+const AlunoRepository = require("../repositories/aluno.repository.js");
 const { gerarQrCodeComTexto, gerarPdfTurma } = require("../services/qrcode.service");
 
-const ALUNO_DATA_FILE = path.join(__dirname, "../data/alunos.json");
+// const ALUNO_DATA_FILE = path.join(__dirname, "../data/alunos.json");
 const QR_CODES_DIR = path.join(__dirname, "../../qrcodes");
 const ZIP_PATH = path.join(__dirname, "../../qrcodes.zip");
 
 // Gera QR Code individual
 async function gerarQRCodeAluno(matricula) {
-    const alunos = readJson(ALUNO_DATA_FILE);
-    const aluno = alunos.find(a => a.matricula === matricula);
+    const alunos = AlunoRepository.getAll();
+    const aluno = AlunoRepository.findByMatricula(matricula);
     if (!aluno) throw new Error(`Aluno ${matricula} não encontrado`);
 
     const qrCodeDataUrl = await gerarQrCodeComTexto(aluno);
@@ -20,7 +20,7 @@ async function gerarQRCodeAluno(matricula) {
     aluno.qrcodeGerado = true;
     aluno.qrCodeGeradoEm = new Date().toISOString();
 
-    writeJson(ALUNO_DATA_FILE, alunos); // salva atualização
+    AlunoRepository.saveAll(alunos); // salva atualização
     return { aluno, qrCodeDataUrl };
 }
 
@@ -28,7 +28,7 @@ async function gerarQRCodeAluno(matricula) {
 async function gerarQRCodeEmLote() {
     if (!fs.existsSync(QR_CODES_DIR)) fs.mkdirSync(QR_CODES_DIR, { recursive: true });
 
-    const alunos = readJson(ALUNO_DATA_FILE);
+    const alunos = AlunoRepository.getAll();
     const turmas = [...new Set(alunos.map(a => a.turma))];
 
     // Geração dos QR Codes
@@ -44,7 +44,7 @@ async function gerarQRCodeEmLote() {
         console.log(`QR Code gerado para ${aluno.matricula} - ${aluno.nome}`);
     }
 
-    writeJson(ALUNO_DATA_FILE, alunos);
+    AlunoRepository.saveAll(alunos);
 
     // PDFs por turma
     for (const turma of turmas) {

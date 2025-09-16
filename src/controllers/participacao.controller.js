@@ -1,40 +1,38 @@
-
-const jwt = require("jsonwebtoken");
-const AlunoModel = require("../models/aluno.model");
-const EventoModel = require("../models/evento.model");
-const TurmaModel = require("../models/turma.model");
+const AlunoRepository = require("../repositories/aluno.repository.js");
+const EventoRepository = require("../repositories/evento.repository.js");
+const TurmaRepository = require("../repositories/turma.repository.js");
 
 
-function registrarParticipacao(matricula, eventoId) {
-    const alunos = AlunoModel.getAllAlunos();
-    const eventos = EventoModel.getAllEventos();
 
-    const aluno = alunos.find((a) => a.matricula === matricula);
-    if (!aluno) {
-        return { error: "Aluno não encontrado" };
-    }
+// Validações centralizadas em service
+const ValidacaoService = require('../services/validacao.service.js');
 
-    const evento = eventos.find((e) => e.id === parseInt(eventoId));
-    if (!evento) {
-        return { error: "Evento não encontrado" };
-    }
-
-    if (aluno.participacoes && aluno.participacoes.find((p) => p.id === evento.id)) {
-        return { error: "Participação já registrada", aluno };
-    }
-
+function adicionarParticipacao(aluno, evento) {
+    const alunos = AlunoRepository.getAll();
     const participacao = {
         id: evento.id,
         nome: evento.nome,
         data: new Date().toISOString()
     };
-
     if (!aluno.participacoes) aluno.participacoes = [];
     aluno.participacoes.push(participacao);
     aluno.pontos = (aluno.pontos || 0) + 1;
-
-    AlunoModel.saveAlunos(alunos);
+    AlunoRepository.saveAll(alunos);
     return { success: true, aluno };
+}
+
+// Serviço de domínio para registrar participação
+function registrarParticipacao(matricula, eventoId) {
+    const { aluno, error: erroAluno } = ValidacaoService.validarAluno(matricula);
+    if (erroAluno) return { error: erroAluno };
+
+    const { evento, error: erroEvento } = ValidacaoService.validarEvento(eventoId);
+    if (erroEvento) return { error: erroEvento };
+
+    const { error: erroParticipacao } = ValidacaoService.validarParticipacao(aluno, evento);
+    if (erroParticipacao) return { error: erroParticipacao, aluno };
+
+    return adicionarParticipacao(aluno, evento);
 }
 
 function participarHandler(req, res) {
@@ -55,23 +53,25 @@ function validarPosicao(posicao) {
 
 // Registrar vitória para a turma em um evento com base nisso
 
-function registrarVitoria(matricula, eventoId, posicao) {
-    const turmas = TurmaModel.getAllTurmas();
-    const eventos = EventoModel.getAllEventos();
-    const alunos = AlunoModel.getAllAlunos();
 
-    const aluno = alunos.find((a) => a.matricula === matricula);
+function registrarVitoria(matricula, eventoId, posicao) {
+    const turmas = TurmaRepository.getAll();
+    const eventos = EventoRepository.getAll();
+    const alunos = AlunoRepository.getAll();
+
+
+    const aluno = AlunoRepository.findByMatricula(matricula);
     if (!aluno) {
         return { error: "Aluno não encontrado" };
     }
 
     const turmaId = aluno.turma;
-    const turma = turmas.find((t) => t.id === turmaId);
+    const turma = TurmaRepository.findById(turmaId);
     if (!turma) {
         return { error: "Turma não encontrada" };
     }
 
-    const evento = eventos.find((e) => e.id === parseInt(eventoId));
+    const evento = EventoRepository.findById(parseInt(eventoId));
     if (!evento) {
         return { error: "Evento não encontrado" };
     }
@@ -118,7 +118,7 @@ function registrarVitoria(matricula, eventoId, posicao) {
         data: new Date().toISOString()
     });
 
-    TurmaModel.saveTurmas(turmas);
+    TurmaRepository.saveAll(turmas);
     return { success: true, turma };
 }
 
@@ -136,16 +136,17 @@ function registrarVitoriaHandler(req, res) {
 
 
 
-function cancelarParticipacao(matricula, eventoId) {
-    const alunos = AlunoModel.getAllAlunos();
-    const eventos = EventoModel.getAllEventos();
 
-    const aluno = alunos.find((a) => a.matricula === matricula);
+function cancelarParticipacao(matricula, eventoId) {
+    const alunos = AlunoRepository.getAll();
+    const eventos = EventoRepository.getAll();
+
+    const aluno = AlunoRepository.findByMatricula(matricula);
     if (!aluno) {
         return { error: "Aluno não encontrado" };
     }
 
-    const evento = eventos.find((e) => e.id === parseInt(eventoId));
+    const evento = EventoRepository.findById(parseInt(eventoId));
     if (!evento) {
         return { error: "Evento não encontrado", aluno };
     }
@@ -160,28 +161,30 @@ function cancelarParticipacao(matricula, eventoId) {
     aluno.pontos -= 1;
     if (aluno.pontos < 0) aluno.pontos = 0;
 
-    AlunoModel.saveAlunos(alunos);
+    AlunoRepository.saveAll(alunos);
     return { success: true, aluno };
 }
 
 
-function cancelarVitoria(matricula, eventoId, posicao) {
-    const turmas = TurmaModel.getAllTurmas();
-    const eventos = EventoModel.getAllEventos();
-    const alunos = AlunoModel.getAllAlunos();
 
-    const aluno = alunos.find((a) => a.matricula === matricula);
+function cancelarVitoria(matricula, eventoId, posicao) {
+    const turmas = TurmaRepository.getAll();
+    const eventos = EventoRepository.getAll();
+    const alunos = AlunoRepository.getAll();
+
+
+    const aluno = AlunoRepository.findByMatricula(matricula);
     if (!aluno) {
         return { error: "Aluno não encontrado" };
     }
 
     const turmaId = aluno.turma;
-    const turma = turmas.find((t) => t.id === turmaId);
+    const turma = TurmaRepository.findById(turmaId);
     if (!turma) {
         return { error: "Turma não encontrada" };
     }
 
-    const evento = eventos.find((e) => e.id === parseInt(eventoId));
+    const evento = EventoRepository.findById(parseInt(eventoId));
     if (!evento) {
         return { error: "Evento não encontrado" };
     }
@@ -197,16 +200,16 @@ function cancelarVitoria(matricula, eventoId, posicao) {
     turma.pontos -= vitoria.pontos;
     if (turma.pontos < 0) turma.pontos = 0;
 
-    TurmaModel.saveTurmas(turmas);
+    TurmaRepository.saveAll(turmas);
     return { success: true, turma };
 }
+
 
 
 function cancelarParticipacaoHandler(req, res) {
     const { eventoId } = req.params;
     const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
-    const alunos = AlunoModel.getAllAlunos();
-    const aluno = alunos.find((a) => a.matricula === matricula);
+    const aluno = AlunoRepository.findByMatricula(matricula);
     if (!aluno) {
         return res.status(400).json({ error: "Aluno não encontrado" });
     }
@@ -230,9 +233,10 @@ function cancelarVitoriaHandler(req, res) {
 }
 
 
+
 function registrarParticipacaoPage(req, res) {
-    const alunos = AlunoModel.getAllAlunos();
-    let eventos = EventoModel.getAllEventos();
+    const alunos = AlunoRepository.getAll();
+    let eventos = EventoRepository.getAll();
     // Filtrar eventos que são relacionados ao usuário logado ou todos se for admin
     if (req.user.role !== "admin") {
         eventos = eventos.filter((e) => e.users && e.users.includes(req.user.username));

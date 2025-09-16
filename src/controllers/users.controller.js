@@ -1,20 +1,22 @@
 
-const UserModel = require("../models/user.model");
-const bcrypt = require("bcrypt");
+
+
+const UserRepository = require("../repositories/user.repository.js");
+const UserService = require("../services/user.service.js");
 
 
 function listar(req, res) {
-    const users = UserModel.getAllUsers();
+    const users = UserRepository.getAll();
     res.json(users);
 }
 
 
 function login(req, res) {
     const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: "username e password são obrigatórios" });
+    const erroLogin = UserService.validarLogin({ username, password });
+    if (erroLogin.error) return res.status(400).json({ error: erroLogin.error });
 
-    const users = UserModel.getAllUsers();
-    const user = users.find(u => u.username === username);
+    const user = UserRepository.findByUsername(username);
     if (!user || user.password !== password) {
         return res.status(401).json({ error: "Credenciais inválidas" });
     }
@@ -24,14 +26,16 @@ function login(req, res) {
 
 function cadastrar(req, res) {
     const { username, password, role } = req.body;
-    if (!username || !password || !role) return res.status(400).json({ error: "username, password e role são obrigatórios" });
+    const erroPayload = UserService.validarUserPayload({ username, password, role });
+    if (erroPayload.error) return res.status(400).json({ error: erroPayload.error });
 
-    const users = UserModel.getAllUsers();
-    if (users.find(u => u.username === username)) return res.status(400).json({ error: "Usuário já cadastrado" });
+    const erroExistente = UserService.userJaExiste(username);
+    if (erroExistente.error) return res.status(400).json({ error: erroExistente.error });
 
+    const users = UserRepository.getAll();
     const novoUser = { id: Date.now(), username, password, role };
     users.push(novoUser);
-    UserModel.saveUsers(users);
+    UserRepository.saveAll(users);
     res.json(novoUser);
 }
 

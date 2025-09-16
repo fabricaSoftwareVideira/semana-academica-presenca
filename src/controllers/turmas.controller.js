@@ -1,28 +1,29 @@
-// cada turma tem   {"id": "1A","nome": "Turma 1A"}
 
-const TurmaModel = require("../models/turma.model");
-
+const TurmaRepository = require("../repositories/turma.repository.js");
+const TurmaService = require("../services/turma.service.js");
 
 function listar(req, res) {
-    const turmas = TurmaModel.getAllTurmas();
+    const turmas = TurmaRepository.getAll();
     res.json(turmas);
 }
 
 
 function cadastrar(req, res) {
     const { id, nome } = req.body;
-    if (!id || !nome) {
-        return res.status(400).json({ error: "id e nome são obrigatórios" });
+    const erroPayload = TurmaService.validarTurmaPayload({ id, nome });
+    if (erroPayload.error) {
+        return res.status(400).json({ error: erroPayload.error });
     }
 
-    const turmas = TurmaModel.getAllTurmas();
-    if (turmas.find((t) => t.id === id)) {
-        return res.status(400).json({ error: "Turma já cadastrada" });
+    const erroExistente = TurmaService.turmaJaExiste(id);
+    if (erroExistente.error) {
+        return res.status(400).json({ error: erroExistente.error });
     }
 
+    const turmas = TurmaRepository.getAll();
     const novaTurma = { id, nome };
     turmas.push(novaTurma);
-    TurmaModel.saveTurmas(turmas);
+    TurmaRepository.saveAll(turmas);
 
     res.json(novaTurma);
 }

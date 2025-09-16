@@ -1,11 +1,15 @@
 
-const AlunoModel = require("../models/aluno.model");
+
+const AlunoRepository = require("../repositories/aluno.repository.js");
+
 
 
 function listar(req, res) {
-    const alunos = AlunoModel.getAllAlunos();
+    const alunos = AlunoRepository.getAll();
     res.json(alunos);
 }
+
+
 
 
 function cadastrar(req, res) {
@@ -14,27 +18,28 @@ function cadastrar(req, res) {
         return res.status(400).json({ error: "matricula, nome e turma são obrigatórios" });
     }
 
-    const alunos = AlunoModel.getAllAlunos();
-    if (alunos.find((a) => a.matricula === matricula)) {
+    if (AlunoRepository.findByMatricula(matricula)) {
         return res.status(400).json({ error: "Aluno já cadastrado" });
     }
 
+    const alunos = AlunoRepository.getAll();
     const novoAluno = { matricula, nome, turma, pontos: 0 };
     alunos.push(novoAluno);
-    AlunoModel.saveAlunos(alunos);
+    AlunoRepository.saveAll(alunos);
 
     res.json(novoAluno);
 }
 
 
+
 function atualizarAluno(matricula, dadosAtualizados) {
-    const alunos = AlunoModel.getAllAlunos();
+    const alunos = AlunoRepository.getAll();
     const index = alunos.findIndex((a) => a.matricula === matricula);
     if (index === -1) {
         throw new Error("Aluno não encontrado");
     }
     alunos[index] = { ...alunos[index], ...dadosAtualizados };
-    AlunoModel.saveAlunos(alunos);
+    AlunoRepository.saveAll(alunos);
     return alunos[index];
 }
 

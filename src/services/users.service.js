@@ -1,27 +1,22 @@
-// src/services/users.service.js
-const path = require("path");
-const { readJson, writeJson } = require("../utils/file.utils");
-
-const DATA_FILE = path.join(__dirname, "../data/users.json");
+const UserRepository = require("../repositories/user.repository.js");
 
 function getAllUsers() {
-    return readJson(DATA_FILE);
+    return UserRepository.getAll();
 }
 
 function getUserByUsername(username) {
-    const users = getAllUsers();
-    return users.find(u => u.username === username);
+    return UserRepository.findByUsername(username);
 }
 
 function getUserById(id) {
-    const users = getAllUsers();
+    const users = UserRepository.getAll();
     return users.find(u => u.id === id);
 }
 
 function addUser(user) {
-    const users = getAllUsers();
+    const users = UserRepository.getAll();
     users.push(user);
-    writeJson(DATA_FILE, users);
+    UserRepository.saveAll(users);
     return user;
 }
 

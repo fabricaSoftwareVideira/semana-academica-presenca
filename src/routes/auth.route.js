@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const authController = require("../controllers/authController");
+const { loginPage, login, logout } = require("../controllers/auth.controller");
 
 // Se estiver logado então redireciona para o dashboard
 function checkNotAuthenticated(req, res, next) {
@@ -10,8 +10,8 @@ function checkNotAuthenticated(req, res, next) {
     next();
 }
 
-router.get("/login", checkNotAuthenticated, authController.loginPage);
-router.post("/login", authController.login);
-router.get("/logout", authController.logout);
+router.get("/login", checkNotAuthenticated, loginPage);
+router.post("/login", login);
+router.get("/logout", logout);
 
 module.exports = router;
