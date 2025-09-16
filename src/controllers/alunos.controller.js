@@ -1,8 +1,6 @@
 
-
 const AlunoRepository = require("../repositories/aluno.repository.js");
-
-
+const { validarCadastroAluno } = require("../services/aluno.validation.js");
 
 function listar(req, res) {
     const alunos = AlunoRepository.getAll();
@@ -10,27 +8,17 @@ function listar(req, res) {
 }
 
 
-
-
 function cadastrar(req, res) {
-    const { matricula, nome, turma } = req.body;
-    if (!matricula || !nome || !turma) {
-        return res.status(400).json({ error: "matricula, nome e turma são obrigatórios" });
-    }
-
-    if (AlunoRepository.findByMatricula(matricula)) {
-        return res.status(400).json({ error: "Aluno já cadastrado" });
-    }
+    const dados = req.body;
+    const erro = validarCadastroAluno(dados);
+    if (erro.error) return res.status(400).json({ error: erro.error });
 
     const alunos = AlunoRepository.getAll();
-    const novoAluno = { matricula, nome, turma, pontos: 0 };
+    const novoAluno = { matricula: dados.matricula, nome: dados.nome, turma: dados.turma, pontos: 0 };
     alunos.push(novoAluno);
     AlunoRepository.saveAll(alunos);
-
     res.json(novoAluno);
 }
-
-
 
 function atualizarAluno(matricula, dadosAtualizados) {
     const alunos = AlunoRepository.getAll();

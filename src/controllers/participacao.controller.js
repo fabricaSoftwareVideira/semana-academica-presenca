@@ -2,9 +2,6 @@ const AlunoRepository = require("../repositories/aluno.repository.js");
 const EventoRepository = require("../repositories/evento.repository.js");
 const TurmaRepository = require("../repositories/turma.repository.js");
 
-
-
-// Validações centralizadas em service
 const ValidacaoService = require('../services/validacao.service.js');
 
 function adicionarParticipacao(aluno, evento) {

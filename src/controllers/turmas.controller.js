@@ -1,6 +1,7 @@
 
+
 const TurmaRepository = require("../repositories/turma.repository.js");
-const TurmaService = require("../services/turma.service.js");
+const { validarCadastroTurma } = require("../services/turma.validation.js");
 
 function listar(req, res) {
     const turmas = TurmaRepository.getAll();
@@ -8,23 +9,16 @@ function listar(req, res) {
 }
 
 
-function cadastrar(req, res) {
-    const { id, nome } = req.body;
-    const erroPayload = TurmaService.validarTurmaPayload({ id, nome });
-    if (erroPayload.error) {
-        return res.status(400).json({ error: erroPayload.error });
-    }
 
-    const erroExistente = TurmaService.turmaJaExiste(id);
-    if (erroExistente.error) {
-        return res.status(400).json({ error: erroExistente.error });
-    }
+function cadastrar(req, res) {
+    const dados = req.body;
+    const erro = validarCadastroTurma(dados);
+    if (erro.error) return res.status(400).json({ error: erro.error });
 
     const turmas = TurmaRepository.getAll();
-    const novaTurma = { id, nome };
+    const novaTurma = { id: dados.id, nome: dados.nome };
     turmas.push(novaTurma);
     TurmaRepository.saveAll(turmas);
-
     res.json(novaTurma);
 }
 
