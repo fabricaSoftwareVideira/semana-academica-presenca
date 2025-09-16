@@ -3,10 +3,18 @@
     --primary-color-hover: #a300a0;
     --secondary-color: #f0f0f0;
     --tertiary-color: #00bcd4;
-    --success-color: #4caf50;
-    --warning-color: #f9f871;
     --text-color: #333;
     --background-color: #f8f9fa;
+
+    /* Alertas / feedback */
+    --success-color: #4caf50;
+    --success-hover: #52bc57;
+    --danger-color: #f44336;
+    --danger-hover: #da190b;
+    --warning-color: #f9f871;
+    --warning-hover: #e6d30b;
+    --info-color: #2196f3;
+    --info-hover: #0b7dda;
     
       /* Bordas / tons neutros */
     --border-color: var(--primary-color);
