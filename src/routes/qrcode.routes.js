@@ -38,6 +38,18 @@ router.post('/gerar-lote', ensureAuthenticated, checkRole('admin'), async (req, 
     }
 });
 
+router.post('/gerar-pdf', ensureAuthenticated, checkRole('admin'), async (req, res) => {
+    try {
+        const user = req.user;
+        const isAuthenticated = req.isAuthenticated();
+        const result = await qrcodeController.gerarPdfPorTurma();
+
+        res.render('gerar-qrcode', { message: result.message, user, isAuthenticated, pdfFile: result.pdfFile });
+    } catch (error) {
+        res.render('gerar-qrcode', { error: error.message });
+    }
+});
+
 router.get('/download/:file', ensureAuthenticated, checkRole('admin'), (req, res) => {
     const filePath = path.join(__dirname, "../../", req.params.file);
     res.download(filePath);
