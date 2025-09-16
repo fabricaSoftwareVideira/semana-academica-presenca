@@ -4,6 +4,7 @@ require("./config/passport")(app); // configura passport e sessão
 
 // Rotas
 app.use("/", require("./routes/home.routes"));
+app.use("/dashboard", require("./routes/dashboard.routes"));
 app.use("/ranking", require("./routes/ranking.routes"));
 app.use("/alunos", require("./routes/alunos.routes"));
 app.use("/eventos", require("./routes/eventos.routes"));
@@ -12,7 +13,6 @@ app.use("/participacao", require("./routes/participacao.routes"));
 app.use("/qrcode", require("./routes/qrcode.routes"));
 app.use("/auth", require("./routes/auth.route"));
 app.use("/users", require("./routes/users.routes"));
-app.use("/dashboard", require("./routes/dashboard.routes"));
 
 // 404
 app.use((req, res) => {
