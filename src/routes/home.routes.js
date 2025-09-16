@@ -8,7 +8,7 @@ router.get("/", (req, res) => {
     const user = req.user; // Passport preenche req.user quando logado
     const isAuthenticated = req.isAuthenticated();
 
-    const ranking = rankingController.rankingPublico();
+    const { ranking } = rankingController.rankingPublico();
     const eventosPorTipo = eventoController.agruparPorTipo();
     const rankingExistePontuacao = ranking.some(u => u.pontosTotal > 0);
 
