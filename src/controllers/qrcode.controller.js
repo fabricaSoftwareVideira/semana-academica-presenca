@@ -16,6 +16,7 @@ async function gerarQRCodeAluno(matricula) {
     if (!aluno) throw new Error(`Aluno ${matricula} não encontrado`);
 
     const qrCodeDataUrl = await gerarQrCodeComTexto(aluno);
+
     aluno.qrcodeGerado = true;
     aluno.qrCodeGeradoEm = new Date().toISOString();
 

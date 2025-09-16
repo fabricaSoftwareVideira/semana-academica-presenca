@@ -62,7 +62,16 @@ function rankingPublico() {
         pontosTotal: turma.pontosTotal,
         vitorias: turma.vitorias || []
     }));
-    return ranking;
+    // Ordena o ranking por nome de turma
+    const vitoriasOrdenadas = ranking
+        .map(turma => ({
+            ...turma,
+            vitorias: (turma.vitorias || []).sort((a, b) => new Date(b.data) - new Date(a.data))
+        }))
+        .sort((a, b) => a.nome.localeCompare(b.nome));
+    console.log(vitoriasOrdenadas);
+
+    return { ranking, vitoriasOrdenadas };
 }
 
 module.exports = { rankingAlunosHandler, rankingTurmasHandler, rankingPublico };

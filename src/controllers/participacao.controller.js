@@ -6,14 +6,6 @@ const ALUNOS_FILE = path.join(__dirname, "../data/alunos.json");
 const EVENTOS_FILE = path.join(__dirname, "../data/eventos.json");
 const TURMAS_FILE = path.join(__dirname, "../data/turmas.json");
 
-function verificarToken(token) {
-    try {
-        return jwt.verify(token, process.env.JWT_SECRET);
-    } catch (err) {
-        throw new Error("QR Code inválido ou expirado.");
-    }
-}
-
 function registrarParticipacao(matricula, eventoId) {
     const alunos = readJson(ALUNOS_FILE);
     const eventos = readJson(EVENTOS_FILE);
@@ -97,8 +89,10 @@ function registrarVitoria(matricula, eventoId, posicao) {
         return { error: "Turma já registrou vitória nesta posição para este evento" };
     }
 
+    // Verifica se qualquer turma já registrou vitória para este evento na mesma posição
     const todasVitorias = turmas.flatMap((t) => t.vitorias || []);
     if (todasVitorias.find((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao))) {
+        const turma = turmas.find((t) => t.vitorias && t.vitorias.find((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao)));
         return { error: `Vitória para posição ${posicao} já registrada na turma ${turma.id}` };
     }
 

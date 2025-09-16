@@ -138,6 +138,8 @@ function onScanSuccess(decodedText) {
     const eventoId = eventoSelect.value;
     try {
         const token = decodedText; // 🔑 agora o QR code contém JWT
+        console.log("Token lido:", token);
+
 
         if (posicaoSelecionada && posicaoSelecionada !== "participacao") {
             registrarVitoriaParaTurma(token, eventoId);

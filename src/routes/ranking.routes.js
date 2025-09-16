@@ -8,9 +8,9 @@ router.get("/alunos", ensureAuthenticated, rankingController.rankingAlunosHandle
 router.get("/turmas", ensureAuthenticated, rankingController.rankingTurmasHandler);
 router.get("/", (req, res) => {
     const user = req.user;
-    const ranking = rankingController.rankingPublico();
+    const { ranking, vitoriasOrdenadas } = rankingController.rankingPublico();
 
-    res.render("ranking", { ranking, user });
+    res.render("ranking", { ranking, user, vitoriasOrdenadas });
 });
 
 module.exports = router;
