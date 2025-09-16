@@ -1,4 +1,4 @@
-const CACHE_NAME = "semana-academica-v8";
+const CACHE_NAME = "semana-academica-v1";
 const OFFLINE_URL = "/offline.html";
 
 // Install - pré-cache só da página offline
