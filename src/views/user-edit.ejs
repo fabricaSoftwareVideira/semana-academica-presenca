@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<title>Editar Usuário - Semana Acadêmica</title>
+<style>
+    .form-container {
+        max-width: 500px;
+        margin: 0 auto 0 auto;
+        padding: 0 10px;
+    }
+
+    .form-user {
+        margin: 32px auto 0 auto;
+        background: #fff;
+        border-radius: 10px;
+        box-shadow: 0 2px 16px 0 rgba(0, 0, 0, 0.08);
+        padding: 32px 20px 24px 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+    }
+
+    .form-user .actions {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 12px;
+    }
+
+    .form-user label {
+        font-weight: 500;
+        /* margin-bottom: 4px; */
+    }
+
+    .form-user input,
+    .form-user select {
+        padding: 10px 12px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        font-size: 1rem;
+        margin-bottom: 8px;
+        background: #f9f9f9;
+        transition: border-color 0.2s;
+    }
+
+    .form-user input:focus,
+    .form-user select:focus {
+        border-color: var(--primary-color, #2e7d32);
+        outline: none;
+    }
+
+    .form-user button[type="submit"] {
+        background: var(--primary-color, #2e7d32);
+        color: #fff;
+        border: none;
+        border-radius: 6px;
+        padding: 10px 0;
+        font-size: 1.1rem;
+        font-weight: 600;
+        cursor: pointer;
+        /* margin-top: 8px; */
+        padding: 12px 14px;
+        transition: background 0.2s;
+    }
+
+    .form-user button[type="submit"]:hover {
+        background: var(--primary-color-hover);
+    }
+
+    .form-user a {
+        display: inline-block;
+        /* margin-top: 8px; */
+        color: #666;
+        text-decoration: none;
+        font-size: 0.98rem;
+        transition: color 0.2s;
+    }
+
+    .form-user a:hover {
+        color: var(--primary-color, #2e7d32);
+        text-decoration: underline;
+    }
+</style>
+</head>
+
+<body>
+    <nav>
+        <h1>
+            <a href="/" class="logo">
+                <img src="/img/ifc.webp" alt="Logo" class="logo-img">
+                Semana Acadêmica
+            </a>
+        </h1>
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
+                <span class="username">
+                    <%= user.username %>
+                </span>
+                <a href="/dashboard" class="user-link">
+                    <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="/auth/logout" class="user-link logout-link">
+                    <i class="fa fa-sign-out-alt"></i> Sair
+                </a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
+    </nav>
+    <main>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Início</a> &gt; <a href="/users">Usuários</a> &gt; <span>Editar Usuário</span>
+            </div>
+        </div>
+        <div class="container">
+            <div class="form-container">
+                <h1 class="page-title">Editar Usuário</h1>
+                <% if (typeof message !=='undefined' && message) { %>
+                    <div class="success-message">
+                        <%= message %>
+                    </div>
+                    <%} else if (typeof error !=='undefined' && error) { %>
+                        <div class="alert-message">
+                            <%= error %>
+                        </div>
+                        <% } %>
+                            <form action="/users/<%= user.id %>" method="POST" class="form-user">
+                                <label for="username">Nome de usuário:</label>
+                                <input type="text" id="username" name="username" value="<%= user.username %>" required>
+                                <label for="role">Perfil:</label>
+                                <select id="role" name="role" required>
+                                    <option value="admin" <%=user.role==='admin' ? 'selected' : '' %>>Admin</option>
+                                    <option value="organizador" <%=user.role==='organizador' ? 'selected' : '' %>
+                                        >Organizador
+                                    </option>
+                                    <option value="convidado" <%=user.role==='convidado' ? 'selected' : '' %>>Convidado
+                                    </option>
+                                </select>
+                                <div class="actions">
+                                    <button type="submit">Salvar Alterações</button>
+                                    <a href="/users">Cancelar</a>
+                                </div>
+                            </form>
+            </div>
+        </div>
+    </main>
+    <footer class="footer-fixed">
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>Semana Acadêmica - 2025</h3>
+                <div class="footer-logo">
+                    <a href="https://fsw-ifc.brdrive.net" target="_blank">
+                        <img src="/img/favicon.svg" alt="Fábrica de Software">
+                    </a>
+                    <a href="https://videira.ifc.edu.br" target="_blank">
+                        <img src="/img/ifc.webp" alt="IFC">
+                    </a>
+                </div>
+            </div>
+            <div class="footer-social">
+                <h3>Siga-nos</h3>
+                <ul>
+                    <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                class="fab fa-instagram"></i></a></li>
+                    <li>
+                        <a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                class="fa fa-envelope"></i></a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+    <script src="/js/main.js"></script>
+</body>
+
+</html>

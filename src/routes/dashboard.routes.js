@@ -1,11 +1,13 @@
+
 const express = require('express');
 const router = express.Router();
 const { userView } = require('../utils/user-view.utils.js');
+const respond = require("../utils/respond");
 
 // Dashboard protegido
 router.get('/', (req, res) => {
     if (req.isAuthenticated()) {
-        res.render('dashboard', { user: userView(req.user) });
+        respond(req, res, 'dashboard', { user: userView(req.user) });
     } else {
         res.redirect('/');
     }

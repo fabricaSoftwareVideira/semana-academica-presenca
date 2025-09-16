@@ -1,16 +1,14 @@
 const express = require("express");
 const router = express.Router();
+
 const eventosController = require("../controllers/eventos.controller");
 const { ensureAuthenticated, checkRole } = require("../middlewares/auth");
+const respond = require("../utils/respond");
 
 router.get("/", ensureAuthenticated, (req, res) => {
-    // res.json(eventosController.listar());
     const eventos = eventosController.listar();
     const eventosAgrupados = eventosController.agruparPorTipo();
-
-    console.log(eventosAgrupados);
-
-    res.render("eventos", { user: req.user, eventos, eventosAgrupados });
+    respond(req, res, "eventos", { user: req.user, eventos, eventosAgrupados });
 });
 
 router.post("/", ensureAuthenticated, checkRole("admin"), eventosController.cadastrar);
