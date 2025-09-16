@@ -4,6 +4,7 @@ const LocalStrategy = require("passport-local").Strategy;
 const bcrypt = require("bcrypt");
 const fs = require("fs");
 const path = require("path");
+const isProduction = process.env.NODE_ENV === "production";
 
 function getUsers() {
     const data = fs.readFileSync(path.join(__dirname, "../data/users.json"), "utf8");
@@ -11,6 +12,11 @@ function getUsers() {
 }
 
 module.exports = (app) => {
+    // Configuração para proxies reversos (Nginx)
+    if (isProduction) {
+        app.set("trust proxy", 1); // Trust first proxy
+    }
+
     // Sessão
     app.use(session({
         secret: process.env.SESSION_SECRET || "segredo",
@@ -19,7 +25,7 @@ module.exports = (app) => {
         cookie: {
             maxAge: 1000 * 60 * 60, // 1 hora
             httpOnly: true, // Acessível apenas via HTTP
-            secure: false, // Defina como true se estiver usando HTTPS
+            secure: process.env.NODE_ENV === "production", // Apenas em HTTPS no ambiente de produção
             sameSite: 'lax' // Protege contra CSRF
         }
     }));
