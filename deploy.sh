@@ -24,6 +24,6 @@ docker image prune -f
 
 # 5. Checar logs da aplicação
 echo "📜 Logs recentes do app:"
-docker logs --tail=30 ${APP_NAME}-app
+docker logs --tail=30 ${APP_NAME}
 
 echo "✅ Deploy finalizado com sucesso!"
