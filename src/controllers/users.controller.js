@@ -16,7 +16,7 @@ function login(req, res) {
     if (!user || user.password !== password) {
         return res.status(401).json({ error: "Credenciais inválidas" });
     }
-    res.json({ message: "Login bem-sucedido", user: userView });
+    res.json({ message: "Login bem-sucedido", user: userView(user) });
 }
 
 function cadastrar(req, res) {

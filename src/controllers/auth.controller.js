@@ -3,7 +3,7 @@ const AuthValidation = require("../services/auth.validation.js");
 const { userView } = require('../utils/user-view.utils.js');
 
 exports.loginPage = (req, res) => {
-    res.render("login", { user: userView });
+    res.render("login", { user: userView(req.user) });
 };
 
 function efetuarLogin(req, res, next) {
@@ -11,7 +11,7 @@ function efetuarLogin(req, res, next) {
         req, res, next,
         (user) => {
             if (AuthService.usuarioBloqueado(user)) {
-                return res.render("login", { error: "Usuário bloqueado. Contate o administrador.", user: userView });
+                return res.render("login", { error: "Usuário bloqueado. Contate o administrador.", user: userView(user) });
             }
             return res.redirect("/dashboard");
         },

@@ -149,7 +149,7 @@ function registrarParticipacaoPage(req, res) {
         });
     }
 
-    res.render("registrar-participacao", { user: userView, alunos, eventos });
+    res.render("registrar-participacao", { user: userView(req.user), alunos, eventos });
 }
 
 module.exports = { participarHandler, registrarVitoriaHandler, cancelarParticipacaoHandler, cancelarVitoriaHandler, registrarParticipacaoPage };
