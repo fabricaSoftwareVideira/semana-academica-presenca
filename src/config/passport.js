@@ -19,7 +19,7 @@ module.exports = (app) => {
         cookie: {
             maxAge: 1000 * 60 * 60, // 1 hora
             httpOnly: true, // Acessível apenas via HTTP
-            secure: false,
+            secure: process.env.NODE_ENV === 'production', // Apenas em produção
             sameSite: 'lax' // Protege contra CSRF
         }
     }));
