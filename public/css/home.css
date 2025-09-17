@@ -454,10 +454,10 @@ a {
 footer {
     background-color: white;
     color: var(--text-color);
-    padding: 40px 20px 30px;
+    padding: 20px 20px 20px;
     border-top: 2px solid var(--primary-color);
     box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.1);
-    margin-top: 50px;
+    margin-top: 20px;
 }
 
 .footer-content {
@@ -496,6 +496,82 @@ footer {
 .footer-logo img {
     height: 40px;
     margin: 0 10px;
+}
+
+
+.footer-contact a::after {
+  content: "";
+  position: absolute;
+  width: 0;
+  height: 1px;
+  bottom: 0;
+  left: 0;
+  background-color: var(--primary-color-hover);
+  transition: width 0.3s ease;
+}
+
+.footer-contact a:hover::after {
+  width: 100%;
+}
+
+.footer-contact a:hover {
+  color: var(--primary-color-hover);
+}
+
+.footer-social ul {
+  display: flex;
+  gap: 15px;
+  list-style: none;
+  padding: 0;
+  margin-top: 5px;
+}
+
+.footer-social a {
+  color: var(--primary-color);
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgba(134, 0, 131, 0.05);
+  transition: all 0.3s ease;
+}
+
+.footer-social a:hover {
+  color: var(--primary-color-hover);
+  transform: scale(1.1);
+  background: rgba(134, 0, 131, 0.15);
+}
+
+.footer-logos {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+
+.footer-logo {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-logo img {
+  height: 40px;
+  width: auto;
+  object-fit: contain;
+}
+
+.footer-fixed {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    z-index: 100;
 }
 
 /* Responsividade (celular) */
@@ -595,4 +671,27 @@ hr {
     .username {
         font-size: 14px;
     }
+}
+
+/* Destaque para edição do evento */
+.event-title {
+    font-size: 2rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 0.5em;
+}
+.event-title .event-edition {
+    display: inline-block;
+    font-size: 3rem;
+    font-weight: 900;
+    margin-right: 0.5rem;
+    text-shadow: 0 2px 12px rgba(67,160,71,0.18), 0 1px 0 #fff;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-color-hover) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
+    vertical-align: middle;
+    border-radius: 8px;
+    padding: 0 6px;
+    line-height: 1;
 }

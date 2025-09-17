@@ -14,14 +14,10 @@
     <style>
         /* Responsividade */
         .login-box {
-            background: var(--secondary-color);
-            padding: 30px;
             border-radius: 12px;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
             text-align: center;
-            width: 92%;
             max-width: 400px;
-            margin: 10vh auto;
         }
 
         /* Textos bem legíveis em telas pequenas */
@@ -52,18 +48,6 @@
             margin-bottom: 20px;
             font-size: 0.9rem;
         }
-
-        /* Melhor espaçamento em telas muito pequenas */
-        @media (max-width: 480px) {
-            .login-box {
-                margin-top: 5vh;
-                padding: 20px;
-            }
-
-            .login-box h2 {
-                font-size: 1.2rem;
-            }
-        }
     </style>
 </head>
 
@@ -92,36 +76,39 @@
         </div>
     </nav>
 
-    <div class="login-box">
-        <h2>🔑 Acesse sua conta</h2>
-        <p class="text-info">Acesso restrito a organizadores e convidados.</p>
+    <main class="container">
+        <div class="login-box">
+            <h2>🔑 Acesse sua conta</h2>
+            <p class="text-info">Acesso restrito a organizadores e convidados.</p>
 
-        <% if (typeof error !=='undefined' ) { %>
-            <div id="erro">
-                <%= error %>
-            </div>
-            <% } %>
+            <% if (typeof error !=='undefined' ) { %>
+                <div id="erro">
+                    <%= error %>
+                </div>
+                <% } %>
 
-                <form action="/auth/login" method="POST">
-                    <div class="form-group">
-                        <label for="username">Usuário:</label>
-                        <input id="username" type="text" name="username" required placeholder="Digite seu usuário"
-                            autocorrect="off" autocapitalize="none" spellcheck="false" autocomplete="new-username"
-                            inputmode="text" autofocus>
-                    </div>
+                    <form action="/auth/login" method="POST">
+                        <div class="form-group">
+                            <label for="username">Usuário:</label>
+                            <input id="username" type="text" name="username" required placeholder="Digite seu usuário"
+                                autocorrect="off" autocapitalize="none" spellcheck="false" autocomplete="new-username"
+                                inputmode="text" autofocus>
+                        </div>
 
-                    <div class="form-group">
-                        <label for="password">Senha:</label>
-                        <input id="password" type="password" name="password" required placeholder="Digite sua senha"
-                            autocomplete="current-password" inputmode="text">
-                    </div>
+                        <div class="form-group">
+                            <label for="password">Senha:</label>
+                            <input id="password" type="password" name="password" required placeholder="Digite sua senha"
+                                autocomplete="current-password" inputmode="text">
+                        </div>
 
-                    <button type="submit" class="btn-primary" aria-label="Entrar na conta da Semana Acadêmica">
-                        Entrar
-                    </button>
-                </form>
+                        <button type="submit" class="btn-primary" aria-label="Entrar na conta da Semana Acadêmica">
+                            Entrar
+                        </button>
+                    </form>
 
-    </div>
+        </div>
+
+    </main>
 
     <footer role="contentinfo">
         <div class="container">
@@ -129,7 +116,7 @@
 
                 <!-- Informações do site -->
                 <div class="footer-info">
-                    <h3>Semana Acadêmica - 2025</h3>
+                    <h3>10° Semana Acadêmica</h3>
                     <div class="footer-logo">
                         <a href="https://fsw-ifc.brdrive.net" target="_blank">
                             <img src="/img/favicon.svg" alt="Fábrica de Software">

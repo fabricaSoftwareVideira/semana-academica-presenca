@@ -133,64 +133,66 @@
         </div>
     </header>
 
-    <main class="qrcode-container">
-        <h1>Gerar QR Code</h1>
-        <p class="info-text">Digite sua matrícula para gerar seu QR Code de participação.</p>
+    <main>
+        <div class="qrcode-container">
+            <h1>Gerar QR Code</h1>
+            <p class="info-text">Digite sua matrícula para gerar seu QR Code de participação.</p>
 
-        <form action="/qrcode/gerar" method="POST">
-            <input type="number" id="matricula" name="matricula" placeholder="Digite sua matrícula" required
-                autofocus />
-            <button type="submit" class="card-btn">
-                <i class="fas fa-qrcode"></i>
-                Gerar QR Code
-            </button>
-        </form>
-
-        <% if(user && user.isAdmin ) { %>
-            <hr>
-            <p class="info-text">Como administrador, você pode gerar QR Codes em lote para todos os alunos.</p>
-
-            <form action="/qrcode/gerar-lote" method="POST">
-                <button type="submit" class="link-primary">
-                    <i class="fas fa-lock"></i>
-                    Gerar QR Codes em Lote
+            <form action="/qrcode/gerar" method="POST">
+                <input type="number" id="matricula" name="matricula" placeholder="Digite sua matrícula" required
+                    autofocus />
+                <button type="submit" class="card-btn">
+                    <i class="fas fa-qrcode"></i>
+                    Gerar QR Code
                 </button>
-                <p class="message">
-                    <% if (typeof message !=='undefined' ) { %>
-                        <%= message %>
-                            <% } %>
-                </p>
-                <% if (typeof zipFile !=='undefined' ) { %>
-                    <p>
-                        <a href="/qrcode/download/<%= zipFile %>" class="btn btn-success">
-                            Baixar QR Codes em ZIP
-                        </a>
-                    </p>
-                    <% } %>
-
             </form>
-            <% } %>
 
-                <div id="resultado">
-                    <% if (typeof qrCodeDataURL !=='undefined' && typeof aluno !=='undefined' ) { %>
-                        <img src="<%= qrCodeDataURL %>" alt="QR Code" />
-                        <div>
-                            <strong>
-                                <%= aluno.nome %>
-                            </strong><br>
-                            Turma: <%= aluno.turma %>
-                        </div>
-                        <a href="<%= qrCodeDataURL %>" download="<%= aluno.nome %>_qrcode.png">
-                            <button class="btn-success">Baixar QR Code</button>
-                        </a>
+            <% if(user && user.isAdmin ) { %>
+                <hr>
+                <p class="info-text">Como administrador, você pode gerar QR Codes em lote para todos os alunos.</p>
+
+                <form action="/qrcode/gerar-lote" method="POST">
+                    <button type="submit" class="link-primary">
+                        <i class="fas fa-lock"></i>
+                        Gerar QR Codes em Lote
+                    </button>
+                    <p class="message">
+                        <% if (typeof message !=='undefined' ) { %>
+                            <%= message %>
+                                <% } %>
+                    </p>
+                    <% if (typeof zipFile !=='undefined' ) { %>
+                        <p>
+                            <a href="/qrcode/download/<%= zipFile %>" class="btn btn-success">
+                                Baixar QR Codes em ZIP
+                            </a>
+                        </p>
                         <% } %>
-                </div>
 
-                <div id="erro">
-                    <% if (typeof error !=='undefined' ) { %>
-                        <%= error %>
+                </form>
+                <% } %>
+
+                    <div id="resultado">
+                        <% if (typeof qrCodeDataURL !=='undefined' && typeof aluno !=='undefined' ) { %>
+                            <img src="<%= qrCodeDataURL %>" alt="QR Code" />
+                            <div>
+                                <strong>
+                                    <%= aluno.nome %>
+                                </strong><br>
+                                Turma: <%= aluno.turma %>
+                            </div>
+                            <a href="<%= qrCodeDataURL %>" download="<%= aluno.nome %>_qrcode.png">
+                                <button class="btn-success">Baixar QR Code</button>
+                            </a>
                             <% } %>
-                </div>
+                    </div>
+
+                    <div id="erro">
+                        <% if (typeof error !=='undefined' ) { %>
+                            <%= error %>
+                                <% } %>
+                    </div>
+        </div>
     </main>
 
     <footer class="footer-fixed">
@@ -198,7 +200,7 @@
 
             <!-- Informações do site -->
             <div class="footer-info">
-                <h3>Semana Acadêmica - 2025</h3>
+                <h3>10° Semana Acadêmica</h3>
                 <div class="footer-logo">
                     <a href="https://fsw-ifc.brdrive.net" target="_blank">
                         <img src="/img/favicon.svg" alt="Fábrica de Software">
