@@ -1,4 +1,4 @@
-FROM node:20 AS build
+FROM node:22-alpine AS build
 
 WORKDIR /usr/src/app
 
@@ -14,7 +14,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 COPY package*.json ./
+
 RUN npm ci --only=production
+RUN npm install -g pm2
 
 COPY . .
 
@@ -22,4 +24,4 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["node", "server.js"]
+CMD ["pm2-runtime", "ecosystem.config.js"]
