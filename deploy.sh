@@ -11,16 +11,17 @@ echo "📥 Atualizando repositório Git..."
 git pull origin main
 
 # 2. Construir imagens
-echo "🐳 Construindo containers..."
-$DOCKER_COMPOSE build --no-cache
+# echo "🐳 Construindo containers..."
+# $DOCKER_COMPOSE build --no-cache
 
 # 3. Subir containers
 echo "📦 Subindo containers..."
-$DOCKER_COMPOSE up -d
+# $DOCKER_COMPOSE up -d
+$DOCKER_COMPOSE up -d --build
 
 # 4. Limpar imagens antigas
-echo "🧹 Limpando imagens não usadas..."
-docker image prune -f
+# echo "🧹 Limpando imagens não usadas..."
+# docker image prune -f
 
 # 5. Checar logs da aplicação
 echo "📜 Logs recentes do app:"
