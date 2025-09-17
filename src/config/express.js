@@ -1,6 +1,7 @@
 const express = require("express");
 const path = require("path");
 const helmet = require("helmet");
+const morgan = require("morgan");
 
 const app = express();
 
@@ -16,6 +17,7 @@ app.use(
         },
     })
 );
+app.use(morgan("combined")); // log padrão estilo Apache
 
 // View engine
 app.set("view engine", "ejs");
