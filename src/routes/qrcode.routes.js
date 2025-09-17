@@ -5,12 +5,13 @@ const router = express.Router();
 
 const { gerarQRCodeAluno, gerarQRCodeEmLote, gerarPdfPorTurma } = require("../controllers/qrcode.controller");
 const { ensureAuthenticated, checkRole } = require("../middlewares/auth");
+const { userView } = require('../utils/user-view.utils.js');
 
 // Página principal de geração de QR Codes
 router.get("/", (req, res) => {
     const user = req.user;
     const isAuthenticated = req.isAuthenticated();
-    res.render("gerar-qrcode", { user, isAuthenticated });
+    res.render("gerar-qrcode", { isAuthenticated, user: userView(user) });
 });
 
 // Gera QR Code individual
@@ -20,7 +21,7 @@ router.post("/gerar", async (req, res) => {
     const isAuthenticated = req.isAuthenticated();
 
     if (!matricula) {
-        return res.render("gerar-qrcode", { user, isAuthenticated, error: "Matrícula é obrigatória" });
+        return res.render("gerar-qrcode", { user: userView(user), isAuthenticated, error: "Matrícula é obrigatória" });
     }
 
     try {
@@ -35,7 +36,7 @@ router.post("/gerar", async (req, res) => {
             zipFile: null
         });
     } catch (err) {
-        res.render("gerar-qrcode", { user, isAuthenticated, error: err.message });
+        res.render("gerar-qrcode", { user: userView(user), isAuthenticated, error: err.message });
     }
 });
 
@@ -46,9 +47,9 @@ router.post("/gerar-lote", ensureAuthenticated, checkRole("admin"), async (req, 
 
     try {
         const result = await gerarQRCodeEmLote();
-        res.render("gerar-qrcode", { user, isAuthenticated, message: result.message, zipFile: result.zipFile });
+        res.render("gerar-qrcode", { user: userView(user), isAuthenticated, message: result.message, zipFile: result.zipFile });
     } catch (err) {
-        res.render("gerar-qrcode", { user, isAuthenticated, error: err.message });
+        res.render("gerar-qrcode", { user: userView(user), isAuthenticated, error: err.message });
     }
 });
 
@@ -59,9 +60,9 @@ router.post("/gerar-pdf", ensureAuthenticated, checkRole("admin"), async (req, r
 
     try {
         const result = await gerarPdfPorTurma();
-        res.render("gerar-qrcode", { user, isAuthenticated, message: result.message });
+        res.render("gerar-qrcode", { user: userView(user), isAuthenticated, message: result.message });
     } catch (err) {
-        res.render("gerar-qrcode", { user, isAuthenticated, error: err.message });
+        res.render("gerar-qrcode", { user: userView(user), isAuthenticated, error: err.message });
     }
 });
 

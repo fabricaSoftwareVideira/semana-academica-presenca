@@ -109,10 +109,7 @@
             </a>
         </h1>
         <div class="user-info">
-            <% if (typeof user !=='undefined' ) { %>
-                <div class="floating-btn" id="topBtn" title="Registrar Participação">
-                    <i class="fa fa-plus"></i>
-                </div>
+            <% if (user) { %>
                 <span class="username">
                     <%= user.username %>
                 </span>
@@ -149,7 +146,7 @@
             </button>
         </form>
 
-        <% if(typeof user !=='undefined' && user.isAdmin ) { %>
+        <% if(user && user.isAdmin ) { %>
             <hr>
             <p class="info-text">Como administrador, você pode gerar QR Codes em lote para todos os alunos.</p>
 
