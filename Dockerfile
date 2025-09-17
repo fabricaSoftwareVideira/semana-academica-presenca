@@ -24,4 +24,7 @@ EXPOSE 3000
 
 ENV NODE_ENV=production
 
-CMD ["pm2-runtime", "ecosystem.config.js"]
+# CMD ["pm2-runtime", "ecosystem.config.js"]
+# Rodar app
+CMD ["npm", "start"]
+
