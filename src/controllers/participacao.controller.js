@@ -9,16 +9,25 @@ const { isAdmin, isOrganizador, isConvidado } = require('../utils/auth.utils.js'
 
 function adicionarParticipacao(aluno, evento) {
     const alunos = AlunoRepository.getAll();
+
     const participacao = {
         id: evento.id,
         nome: evento.nome,
         data: new Date().toISOString()
     };
-    if (!aluno.participacoes) aluno.participacoes = [];
-    aluno.participacoes.push(participacao);
-    aluno.pontos = (aluno.pontos || 0) + 1;
+
+    // encontrar o índice correto do aluno no array
+    const idx = alunos.findIndex(a => a.matricula === aluno.matricula);
+    if (idx === -1) return { error: "Aluno não encontrado para salvar" };
+
+    if (!alunos[idx].participacoes) alunos[idx].participacoes = [];
+    alunos[idx].participacoes.push(participacao);
+    alunos[idx].pontos = (alunos[idx].pontos || 0) + 1;
+
+    // Atualizar o aluno no repositório
     AlunoRepository.saveAll(alunos);
-    return { success: true, aluno };
+
+    return { success: true, aluno: alunos[idx] };
 }
 
 function registrarParticipacao(matricula, eventoId) {
