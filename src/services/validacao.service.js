@@ -3,6 +3,7 @@ const AlunoRepository = require('../repositories/aluno.repository.js');
 const EventoRepository = require('../repositories/evento.repository.js');
 
 // Handler base para Chain of Responsibility
+// Handler base para Chain of Responsibility
 class Handler {
     setNext(handler) {
         this.next = handler;
@@ -12,9 +13,11 @@ class Handler {
         if (this.next) {
             return this.next.handle(request);
         }
-        return {};
+        // no final da cadeia, devolve o request completo
+        return request;
     }
 }
+
 
 // Validação de aluno
 class AlunoValidationHandler extends Handler {
