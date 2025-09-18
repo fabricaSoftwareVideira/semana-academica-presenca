@@ -2,7 +2,8 @@ const resultado = document.getElementById("resultado");
 const erro = document.getElementById("erro");
 const eventoSelect = document.getElementById("eventoSelect");
 const btnStart = document.getElementById("btnStart");
-const btnToggle = document.getElementById("btnToggle");
+// const btnToggle = document.getElementById("btnToggle");
+const modeToggle = document.getElementById("modeToggle");
 const readerDiv = document.getElementById("reader");
 
 let html5QrcodeScanner;
@@ -27,16 +28,16 @@ function marcarPosicaoSelecionada(valor) {
     }
 }
 
-// alterna registrar/cancelar
-btnToggle.addEventListener("click", () => {
-    if (modo === "registrar") {
+// Event listener para o toggle slider
+modeToggle.addEventListener("change", function () {
+    if (this.checked) {
         modo = "cancelar";
-        btnToggle.textContent = "🔴 Modo: Cancelar Participação / Vitória";
-        btnToggle.className = "btn btn-danger";
+        toggleLabel.textContent = "Cancelar Participação / Vitória";
+        toggleLabel.className = "toggle-label cancelar";
     } else {
         modo = "registrar";
-        btnToggle.textContent = "🔵 Modo: Registrar Participação / Vitória";
-        btnToggle.className = "btn btn-success";
+        toggleLabel.textContent = "Registrar Participação / Vitória";
+        toggleLabel.className = "toggle-label registrar";
     }
 });
 

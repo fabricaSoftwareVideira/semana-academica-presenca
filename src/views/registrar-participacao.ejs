@@ -12,24 +12,78 @@
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/style.css">
     <style>
-        html,
-        body {
-            height: 100%;
-            margin: 0;
+        /* Estilo do Slider Toggle */
+        .toggle-container {
             display: flex;
-            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            gap: 1rem;
         }
 
-        .card-container {
-            flex: 1;
-            /* ocupa espaço livre */
-            display: flex;
-            justify-content: center;
-            /* centraliza o card na vertical */
-            align-items: center;
-            /* centraliza na horizontal */
-            padding-bottom: 40px;
-            /* espaço extra acima do footer */
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            transition: all 0.4s ease;
+            border-radius: 40px;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 25px;
+            width: 24px;
+            left: 3px;
+            bottom: 3px;
+            background: white;
+            transition: all 0.4s ease;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input:checked+.slider {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        input:checked+.slider:before {
+            transform: translateX(30px);
+        }
+
+        .toggle-label {
+            font-weight: 600;
+            font-size: 1rem;
+            color: #333;
+            transition: color 0.3s ease;
+            min-width: 200px;
+            text-align: center;
+        }
+
+        .toggle-label.registrar {
+            color: #28a745;
+        }
+
+        .toggle-label.cancelar {
+            color: #dc3545;
         }
 
         #reader {
@@ -192,64 +246,77 @@
         </div>
     </header>
 
-    <div class="card-container">
-        <div class="card">
-            <h3 class="page-title">
-                Registrar / Cancelar Participação
-            </h3>
-            <% if (typeof error !=='undefined' && error) { %>
-                <div class="alert alert-danger" role="alert" style="text-align: center;">
-                    <%= message %>
-                </div>
-                <% } else { %>
-                    <div class="form-group">
-                        <select id="eventoSelect" class="form-control evento-select" autofocus>
-                            <option value="">-- Selecione o Evento --</option>
-                            <% eventos.forEach(e=> { %>
-                                <option value="<%= e.id %>"
-                                    class="<% if ((e.primeiroLugar||0) > 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) { %>com-medalha<% } %>"
-                                    data-primeiro="<%= e.primeiroLugar || 0 %>"
-                                    data-segundo="<%= e.segundoLugar || 0 %>"
-                                    data-terceiro="<%= e.terceiroLugar || 0 %>">
-                                    <% if ((e.primeiroLugar||0)> 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) >
-                                        0) {
-                                        %>🏅<% } %>
-                                            <%= e.nome %>
-                                </option>
-                                <% }) %>
-                        </select>
+    <main class="container">
+        <div class="card-container">
+            <div class="card">
+                <h3 class="page-title">
+                    Registrar / Cancelar Participação
+                </h3>
+                <% if (typeof error !=='undefined' && error) { %>
+                    <div class="alert alert-danger" role="alert" style="text-align: center;">
+                        <%= message %>
                     </div>
+                    <% } else { %>
+                        <div class="form-group">
 
-                    <!-- Grupo de registro -->
-                    <div id="registroGroup" style="display:none;">
-                        <p><strong>Escolha o tipo de registro:</strong></p>
-                        <label><input type="radio" name="posicao" value="participacao"><span class="texto">📌
-                                Participação</span></label>
-                        <hr>
-                        <label><input type="radio" name="posicao" value="1"><span class="texto">🥇 1º
-                                Lugar</span></label>
-                        <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º
-                                Lugar</span></label>
-                        <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º
-                                Lugar</span></label>
-                    </div>
+                            <!-- Toggle Slider Container -->
+                            <div class="toggle-container">
+                                <span class="toggle-label registrar" id="toggleLabel">Registrar Participação /
+                                    Vitória</span>
+                                <label class="toggle-switch">
+                                    <input type="checkbox" id="modeToggle">
+                                    <span class="slider"></span>
+                                </label>
+                            </div>
 
-                    <div class="button-group">
-                        <button id="btnToggle" class="btn btn-success">🔵 Modo: Registrar Participação</button>
-                        <button id="btnStart" class="btn btn-primary">
-                            <i class="fa fa-qrcode"></i>
-                            Ler QR Code
-                        </button>
-                    </div>
+                            <select id="eventoSelect" class="form-control evento-select" autofocus>
+                                <option value="">-- Selecione o Evento --</option>
+                                <% eventos.forEach(e=> { %>
+                                    <option value="<%= e.id %>"
+                                        class="<% if ((e.primeiroLugar||0) > 0 || (e.segundoLugar||0) > 0 || (e.terceiroLugar||0) > 0) { %>com-medalha<% } %>"
+                                        data-primeiro="<%= e.primeiroLugar || 0 %>"
+                                        data-segundo="<%= e.segundoLugar || 0 %>"
+                                        data-terceiro="<%= e.terceiroLugar || 0 %>">
+                                        <% if ((e.primeiroLugar||0)> 0 || (e.segundoLugar||0) > 0 ||
+                                            (e.terceiroLugar||0) >
+                                            0) {
+                                            %>🏅<% } %>
+                                                <%= e.nome %>
+                                    </option>
+                                    <% }) %>
+                            </select>
+                        </div>
 
-                    <div id="reader"></div>
+                        <!-- Grupo de registro -->
+                        <div id="registroGroup" style="display:none;">
+                            <p><strong>Escolha o tipo de registro:</strong></p>
+                            <label><input type="radio" name="posicao" value="participacao"><span class="texto">📌
+                                    Participação</span></label>
+                            <hr>
+                            <label><input type="radio" name="posicao" value="1"><span class="texto">🥇 1º
+                                    Lugar</span></label>
+                            <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º
+                                    Lugar</span></label>
+                            <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º
+                                    Lugar</span></label>
+                        </div>
 
-                    <div id="resultado"></div>
-                    <div id="erro"></div>
-                    <% } %>
+                        <div class="button-group">
+                            <button id="btnStart" class="btn btn-primary">
+                                <i class="fa fa-qrcode"></i>
+                                Ler QR Code
+                            </button>
+                        </div>
+
+                        <div id="reader"></div>
+
+                        <div id="resultado"></div>
+                        <div id="erro"></div>
+                        <% } %>
+            </div>
+
         </div>
-
-    </div>
+    </main>
 
     <footer>
         <div class="footer-content">
