@@ -128,14 +128,28 @@ function cancelarParticipacao(matricula, eventoId) {
 function cancelarVitoria(matricula, eventoId, posicao) {
     const resultadoValidacao = validarCancelamentoVitoriaChain({ matricula, eventoId, posicao });
     if (resultadoValidacao.error) return resultadoValidacao;
+
     const { turma, vitoriaIndex, vitoria } = resultadoValidacao;
     const turmas = TurmaRepository.getAll();
-    turma.vitorias.splice(vitoriaIndex, 1);
-    turma.pontos -= vitoria.pontos;
-    if (turma.pontos < 0) turma.pontos = 0;
+
+    const idx = turmas.findIndex(t => t.id === turma.id);
+    if (idx === -1) return { error: "Turma não encontrada para salvar" };
+
+    if (!Array.isArray(turmas[idx].vitorias)) {
+        return { error: "Turma não possui vitórias registradas." };
+    }
+    if (vitoriaIndex < 0 || vitoriaIndex >= turmas[idx].vitorias.length) {
+        return { error: "Vitória não encontrada para cancelamento." };
+    }
+
+    turmas[idx].vitorias.splice(vitoriaIndex, 1);
+    turmas[idx].pontos = Math.max(0, (turmas[idx].pontos || 0) - vitoria.pontos);
+
     TurmaRepository.saveAll(turmas);
-    return { success: true, turma };
+
+    return { success: true, turma: turmas[idx] };
 }
+
 
 function cancelarParticipacaoHandler(req, res) {
     const { eventoId } = req.params;
