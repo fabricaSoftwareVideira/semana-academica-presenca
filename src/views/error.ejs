@@ -77,7 +77,11 @@
     <div class="error-box" role="alert">
         <h1>❌ Algo deu errado</h1>
         <p>
-            <%= message %>
+            <% if (message) { %>
+                <%= message %>
+                    <% } else { %>
+                        Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.
+                        <% } %>
         </p>
         <a href="/" class="btn-back"><i class="fa fa-arrow-left"></i> Voltar</a>
     </div>
