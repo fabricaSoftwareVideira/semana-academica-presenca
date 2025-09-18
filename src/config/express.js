@@ -8,25 +8,39 @@ const app = express();
 
 // Configuração do CORS
 const allowedOrigins =
-    process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim()) : [
-        'http://localhost:3000',
-    ];
+    process.env.CORS_ORIGINS ? process.env.CORS_ORIGINS.split(",").map((origin) => origin.trim()) : [];
 
 app.use(
     cors({
         origin: function (origin, callback) {
-            // Permite requisições sem "origin" (ex: mobile apps, curl)
             if (!origin) return callback(null, true);
 
             if (allowedOrigins.includes(origin)) {
                 return callback(null, true);
             } else {
-                return callback(new Error("Não permitido pelo CORS"));
+                return callback(new Error("CORS_ERROR"));
             }
         },
         credentials: process.env.CORS_CREDENTIALS === "true",
     })
 );
+
+// ⚠️ Error handler global — precisa vir DEPOIS das rotas
+app.use((err, req, res, next) => {
+    if (err.message === "CORS_ERROR") {
+        return res.status(403).render("error", {
+            titulo: "Acesso Negado",
+            mensagem: "Origem não permitida pelo CORS.",
+        });
+    }
+
+    // outros erros
+    console.error(err.stack);
+    res.status(500).render("error", {
+        titulo: "Erro Interno",
+        mensagem: "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+    });
+});
 
 // Middlewares básicos
 app.use(express.json());
