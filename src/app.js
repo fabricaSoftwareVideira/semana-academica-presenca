@@ -2,6 +2,11 @@ require("dotenv").config();
 const app = require("./config/express");
 require("./config/passport")(app); // configura passport e sessão
 const { verificarPrimeiroLogin } = require("./middlewares/primeiro-login");
+const { sanitizarInputs, logSeguranca } = require("./middlewares/security");
+
+// Middlewares de segurança global
+app.use(logSeguranca);
+app.use(sanitizarInputs);
 
 // Middleware global para verificar primeiro login
 app.use(verificarPrimeiroLogin);
