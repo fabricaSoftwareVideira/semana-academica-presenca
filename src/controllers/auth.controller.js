@@ -1,7 +1,7 @@
 const AuthService = require("../services/auth.service.js");
 const AuthValidation = require("../services/auth.validation.js");
 const { userView } = require('../utils/user-view.utils.js');
-const bcrypt = require('bcryptjs');
+const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 
