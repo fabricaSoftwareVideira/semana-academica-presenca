@@ -6,6 +6,7 @@ const { validarCancelamentoVitoriaChain } = require('../services/vitoria.validat
 const { validarVitoriaChain } = require('../services/vitoria.validation.js');
 const { userView } = require('../utils/user-view.utils.js');
 const { isAdmin, isOrganizador, isConvidado } = require('../utils/auth.utils.js');
+const { validarCancelamentoParticipacaoChain } = require('../services/cancelamento-participacao.validation.js');
 
 function adicionarParticipacao(aluno, evento) {
     const alunos = AlunoRepository.getAll();
@@ -85,19 +86,32 @@ function registrarVitoriaHandler(req, res) {
 
 function cancelarParticipacao(matricula, eventoId) {
     const alunos = AlunoRepository.getAll();
-    const eventos = EventoRepository.getAll();
-
     const { validarCancelamentoParticipacaoChain } = require('../services/cancelamento-participacao.validation.js');
 
     const resultadoValidacao = validarCancelamentoParticipacaoChain({ matricula, eventoId });
     if (resultadoValidacao.error) return resultadoValidacao;
+
     const { aluno, evento, participacaoIndex } = resultadoValidacao;
-    aluno.participacoes.splice(participacaoIndex, 1);
-    aluno.pontos -= 1;
-    if (aluno.pontos < 0) aluno.pontos = 0;
+
+    // localizar o aluno na lista 'alunos' para atualizar a referência correta
+    const idx = alunos.findIndex(a => a.matricula === aluno.matricula);
+    if (idx === -1) return { error: "Aluno não encontrado ao salvar" };
+
+    if (!Array.isArray(alunos[idx].participacoes)) {
+        return { error: "Aluno não possui participações registradas." };
+    }
+    if (participacaoIndex < 0 || participacaoIndex >= alunos[idx].participacoes.length) {
+        return { error: "Participação não encontrada para cancelamento." };
+    }
+
+    alunos[idx].participacoes.splice(participacaoIndex, 1);
+    alunos[idx].pontos = Math.max(0, (alunos[idx].pontos || 0) - 1);
+
     AlunoRepository.saveAll(alunos);
-    return { success: true, aluno };
+
+    return { success: true, aluno: alunos[idx] };
 }
+
 
 function cancelarVitoria(matricula, eventoId, posicao) {
     const resultadoValidacao = validarCancelamentoVitoriaChain({ matricula, eventoId, posicao });

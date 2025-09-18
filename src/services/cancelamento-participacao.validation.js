@@ -1,3 +1,4 @@
+// cancelamento-participacao.validation.js
 const AlunoRepository = require('../repositories/aluno.repository.js');
 const EventoRepository = require('../repositories/evento.repository.js');
 
@@ -11,7 +12,8 @@ class Handler {
         if (this.next) {
             return this.next.handle(request);
         }
-        return {};
+        // <-- retornar o request (não um objeto vazio)
+        return request;
     }
 }
 
