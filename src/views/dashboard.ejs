@@ -129,92 +129,98 @@
         </div>
     </header>
 
-    <div class="container">
-        <% if (typeof error !=='undefined' && error) { %>
-            <div class="alert-message">
-                <%= error %>
-            </div>
-            <% } %>
+    <main>
+        <div class="container">
+            <% if (typeof error !=='undefined' && error) { %>
+                <div class="alert-message">
+                    <%= error %>
+                </div>
+                <% } %>
 
-                <% if (typeof success !=='undefined' && success) { %>
-                    <div class="success-message">
-                        <%= success %>
-                    </div>
-                    <% } %>
+                    <% if (typeof success !=='undefined' && success) { %>
+                        <div class="success-message">
+                            <%= success %>
+                        </div>
+                        <% } %>
 
-                        <% if (user.isAdmin || user.isOrganizador || user.isConvidado) { %>
-                            <section class="section">
-                                <!-- <h2>Ações Disponíveis</h2> -->
-                                <ul class="action-list">
-                                    <li>
-                                        <span class="action-title">Registrar Participação</span>
-                                        <p class="action-desc">Registre a participação dos alunos</p>
-                                        <div class="button-group">
-                                            <a href="/participacao" class="card-btn btn-success">Registrar
-                                                Participação</a>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <span class="action-title">Gerar QR Code</span>
-                                        <p class="action-desc">Gere seu QR Code para participar do evento.</p>
-                                        <div class="button-group">
-                                            <a href="/qrcode" class="card-btn">Gerar QR Code</a>
-                                        </div>
-                                    </li>
-                                    <li>
-                                        <span class="action-title">Gerenciar Usuário</span>
-                                        <p class="action-desc">Atualize suas informações de perfil.</p>
-                                        <div class="button-group">
-                                            <a href="/auth/alterar-senha" class="card-btn">Alterar Senha</a>
-                                        </div>
-                                    </li>
-                                </ul>
-                            </section>
-                            <% } %>
-                                <% if (user.isAdmin) { %>
-                                    <section class="section">
-                                        <h2>Área Administrativa</h2>
-                                        <ul class="action-list">
-                                            <li>
-                                                <span class="action-title">Gerenciar Usuários</span>
-                                                <p class="action-desc">Adicione, remova ou edite usuários do sistema.
-                                                </p>
-                                                <div class="button-group">
-                                                    <a href="/users" class="card-btn">Ir para Usuários</a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <span class="action-title">Gerenciar Eventos</span>
-                                                <p class="action-desc">Veja o calendário do evento</p>
-                                                <div class="button-group">
-                                                    <a href="/eventos" class="card-btn">Ir para Eventos</a>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <span class="action-title">Ranking</span>
-                                                <p class="action-desc">Visualize o ranking individual dos alunos e da
-                                                    turmas.</p>
-                                                <div class="button-group">
-                                                    <a href="/ranking/alunos" class="card-btn">Ver Ranking (Alunos)</a>
-                                                    <a href="/ranking/turmas" class="card-btn">Ver Ranking (Turmas)</a>
-                                                </div>
-                                            </li>
-                                            <!-- <li>
-                                <span class="action-title">Ranking Turmas</span>
-                                <p class="action-desc">Visualize o ranking das turmas participantes.</p>
-                                <a href="/ranking/turmas" class="card-btn">Ver Ranking (Turmas)</a>
-                            </li> -->
-                                            <!-- <li>
-                                <span class="action-title">Gerar QR Code - Lote</span>
-                                <p class="action-desc">Gere QR Codes em lote para os alunos.</p>
-                                <form action="/qrcode/gerar-lote" method="POST">
-                                    <button type="submit" class="card-btn">Gerar QR Codes</button>
-                                </form>
-                            </li> -->
-                                        </ul>
-                                    </section>
-                                    <% } %>
-    </div>
+                            <% if (user.isAdmin || user.isOrganizador || user.isConvidado) { %>
+                                <section class="section">
+                                    <!-- <h2>Ações Disponíveis</h2> -->
+                                    <ul class="action-list">
+                                        <li>
+                                            <span class="action-title">Registrar Participação</span>
+                                            <p class="action-desc">Registre a participação dos alunos</p>
+                                            <div class="button-group">
+                                                <a href="/participacao" class="card-btn btn-success">Registrar
+                                                    Participação</a>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="action-title">Gerar QR Code</span>
+                                            <p class="action-desc">Gere seu QR Code para participar do evento.</p>
+                                            <div class="button-group">
+                                                <a href="/qrcode" class="card-btn">Gerar QR Code</a>
+                                            </div>
+                                        </li>
+                                        <li>
+                                            <span class="action-title">Gerenciar Usuário</span>
+                                            <p class="action-desc">Atualize suas informações de perfil.</p>
+                                            <div class="button-group">
+                                                <a href="/auth/alterar-senha" class="card-btn">Alterar Senha</a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </section>
+                                <% } %>
+                                    <% if (user.isAdmin) { %>
+                                        <section class="section">
+                                            <h2>Área Administrativa</h2>
+                                            <ul class="action-list">
+                                                <li>
+                                                    <span class="action-title">Gerenciar Usuários</span>
+                                                    <p class="action-desc">Adicione, remova ou edite usuários do
+                                                        sistema.
+                                                    </p>
+                                                    <div class="button-group">
+                                                        <a href="/users" class="card-btn">Ir para Usuários</a>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <span class="action-title">Gerenciar Eventos</span>
+                                                    <p class="action-desc">Veja o calendário do evento</p>
+                                                    <div class="button-group">
+                                                        <a href="/eventos" class="card-btn">Ir para Eventos</a>
+                                                    </div>
+                                                </li>
+                                                <li>
+                                                    <span class="action-title">Ranking</span>
+                                                    <p class="action-desc">Visualize o ranking individual dos alunos e
+                                                        da
+                                                        turmas.</p>
+                                                    <div class="button-group">
+                                                        <a href="/ranking/alunos" class="card-btn">Ver Ranking
+                                                            (Alunos)</a>
+                                                        <a href="/ranking/turmas" class="card-btn">Ver Ranking
+                                                            (Turmas)</a>
+                                                    </div>
+                                                </li>
+                                                <!-- <li>
+                                        <span class="action-title">Ranking Turmas</span>
+                                        <p class="action-desc">Visualize o ranking das turmas participantes.</p>
+                                        <a href="/ranking/turmas" class="card-btn">Ver Ranking (Turmas)</a>
+                                    </li> -->
+                                                <!-- <li>
+                                        <span class="action-title">Gerar QR Code - Lote</span>
+                                        <p class="action-desc">Gere QR Codes em lote para os alunos.</p>
+                                        <form action="/qrcode/gerar-lote" method="POST">
+                                            <button type="submit" class="card-btn">Gerar QR Codes</button>
+                                        </form>
+                                    </li> -->
+                                            </ul>
+                                        </section>
+                                        <% } %>
+        </div>
+    </main>
 
     <footer>
         <div class="footer-content">
