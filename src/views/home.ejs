@@ -9,7 +9,7 @@
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Dashboard - Semana Acadêmica Informática</title>
     <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#4caf50">
 </head>
@@ -97,7 +97,7 @@
                     </div>
                 </div>
 
-                <a href="/qrcode" class="btn">
+                <a href="/qrcode" class="btn btn-warning animated-btn">
                     <i class="fa fa-qrcode"></i>
                     Gerar Meu QR Code
                 </a>
@@ -118,7 +118,8 @@
                             </strong> está em primeiro lugar com <strong>
                                 <%= ranking[0].pontosTotal %>
                             </strong> pontos!</p>
-                        <a href="/ranking" class="btn" style="margin-top: 15px; animation: none;">Ver Ranking
+                        <a href="/ranking" class="btn btn-primary" style="margin-top: 15px; animation: none;">Ver
+                            Ranking
                             Completo</a>
                         <% } %>
                             <% } else { %>
