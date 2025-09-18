@@ -29,16 +29,16 @@ app.use(
 app.use((err, req, res, next) => {
     if (err.message === "CORS_ERROR") {
         return res.status(403).render("error", {
-            titulo: "Acesso Negado",
-            mensagem: "Origem não permitida pelo CORS.",
+            title: "Acesso Negado",
+            message: "Origem não permitida pelo CORS.",
         });
     }
 
     // outros erros
     console.error(err.stack);
     res.status(500).render("error", {
-        titulo: "Erro Interno",
-        mensagem: "Ocorreu um erro inesperado. Tente novamente mais tarde.",
+        title: "Erro Interno",
+        message: "Ocorreu um erro inesperado. Tente novamente mais tarde.",
     });
 });
 
