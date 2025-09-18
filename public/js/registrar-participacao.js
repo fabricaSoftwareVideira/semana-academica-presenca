@@ -61,6 +61,28 @@ eventoSelect.addEventListener("change", function () {
     }
 });
 
+// Verificar se há apenas um evento e processá-lo automaticamente
+document.addEventListener("DOMContentLoaded", function () {
+    const options = eventoSelect.options;
+
+    // Se há apenas uma opção (além da opção padrão vazia) ou apenas uma opção total
+    if ((options.length === 2 && options[0].value === "") || (options.length === 1 && options[0].value !== "")) {
+        // Se há um evento selecionado automaticamente, processar
+        const selectedOption = eventoSelect.selectedOptions[0];
+        if (selectedOption && selectedOption.value) {
+            resetPosicaoSelecionada();
+            const temPremiacao = selectedOption.dataset.primeiro > 0 || selectedOption.dataset.segundo > 0 || selectedOption.dataset.terceiro > 0;
+            const registroGroup = document.getElementById("registroGroup");
+
+            if (temPremiacao) {
+                registroGroup.style.display = "block";
+            } else {
+                registroGroup.style.display = "none";
+            }
+        }
+    }
+});
+
 function registrarOuCancelar(token, eventoId) {
     if (!eventoId) {
         erro.innerText = "Selecione o evento!";
@@ -73,7 +95,7 @@ function registrarOuCancelar(token, eventoId) {
         headers: {
             "Content-Type": "application/json"
         },
-        credentials: "include",
+        // credentials: "include",
         method,
         body: JSON.stringify({ token }) // 🔑 envia JWT no body
     })
@@ -113,7 +135,7 @@ async function registrarVitoriaParaTurma(token, eventoId) {
     try {
         const res = await fetch(`/participacao/vitoria/${eventoId}/${posicaoSelecionada}`, {
             method,
-            credentials: "include",
+            // credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token }) // 🔑 envia JWT
         });
