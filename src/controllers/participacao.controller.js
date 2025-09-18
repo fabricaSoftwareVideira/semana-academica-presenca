@@ -52,24 +52,36 @@ function participarHandler(req, res) {
 function registrarVitoria(matricula, eventoId, posicao) {
     const resultadoValidacao = validarVitoriaChain({ matricula, eventoId, posicao });
     if (resultadoValidacao.error) return resultadoValidacao;
+
     const { turma, evento } = resultadoValidacao;
     const turmas = TurmaRepository.getAll();
+
+    // ✅ localizar a turma dentro do array real
+    const idx = turmas.findIndex(t => t.id === turma.id);
+    if (idx === -1) return { error: "Turma não encontrada para salvar" };
+
     let pontos = 0;
     if (posicao === "1") pontos = evento.primeiroLugar;
     else if (posicao === "2") pontos = evento.segundoLugar;
     else if (posicao === "3") pontos = evento.terceiroLugar;
-    if (turma.pontos === null || turma.pontos === undefined) turma.pontos = 0;
-    turma.pontos += pontos;
-    if (!turma.vitorias) turma.vitorias = [];
-    turma.vitorias.push({
+
+    if (turmas[idx].pontos === null || turmas[idx].pontos === undefined) {
+        turmas[idx].pontos = 0;
+    }
+    turmas[idx].pontos += pontos;
+
+    if (!Array.isArray(turmas[idx].vitorias)) turmas[idx].vitorias = [];
+    turmas[idx].vitorias.push({
         eventoId: evento.id,
         eventoNome: evento.nome,
         posicao: parseInt(posicao),
         pontos,
         data: new Date().toISOString()
     });
+
     TurmaRepository.saveAll(turmas);
-    return { success: true, turma };
+
+    return { success: true, turma: turmas[idx] };
 }
 
 function registrarVitoriaHandler(req, res) {
