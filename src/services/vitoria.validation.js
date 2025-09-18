@@ -12,7 +12,7 @@ class Handler {
         if (this.next) {
             return this.next.handle(request);
         }
-        return {};
+        return request; // <-- retornar o request (não um objeto vazio)
     }
 }
 
