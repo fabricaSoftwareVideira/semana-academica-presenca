@@ -41,15 +41,15 @@
             <h2>Alterar Senha</h2>
 
             <% if (typeof error !=='undefined' && error) { %>
-                <div class="alert-message">
+                <p class="alert-message">
                     <%= error %>
-                </div>
+                </p>
                 <% } %>
 
                     <% if (typeof success !=='undefined' && success) { %>
-                        <div class="success-message">
+                        <p class="success-message">
                             <%= success %>
-                        </div>
+                        </p>
                         <% } %>
 
                             <form action="/auth/alterar-senha" method="POST">

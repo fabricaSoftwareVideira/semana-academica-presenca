@@ -196,7 +196,7 @@ button, .btn, .card-btn, .logout-btn {
   display: inline-block;
   border: none;
   border-radius: 8px;
-  padding: 12px 20px;
+  padding: 8px 20px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
@@ -271,13 +271,13 @@ button, .btn, .card-btn, .logout-btn {
 /* Botão com animação especial */
 .btn {
   display: inline-block;
-  padding: 15px 30px;
+  /* padding: 15px 30px; */
   /* background: var(--warning-color);
   color: var(--text-color); */
   text-decoration: none;
   border-radius: 50px;
   font-weight: bold;
-  font-size: 1.1rem;
+  /* font-size: 1.1rem; */
   transition: all 0.3s ease;
 }
 
@@ -363,6 +363,8 @@ button, .btn, .card-btn, .logout-btn {
   position: relative;
   display: block;
   width: 100%;
+  /* garantir que o wrapper tenha altura do input e não expanda com mensagens abaixo */
+  box-sizing: border-box;
 }
 
 .password-field input[type="password"],
@@ -389,6 +391,11 @@ button, .btn, .card-btn, .logout-btn {
   line-height: 1;
 }
 
+/* Previne que mensagens externas empurrem o conteúdo interno do wrapper */
+.password-field + .password-error-message {
+  margin-top: 6px;
+}
+
 .password-toggle-btn:focus {
   outline: 2px solid var(--primary-color);
   border-radius: 6px;
@@ -401,11 +408,25 @@ button, .btn, .card-btn, .logout-btn {
   .password-toggle-btn { font-size: 16px; right: 8px; }
 }
 
+/* Mensagens de erro para validação de senha (acessibilidade) */
+.password-error-message {
+  color: #b71c1c;
+  font-size: 0.95rem;
+  margin-top: 6px;
+}
+.password-error-message[role="alert"] {
+  /* destaque sutil para leitores visuais */
+  background: rgba(183,28,28,0.05);
+  padding: 6px 8px;
+  border-radius: 6px;
+}
+
 .button-group {
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
   margin-top: 10px;
+  justify-content: space-between;
 }
 
 select, .login-box input {
