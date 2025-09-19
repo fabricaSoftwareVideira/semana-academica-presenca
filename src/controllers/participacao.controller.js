@@ -186,6 +186,16 @@ function cancelarVitoriaHandler(req, res) {
 }
 
 function registrarParticipacaoPage(req, res) {
+    if (process.env.REGISTRO_PARTICIPACAO_ATIVO === 'false') {
+        // return res.status(403).json({ error: "Registro de participação está desabilitado no momento." });
+        return res.render("registrar-participacao", {
+            user: userView(req.user),
+            error: true,
+            message: "Registro de participação está desabilitado no momento.",
+            alunos: [],
+            eventos: []
+        });
+    }
     const alunos = AlunoRepository.getAll();
     const todosEventos = EventoRepository.getAll();
     let eventos;
