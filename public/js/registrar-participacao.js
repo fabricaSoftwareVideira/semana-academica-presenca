@@ -164,6 +164,12 @@ function onScanSuccess(decodedText) {
         const token = decodedText; // 🔑 agora o QR code contém JWT
         console.log("Token lido:", token);
 
+        // Desativa o scanner temporariamente por 2 segundos após cada leitura
+        html5QrcodeScanner.pause();
+        setTimeout(() => {
+            html5QrcodeScanner.resume();
+        }, 2000);
+
 
         if (posicaoSelecionada && posicaoSelecionada !== "participacao") {
             registrarVitoriaParaTurma(token, eventoId);
@@ -176,7 +182,10 @@ function onScanSuccess(decodedText) {
         erro.innerText = "Erro ao ler QR Code!";
         console.error(e);
     } finally {
-        processingScan = false;
+        // Libera o processamento após 2 segundos, junto com o scanner
+        setTimeout(() => {
+            processingScan = false;
+        }, 2000);
     }
 }
 
