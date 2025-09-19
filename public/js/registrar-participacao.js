@@ -59,6 +59,7 @@ eventoSelect.addEventListener("change", function () {
     } else {
         registroGroup.style.display = "none";
     }
+    pararScanner(); // opcional: parar scanner ao mudar evento
 });
 
 // Verificar se há apenas um evento e processá-lo automaticamente
@@ -170,7 +171,7 @@ function onScanSuccess(decodedText) {
             registrarOuCancelar(token, eventoId);
         }
 
-        pararScanner(); // fecha scanner automaticamente após leitura
+        // pararScanner(); // fecha scanner automaticamente após leitura
     } catch (e) {
         erro.innerText = "Erro ao ler QR Code!";
         console.error(e);
