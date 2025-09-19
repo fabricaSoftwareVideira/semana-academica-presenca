@@ -143,7 +143,10 @@
                             <input type="text" id="username" name="username" required autofocus
                                 placeholder="Digite o nome de usuário">
                             <label for="password">Senha:</label>
-                            <input type="password" id="password" name="password" required placeholder="Digite a senha">
+                            <div class="password-field">
+                                <input type="password" id="password" name="password" required
+                                    placeholder="Digite a senha">
+                            </div>
                             <label for="role">Perfil:</label>
                             <select id="role" name="role" required>
                                 <option value="">Selecione o perfil</option>
@@ -187,6 +190,7 @@
         </div>
     </footer>
     <script src="/js/main.js"></script>
+    <script src="/js/password-toggle.js"></script>
 </body>
 
 </html>
