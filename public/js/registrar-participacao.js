@@ -158,6 +158,15 @@ async function registrarVitoriaParaTurma(token, eventoId) {
 function onScanSuccess(decodedText) {
     if (processingScan) return;
     processingScan = true;
+    // Limpar mensagens
+    resultado.innerText = "";
+    erro.innerText = "";
+
+    if (!eventoSelect.value) {
+        erro.innerText = "Selecione o evento antes de escanear!";
+        processingScan = false;
+        return;
+    }
 
     const eventoId = eventoSelect.value;
     try {
