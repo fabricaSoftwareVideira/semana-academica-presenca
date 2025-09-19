@@ -6,9 +6,7 @@ function jwtMiddleware(req, res, next) {
 
     try {
         const decoded = verificarToken(token);
-        console.log("Token verificado:", decoded);
-
-        req.alunoDecoded = decoded; // matrícula, turma, nome
+        req.alunoDecoded = decoded; // código, turma, nome
         next();
     } catch (err) {
         return res.status(401).json({ error: "Token inválido ou expirado" });

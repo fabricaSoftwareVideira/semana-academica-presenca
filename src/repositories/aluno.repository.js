@@ -13,6 +13,11 @@ class AlunoRepository extends AlunoRepositoryInterface {
         const alunos = this.getAll();
         return alunos.find(a => a.matricula === matricula);
     }
+
+    findByCodigo(codigo) {
+        const alunos = this.getAll();
+        return alunos.find(a => a.codigo === codigo);
+    }
 }
 
 module.exports = new AlunoRepository();

@@ -20,7 +20,7 @@ async function gerarQrCodeComTexto(aluno) {
     // QR Code
     const qrCanvas = createCanvas(300, 300);
     const token = gerarToken({
-        matricula: aluno.matricula,
+        codigo: aluno.codigo,
         turma: aluno.turma,
         nome: aluno.nome
     });

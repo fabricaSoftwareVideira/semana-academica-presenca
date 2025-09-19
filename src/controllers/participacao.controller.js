@@ -8,13 +8,14 @@ const { userView } = require('../utils/user-view.utils.js');
 const { isAdmin, isOrganizador, isConvidado } = require('../utils/auth.utils.js');
 const { validarCancelamentoParticipacaoChain } = require('../services/cancelamento-participacao.validation.js');
 
-function adicionarParticipacao(aluno, evento) {
+function adicionarParticipacao(aluno, evento, user) {
     const alunos = AlunoRepository.getAll();
 
     const participacao = {
         id: evento.id,
         nome: evento.nome,
-        data: new Date().toISOString()
+        data: new Date().toISOString(),
+        user: user.username
     };
 
     // encontrar o índice correto do aluno no array
@@ -31,18 +32,21 @@ function adicionarParticipacao(aluno, evento) {
     return { success: true, aluno: alunos[idx] };
 }
 
-function registrarParticipacao(matricula, eventoId) {
+function registrarParticipacao(matricula, eventoId, user) {
     const resultadoValidacao = ValidacaoService.validarParticipacaoChain({ matricula, eventoId });
     if (resultadoValidacao.error) return resultadoValidacao;
     const { aluno, evento } = resultadoValidacao;
-    return adicionarParticipacao(aluno, evento);
+    return adicionarParticipacao(aluno, evento, user);
 }
 
 function participarHandler(req, res) {
     const { eventoId } = req.params;
-    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
-
-    const resultado = registrarParticipacao(matricula, eventoId);
+    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const aluno = AlunoRepository.findByCodigo(codigo);
+    if (!aluno) {
+        return res.status(400).json({ error: "Aluno não encontrado" });
+    }
+    const resultado = registrarParticipacao(aluno.matricula, eventoId, req.user);
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
@@ -86,13 +90,15 @@ function registrarVitoria(matricula, eventoId, posicao) {
 
 function registrarVitoriaHandler(req, res) {
     const { eventoId, posicao } = req.params;
-    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
-    const resultado = registrarVitoria(matricula, eventoId, posicao);
-
+    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const aluno = AlunoRepository.findByCodigo(codigo);
+    if (!aluno) {
+        return res.status(400).json({ error: "Aluno não encontrado" });
+    }
+    const resultado = registrarVitoria(aluno.matricula, eventoId, posicao);
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
-
     res.json(resultado.turma);
 }
 
@@ -153,12 +159,12 @@ function cancelarVitoria(matricula, eventoId, posicao) {
 
 function cancelarParticipacaoHandler(req, res) {
     const { eventoId } = req.params;
-    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
-    const aluno = AlunoRepository.findByMatricula(matricula);
+    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const aluno = AlunoRepository.findByCodigo(codigo);
     if (!aluno) {
         return res.status(400).json({ error: "Aluno não encontrado" });
     }
-    const resultado = cancelarParticipacao(matricula, eventoId);
+    const resultado = cancelarParticipacao(aluno.matricula, eventoId);
     if (resultado && resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
@@ -167,14 +173,15 @@ function cancelarParticipacaoHandler(req, res) {
 
 function cancelarVitoriaHandler(req, res) {
     const { eventoId, posicao } = req.params;
-    const matricula = req.alunoDecoded.matricula; // 🔑 do JWT
-    const resultado = cancelarVitoria(matricula, eventoId, posicao);
-
-
+    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const aluno = AlunoRepository.findByCodigo(codigo);
+    if (!aluno) {
+        return res.status(400).json({ error: "Aluno não encontrado" });
+    }
+    const resultado = cancelarVitoria(aluno.matricula, eventoId, posicao);
     if (resultado.error) {
         return res.status(400).json({ error: resultado.error });
     }
-
     res.json(resultado.turma);
 }
 
