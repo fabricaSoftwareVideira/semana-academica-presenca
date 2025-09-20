@@ -12,7 +12,19 @@ function saveEventos(eventos) {
     fs.writeFileSync(EVENTOS_PATH, JSON.stringify(eventos, null, 2));
 }
 
+/**
+ * Busca um evento pelo ID
+ * @param {number} id 
+ * @returns {object|null}
+ */
+function getEventoById(id) {
+    if (!id) return null;
+    const eventos = getAllEventos();
+    return eventos.find(e => e.id === id) || null;
+}
+
 module.exports = {
     getAllEventos,
     saveEventos,
+    getEventoById,
 };

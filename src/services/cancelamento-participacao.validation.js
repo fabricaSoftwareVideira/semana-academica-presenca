@@ -1,4 +1,4 @@
-// cancelamento-participacao.validation.js
+// src/services/cancelamento-participacao.validation.js
 const AlunoRepository = require('../repositories/aluno.repository.js');
 const EventoRepository = require('../repositories/evento.repository.js');
 
@@ -12,8 +12,11 @@ class Handler {
         if (this.next) {
             return this.next.handle(request);
         }
-        // <-- retornar o request (não um objeto vazio)
-        return request;
+        // sempre retorna no formato padronizado
+        return {
+            success: true,
+            data: request
+        };
     }
 }
 
@@ -23,7 +26,7 @@ class AlunoValidationHandler extends Handler {
         const { matricula } = request;
         const aluno = AlunoRepository.findByMatricula(matricula);
         if (!aluno) {
-            return { error: 'Aluno não encontrado' };
+            return { success: false, message: 'Aluno não encontrado' };
         }
         request.aluno = aluno;
         return super.handle(request);
@@ -36,7 +39,11 @@ class EventoValidationHandler extends Handler {
         const { eventoId } = request;
         const evento = EventoRepository.findById(parseInt(eventoId));
         if (!evento) {
-            return { error: 'Evento não encontrado', aluno: request.aluno };
+            return {
+                success: false,
+                message: 'Evento não encontrado',
+                data: { aluno: request.aluno }
+            };
         }
         request.evento = evento;
         return super.handle(request);
@@ -48,10 +55,16 @@ class ParticipacaoExistenteHandler extends Handler {
     handle(request) {
         const { aluno, evento } = request;
         if (!aluno.participacoes) aluno.participacoes = [];
+
         const participacaoIndex = aluno.participacoes.findIndex((p) => p.id === evento.id);
         if (participacaoIndex === -1) {
-            return { error: 'Aluno não participou deste evento', aluno };
+            return {
+                success: false,
+                message: 'Aluno não participou deste evento',
+                data: { aluno: request.aluno }
+            };
         }
+
         request.participacaoIndex = participacaoIndex;
         return super.handle(request);
     }
@@ -61,7 +74,9 @@ function validarCancelamentoParticipacaoChain({ matricula, eventoId }) {
     const alunoHandler = new AlunoValidationHandler();
     const eventoHandler = new EventoValidationHandler();
     const participacaoExistenteHandler = new ParticipacaoExistenteHandler();
+
     alunoHandler.setNext(eventoHandler).setNext(participacaoExistenteHandler);
+
     return alunoHandler.handle({ matricula, eventoId });
 }
 

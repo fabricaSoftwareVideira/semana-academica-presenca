@@ -1,13 +1,14 @@
+// src/controllers/participacao.controller.js
 const AlunoRepository = require("../repositories/aluno.repository.js");
 const EventoRepository = require("../repositories/evento.repository.js");
 const TurmaRepository = require("../repositories/turma.repository.js");
 const ValidacaoService = require('../services/validacao.service.js');
-const { validarCancelamentoVitoriaChain } = require('../services/vitoria.validation.js');
-const { validarVitoriaChain } = require('../services/vitoria.validation.js');
+const { validarCancelamentoVitoriaChain, validarVitoriaChain } = require('../services/vitoria.validation.js');
 const { userView } = require('../utils/user-view.utils.js');
-const { isAdmin, isOrganizador, isConvidado } = require('../utils/auth.utils.js');
+const { isAdmin } = require('../utils/auth.utils.js');
 const { validarCancelamentoParticipacaoChain } = require('../services/cancelamento-participacao.validation.js');
 
+// ---------------- PARTICIPAÇÃO ----------------
 function adicionarParticipacao(aluno, evento, user) {
     const alunos = AlunoRepository.getAll();
 
@@ -18,61 +19,69 @@ function adicionarParticipacao(aluno, evento, user) {
         user: user.username
     };
 
-    // encontrar o índice correto do aluno no array
     const idx = alunos.findIndex(a => a.matricula === aluno.matricula);
-    if (idx === -1) return { error: "Aluno não encontrado para salvar" };
+    if (idx === -1) {
+        return { success: false, message: "Aluno não encontrado para salvar" };
+    }
 
-    if (!alunos[idx].participacoes) alunos[idx].participacoes = [];
+    if (!Array.isArray(alunos[idx].participacoes)) {
+        alunos[idx].participacoes = [];
+    }
+
     alunos[idx].participacoes.push(participacao);
     alunos[idx].pontos = (alunos[idx].pontos || 0) + 1;
 
-    // Atualizar o aluno no repositório
     AlunoRepository.saveAll(alunos);
 
-    return { success: true, aluno: alunos[idx] };
+    return { success: true, data: { aluno: alunos[idx] } };
 }
 
 function registrarParticipacao(matricula, eventoId, user) {
     const resultadoValidacao = ValidacaoService.validarParticipacaoChain({ matricula, eventoId });
-    if (resultadoValidacao.error) return resultadoValidacao;
-    const { aluno, evento } = resultadoValidacao;
+
+    if (!resultadoValidacao.success) return resultadoValidacao;
+
+    const { aluno, evento } = resultadoValidacao.data;
     return adicionarParticipacao(aluno, evento, user);
 }
 
 function participarHandler(req, res) {
     const { eventoId } = req.params;
-    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const codigo = req.alunoDecoded.codigo; // 🔑 JWT
+
     const aluno = AlunoRepository.findByCodigo(codigo);
     if (!aluno) {
-        return res.status(400).json({ error: "Aluno não encontrado" });
+        return res.status(400).json({ success: false, message: "Aluno não encontrado" });
     }
+
     const resultado = registrarParticipacao(aluno.matricula, eventoId, req.user);
-    if (resultado.error) {
-        return res.status(400).json({ error: resultado.error });
+
+    if (!resultado.success) {
+        return res.status(400).json(resultado);
     }
+
     res.json(resultado);
 }
 
+// ---------------- VITÓRIAS ----------------
 function registrarVitoria(matricula, eventoId, posicao) {
     const resultadoValidacao = validarVitoriaChain({ matricula, eventoId, posicao });
-    if (resultadoValidacao.error) return resultadoValidacao;
+    if (!resultadoValidacao.success) return resultadoValidacao;
 
-    const { turma, evento } = resultadoValidacao;
+    const { turma, evento } = resultadoValidacao.data;
     const turmas = TurmaRepository.getAll();
 
-    // ✅ localizar a turma dentro do array real
     const idx = turmas.findIndex(t => t.id === turma.id);
-    if (idx === -1) return { error: "Turma não encontrada para salvar" };
+    if (idx === -1) {
+        return { success: false, message: "Turma não encontrada para salvar" };
+    }
 
     let pontos = 0;
     if (posicao === "1") pontos = evento.primeiroLugar;
     else if (posicao === "2") pontos = evento.segundoLugar;
     else if (posicao === "3") pontos = evento.terceiroLugar;
 
-    if (turmas[idx].pontos === null || turmas[idx].pontos === undefined) {
-        turmas[idx].pontos = 0;
-    }
-    turmas[idx].pontos += pontos;
+    turmas[idx].pontos = (turmas[idx].pontos || 0) + pontos;
 
     if (!Array.isArray(turmas[idx].vitorias)) turmas[idx].vitorias = [];
     turmas[idx].vitorias.push({
@@ -85,41 +94,40 @@ function registrarVitoria(matricula, eventoId, posicao) {
 
     TurmaRepository.saveAll(turmas);
 
-    return { success: true, turma: turmas[idx] };
+    return { success: true, data: { turma: turmas[idx] } };
 }
 
 function registrarVitoriaHandler(req, res) {
     const { eventoId, posicao } = req.params;
-    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const codigo = req.alunoDecoded.codigo;
+
     const aluno = AlunoRepository.findByCodigo(codigo);
     if (!aluno) {
-        return res.status(400).json({ error: "Aluno não encontrado" });
+        return res.status(400).json({ success: false, message: "Aluno não encontrado" });
     }
+
     const resultado = registrarVitoria(aluno.matricula, eventoId, posicao);
-    if (resultado.error) {
-        return res.status(400).json({ error: resultado.error });
+
+    if (!resultado.success) {
+        return res.status(400).json(resultado);
     }
-    res.json(resultado.turma);
+
+    res.json(resultado);
 }
 
+// ---------------- CANCELAMENTOS ----------------
 function cancelarParticipacao(matricula, eventoId) {
     const alunos = AlunoRepository.getAll();
-    const { validarCancelamentoParticipacaoChain } = require('../services/cancelamento-participacao.validation.js');
 
     const resultadoValidacao = validarCancelamentoParticipacaoChain({ matricula, eventoId });
-    if (resultadoValidacao.error) return resultadoValidacao;
 
-    const { aluno, evento, participacaoIndex } = resultadoValidacao;
+    if (!resultadoValidacao.success) return resultadoValidacao;
 
-    // localizar o aluno na lista 'alunos' para atualizar a referência correta
+    const { aluno, participacaoIndex } = resultadoValidacao.data;
+
     const idx = alunos.findIndex(a => a.matricula === aluno.matricula);
-    if (idx === -1) return { error: "Aluno não encontrado ao salvar" };
-
-    if (!Array.isArray(alunos[idx].participacoes)) {
-        return { error: "Aluno não possui participações registradas." };
-    }
-    if (participacaoIndex < 0 || participacaoIndex >= alunos[idx].participacoes.length) {
-        return { error: "Participação não encontrada para cancelamento." };
+    if (idx === -1) {
+        return { success: false, message: "Aluno não encontrado ao salvar" };
     }
 
     alunos[idx].participacoes.splice(participacaoIndex, 1);
@@ -127,25 +135,19 @@ function cancelarParticipacao(matricula, eventoId) {
 
     AlunoRepository.saveAll(alunos);
 
-    return { success: true, aluno: alunos[idx] };
+    return { success: true, data: { aluno: alunos[idx] } };
 }
-
 
 function cancelarVitoria(matricula, eventoId, posicao) {
     const resultadoValidacao = validarCancelamentoVitoriaChain({ matricula, eventoId, posicao });
-    if (resultadoValidacao.error) return resultadoValidacao;
+    if (!resultadoValidacao.success) return resultadoValidacao;
 
-    const { turma, vitoriaIndex, vitoria } = resultadoValidacao;
+    const { turma, vitoriaIndex, vitoria } = resultadoValidacao.data;
     const turmas = TurmaRepository.getAll();
 
     const idx = turmas.findIndex(t => t.id === turma.id);
-    if (idx === -1) return { error: "Turma não encontrada para salvar" };
-
-    if (!Array.isArray(turmas[idx].vitorias)) {
-        return { error: "Turma não possui vitórias registradas." };
-    }
-    if (vitoriaIndex < 0 || vitoriaIndex >= turmas[idx].vitorias.length) {
-        return { error: "Vitória não encontrada para cancelamento." };
+    if (idx === -1) {
+        return { success: false, message: "Turma não encontrada para salvar" };
     }
 
     turmas[idx].vitorias.splice(vitoriaIndex, 1);
@@ -153,41 +155,48 @@ function cancelarVitoria(matricula, eventoId, posicao) {
 
     TurmaRepository.saveAll(turmas);
 
-    return { success: true, turma: turmas[idx] };
+    return { success: true, data: { turma: turmas[idx] } };
 }
-
 
 function cancelarParticipacaoHandler(req, res) {
     const { eventoId } = req.params;
-    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const codigo = req.alunoDecoded.codigo;
+
     const aluno = AlunoRepository.findByCodigo(codigo);
     if (!aluno) {
-        return res.status(400).json({ error: "Aluno não encontrado" });
+        return res.status(400).json({ success: false, message: "Aluno não encontrado" });
     }
+
     const resultado = cancelarParticipacao(aluno.matricula, eventoId);
-    if (resultado && resultado.error) {
-        return res.status(400).json({ error: resultado.error });
+
+    if (!resultado.success) {
+        return res.status(400).json(resultado);
     }
-    return res.json(resultado);
+
+    res.json(resultado);
 }
 
 function cancelarVitoriaHandler(req, res) {
     const { eventoId, posicao } = req.params;
-    const codigo = req.alunoDecoded.codigo; // 🔑 do JWT
+    const codigo = req.alunoDecoded.codigo;
+
     const aluno = AlunoRepository.findByCodigo(codigo);
     if (!aluno) {
-        return res.status(400).json({ error: "Aluno não encontrado" });
+        return res.status(400).json({ success: false, message: "Aluno não encontrado" });
     }
+
     const resultado = cancelarVitoria(aluno.matricula, eventoId, posicao);
-    if (resultado.error) {
-        return res.status(400).json({ error: resultado.error });
+
+    if (!resultado.success) {
+        return res.status(400).json(resultado);
     }
-    res.json(resultado.turma);
+
+    res.json(resultado);
 }
 
+// ---------------- PAGE ----------------
 function registrarParticipacaoPage(req, res) {
     if (process.env.REGISTRO_PARTICIPACAO_ATIVO === 'false') {
-        // return res.status(403).json({ error: "Registro de participação está desabilitado no momento." });
         return res.render("registrar-participacao", {
             user: userView(req.user),
             error: true,
@@ -196,14 +205,13 @@ function registrarParticipacaoPage(req, res) {
             eventos: []
         });
     }
+
     const alunos = AlunoRepository.getAll();
     const todosEventos = EventoRepository.getAll();
-    let eventos;
-    if (isAdmin(req.user)) {
-        eventos = todosEventos;
-    } else {
-        eventos = todosEventos.filter((e) => Array.isArray(e.users) && e.users.includes(req.user.username));
-    }
+
+    const eventos = isAdmin(req.user)
+        ? todosEventos
+        : todosEventos.filter(e => Array.isArray(e.users) && e.users.includes(req.user.username));
 
     if (!Array.isArray(eventos) || eventos.length === 0) {
         return res.render("registrar-participacao", {
@@ -218,4 +226,10 @@ function registrarParticipacaoPage(req, res) {
     res.render("registrar-participacao", { user: userView(req.user), alunos, eventos });
 }
 
-module.exports = { participarHandler, registrarVitoriaHandler, cancelarParticipacaoHandler, cancelarVitoriaHandler, registrarParticipacaoPage };
+module.exports = {
+    participarHandler,
+    registrarVitoriaHandler,
+    cancelarParticipacaoHandler,
+    cancelarVitoriaHandler,
+    registrarParticipacaoPage
+};

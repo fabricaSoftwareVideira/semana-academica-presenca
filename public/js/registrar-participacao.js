@@ -93,28 +93,18 @@ function registrarOuCancelar(token, eventoId) {
     const method = modo === "registrar" ? "POST" : "DELETE";
 
     fetch(url, {
-        headers: {
-            "Content-Type": "application/json"
-        },
-        // credentials: "include",
+        headers: { "Content-Type": "application/json" },
         method,
         body: JSON.stringify({ token }) // 🔑 envia JWT no body
     })
-        .then(async res => {
-            // Tenta extrair o JSON da resposta
-            const data = await res.json().catch(() => ({}));
-
-            if (!res.ok) {
-                // Usa a mensagem do servidor se existir
-                const msg = data.error || `Erro ${res.status}`;
-                throw new Error(msg);
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                throw new Error(data.message || "Erro desconhecido");
             }
 
-            return data;
-        })
-        .then(data => {
             const acao = modo === "registrar" ? "Registrado" : "Cancelado";
-            resultado.innerText = `${acao}: ${data.aluno.nome} | Pontos: ${data.aluno.pontos}`;
+            resultado.innerText = `${acao}: ${data.data.aluno.nome} | Pontos: ${data.data.aluno.pontos}`;
             erro.innerText = "";
         })
         .catch(e => {
@@ -123,7 +113,6 @@ function registrarOuCancelar(token, eventoId) {
             console.error(e);
         });
 }
-
 
 // Registrar ou cancelar vitória
 async function registrarVitoriaParaTurma(token, eventoId) {
@@ -136,20 +125,20 @@ async function registrarVitoriaParaTurma(token, eventoId) {
     try {
         const res = await fetch(`/participacao/vitoria/${eventoId}/${posicaoSelecionada}`, {
             method,
-            // credentials: "include",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ token }) // 🔑 envia JWT
         });
         const data = await res.json();
-        if (data.error) {
-            erro.innerText = data.error;
-        } else {
-            const acao = modo === "registrar" ? "Registrada" : "Cancelada";
-            resultado.innerText = `Vitória ${acao}: ${posicaoSelecionada}º lugar (+${data.vitorias?.at(-1)?.pontos || 0} pontos)`;
-            erro.innerText = "";
+
+        if (!data.success) {
+            throw new Error(data.message || "Erro ao registrar vitória");
         }
+
+        const acao = modo === "registrar" ? "Registrada" : "Cancelada";
+        resultado.innerText = `Vitória ${acao}: ${posicaoSelecionada}º lugar (+${data.vitoria?.pontos || 0} pontos)`;
+        erro.innerText = "";
     } catch (err) {
-        erro.innerText = "Erro ao registrar vitória.";
+        erro.innerText = err.message;
         console.error(err);
     }
 }
@@ -170,8 +159,7 @@ function onScanSuccess(decodedText) {
 
     const eventoId = eventoSelect.value;
     try {
-        const token = decodedText; // 🔑 agora o QR code contém JWT
-        console.log("Token lido:", token);
+        const token = decodedText;
 
         // Desativa o scanner temporariamente por 2 segundos após cada leitura
         html5QrcodeScanner.pause();

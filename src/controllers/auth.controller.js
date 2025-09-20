@@ -48,7 +48,7 @@ exports.login = (req, res, next) => {
     const { username, password } = req.body;
     const erroPayload = AuthValidation.validarLoginPayload({ username, password });
     if (erroPayload.error) {
-        return res.render("login", { error: erroPayload.error, user: userView(req.user) });
+        return res.render("login", { error: erroPayload.error });
     }
     efetuarLogin(req, res, next);
 };

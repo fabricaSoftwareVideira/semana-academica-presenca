@@ -88,19 +88,18 @@
                     <%= error %>
                 </div>
                 <% } %>
-
                     <form action="/auth/login" method="POST">
                         <div class="form-group">
                             <label for="username">Usuário:</label>
                             <input id="username" type="text" name="username" required placeholder="Digite seu usuário"
                                 autocorrect="off" autocapitalize="none" spellcheck="false" autocomplete="new-username"
-                                inputmode="text" autofocus>
+                                inputmode="text" autofocus value="fabricio.bizotto">
                         </div>
 
                         <div class="form-group">
                             <label for="password">Senha:</label>
                             <input id="password" type="password" name="password" required placeholder="Digite sua senha"
-                                autocomplete="current-password" inputmode="text">
+                                autocomplete="current-password" inputmode="text" value="ifcvideira">
                         </div>
 
                         <button type="submit" class="btn-primary" aria-label="Entrar na conta da Semana Acadêmica">

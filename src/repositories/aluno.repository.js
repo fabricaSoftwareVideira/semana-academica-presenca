@@ -10,13 +10,17 @@ class AlunoRepository extends AlunoRepositoryInterface {
         return AlunoModel.saveAlunos(alunos);
     }
     findByMatricula(matricula) {
-        const alunos = this.getAll();
-        return alunos.find(a => a.matricula === matricula);
+        if (!matricula) {
+            throw new Error("Matrícula inválida");
+        }
+        return AlunoModel.getAlunoByMatricula(matricula);
     }
 
     findByCodigo(codigo) {
-        const alunos = this.getAll();
-        return alunos.find(a => a.codigo === codigo);
+        if (!codigo) {
+            throw new Error("Código inválido");
+        }
+        return AlunoModel.getAlunoByCodigo(codigo);
     }
 }
 

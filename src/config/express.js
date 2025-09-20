@@ -54,7 +54,7 @@ app.use(
         },
     })
 );
-app.use(morgan("combined")); // log padrão estilo Apache
+app.use(morgan("short")); // log padrão estilo Apache
 
 // View engine
 app.set("view engine", "ejs");

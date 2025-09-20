@@ -12,7 +12,7 @@ class Handler {
         if (this.next) {
             return this.next.handle(request);
         }
-        return request; // <-- retornar o request (não um objeto vazio)
+        return { success: true, data: request };
     }
 }
 
@@ -22,7 +22,7 @@ class AlunoValidationHandler extends Handler {
         const { matricula } = request;
         const aluno = AlunoRepository.findByMatricula(matricula);
         if (!aluno) {
-            return { error: 'Aluno não encontrado' };
+            return { success: false, message: 'Aluno não encontrado' };
         }
         request.aluno = aluno;
         return super.handle(request);
@@ -35,7 +35,7 @@ class TurmaValidationHandler extends Handler {
         const { aluno } = request;
         const turma = TurmaRepository.findById(aluno.turma);
         if (!turma) {
-            return { error: 'Turma não encontrada' };
+            return { success: false, message: 'Turma não encontrada' };
         }
         request.turma = turma;
         return super.handle(request);
@@ -48,7 +48,7 @@ class EventoValidationHandler extends Handler {
         const { eventoId } = request;
         const evento = EventoRepository.findById(parseInt(eventoId));
         if (!evento) {
-            return { error: 'Evento não encontrado' };
+            return { success: false, message: 'Evento não encontrado' };
         }
         request.evento = evento;
         return super.handle(request);
@@ -60,7 +60,7 @@ class PosicaoValidationHandler extends Handler {
     handle(request) {
         const { posicao } = request;
         if (!['1', '2', '3'].includes(posicao)) {
-            return { error: 'Posição inválida. Use 1, 2 ou 3.' };
+            return { success: false, message: 'Posição inválida. Use 1, 2 ou 3.' };
         }
         return super.handle(request);
     }
@@ -71,7 +71,7 @@ class PontosEventoValidationHandler extends Handler {
     handle(request) {
         const { evento } = request;
         if (!evento.primeiroLugar || !evento.segundoLugar || !evento.terceiroLugar) {
-            return { error: 'Evento não tem pontos definidos para posições' };
+            return { success: false, message: 'Evento não tem pontos definidos para posições' };
         }
         return super.handle(request);
     }
@@ -83,12 +83,12 @@ class DuplicidadeTurmaVitoriaHandler extends Handler {
         const { turma, evento, posicao } = request;
         if (!turma.vitorias) turma.vitorias = [];
         if (turma.vitorias.find((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao))) {
-            return { error: 'Turma já registrou vitória nesta posição para este evento' };
+            return { success: false, message: 'Turma já registrou vitória nesta posição para este evento' };
         }
         if (turma.vitorias.find((v) => v.eventoId === evento.id)) {
             const posicaoVitoria = turma.vitorias.find((v) => v.eventoId === evento.id).posicao;
             const posicaoTexto = posicaoVitoria === 1 ? '1º lugar' : posicaoVitoria === 2 ? '2º lugar' : '3º lugar';
-            return { error: `Turma já registrou vitória para este evento na posição ${posicaoTexto}` };
+            return { success: false, message: `Turma já registrou vitória para este evento na posição ${posicaoTexto}` };
         }
         return super.handle(request);
     }
@@ -101,7 +101,7 @@ class DuplicidadeGlobalVitoriaHandler extends Handler {
         const todasVitorias = turmas.flatMap((t) => t.vitorias || []);
         if (todasVitorias.find((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao))) {
             const turma = turmas.find((t) => t.vitorias && t.vitorias.find((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao)));
-            return { error: `Vitória para posição ${posicao} já registrada na turma ${turma.id}` };
+            return { success: false, message: `Vitória para posição ${posicao} já registrada na turma ${turma.id}` };
         }
         return super.handle(request);
     }
@@ -126,7 +126,6 @@ function validarVitoriaChain({ matricula, eventoId, posicao }) {
     return alunoHandler.handle({ matricula, eventoId, posicao, turmas });
 }
 
-
 // Handlers para cancelamento de vitória
 class VitoriaExistenteHandler extends Handler {
     handle(request) {
@@ -134,7 +133,7 @@ class VitoriaExistenteHandler extends Handler {
         if (!turma.vitorias) turma.vitorias = [];
         const vitoriaIndex = turma.vitorias.findIndex((v) => v.eventoId === evento.id && v.posicao === parseInt(posicao));
         if (vitoriaIndex === -1) {
-            return { error: 'Turma não registrou vitória nesta posição para este evento' };
+            return { success: false, message: 'Turma não registrou vitória nesta posição para este evento' };
         }
         request.vitoriaIndex = vitoriaIndex;
         request.vitoria = turma.vitorias[vitoriaIndex];
