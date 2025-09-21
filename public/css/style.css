@@ -512,6 +512,11 @@ select, .login-box input {
   justify-content: center;
   gap: 15px;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.jumbotron-buttons .btn {
+  flex: 0 0 150px;
 }
 
 .course-badge {
