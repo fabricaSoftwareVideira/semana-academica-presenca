@@ -516,7 +516,7 @@ select, .login-box input {
 }
 
 .jumbotron-buttons .btn {
-  flex: 1 1 150px;
+  flex: 0 0 150px;
 }
 
 .course-badge {
@@ -1044,12 +1044,10 @@ hr {
 @keyframes pulse {
   0%, 100% { 
     transform: scale(1); 
-    gap: 0;
     /* box-shadow: 0 0 0 rgba(255, 193, 7, 0.7);  */
   }
   50% { 
     transform: scale(1.05); 
-    gap: 15px;
     /* box-shadow: 0 0 20px rgba(255, 193, 7, 0.9);  */
   }
 }
@@ -1114,6 +1112,10 @@ hr {
 }
 
 @media (max-width: 480px) {
+  .jumbotron-buttons .btn {
+    flex: 1 1 100%;
+  }
+  
   button, .btn, .card-btn { 
     font-size: 14px; 
     padding: 10px 14px; 
