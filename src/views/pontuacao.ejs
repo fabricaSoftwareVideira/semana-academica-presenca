@@ -69,16 +69,21 @@
     <nav>
         <h1>
             <a href="/" class="logo">
+                <!-- <img src="/img/ifc.webp" alt="Logo" class="logo-img"> -->
                 <span>10°</span>Semana Acadêmica
             </a>
         </h1>
         <div class="user-info">
-            <% if (typeof user !=='undefined' ) { %>
+            <% if (user) { %>
                 <span class="username">
                     <%= user.username %>
                 </span>
-                <a href="/auth/logout" class="user-link logout-link"><i class="fa fa-sign-out-alt"></i>
-                    Sair</a>
+                <a href="/dashboard" class="user-link">
+                    <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="/auth/logout" class="user-link logout-link">
+                    <i class="fa fa-sign-out-alt"></i> Sair
+                </a>
                 <% } else { %>
                     <a href="/auth/login" class="login-btn">Login</a>
                     <% } %>
@@ -116,16 +121,35 @@
         </div>
     </main>
 
-    <footer>
-        <div class="footer-content">
-            <div class="footer-info">
-                <h3>10° Semana Acadêmica</h3>
-            </div>
-            <div class="footer-social">
-                <p class="footer-rights">© 2025 Todos os direitos reservados à Fábrica de Software</p>
+    <footer role="contentinfo">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-info">
+                    <h3>10° Semana Acadêmica</h3>
+                    <div class="footer-logo">
+                        <a href="https://fsw-ifc.brdrive.net" target="_blank">
+                            <img src="/img/favicon.svg" alt="Fábrica de Software">
+                        </a>
+                        <a href="https://videira.ifc.edu.br" target="_blank">
+                            <img src="/img/ifc.webp" alt="IFC">
+                        </a>
+                    </div>
+                </div>
+
+                <div class="footer-social">
+                    <h3>Siga-nos</h3>
+                    <ul>
+                        <li><a href="https://www.instagram.com/fsw.ifcvideira/" target="_blank"><i
+                                    class="fab fa-instagram"></i></a></li>
+                        <li><a href="mailto:fabricadesoftware.videira@ifc.edu.br" target="_blank"><i
+                                    class="fa fa-envelope"></i></a></li>
+                    </ul>
+                    <p class="footer-rights">© 2025 Todos os direitos reservados à Fábrica de Software</p>
+                </div>
             </div>
         </div>
     </footer>
+
 
     <script src="/js/pontuacao.js"></script>
 </body>

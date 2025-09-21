@@ -1,11 +1,12 @@
 const jwt = require('../services/jwt.service');
 const AlunoRepository = require('../repositories/aluno.repository');
+const { userView } = require('../utils/user-view.utils');
 
-exports.pontuacaoPage = (req, res) => {
-    res.render('pontuacao', { pontuacao: null, aluno: null, error: null });
+const pontuacaoPage = (req, res) => {
+    res.render('pontuacao', { pontuacao: null, aluno: null, error: null, user: userView(req.user) });
 };
 
-exports.lerPontuacao = (req, res) => {
+const lerPontuacao = (req, res) => {
     const { token } = req.body;
     try {
         const payload = jwt.verificarToken(token);
@@ -15,6 +16,10 @@ exports.lerPontuacao = (req, res) => {
         }
         res.json({ success: true, aluno, pontuacao: aluno.pontos || 0 });
     } catch (e) {
-        res.status(400).json({ success: false, message: 'QR Code inválido.' });
+        console.log(e);
+
+        res.status(400).json({ success: false, message: 'QR Code inválido.', user: userView(req.user) });
     }
 };
+
+module.exports = { pontuacaoPage, lerPontuacao };
