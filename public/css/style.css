@@ -250,11 +250,6 @@ button, .btn, .card-btn, .logout-btn {
   background-color: var(--tertiary-hover);
 }
 
-.btn-small {
-  padding: 8px 14px;
-  font-size: 14px;
-}
-
 .logout-btn {
   background: rgba(255, 255, 255, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.3);
@@ -293,7 +288,20 @@ button, .btn, .card-btn, .logout-btn {
 
 .animated-btn:hover {
   transform: scale(1.1);
+  /* box-shadow: 0 0 25px var(--warning-color); */
+}
+
+.animated-btn.btn-warning:hover {
   box-shadow: 0 0 25px var(--warning-color);
+}
+
+.animated-btn.btn-info:hover {
+  box-shadow: 0 0 25px var(--tertiary-color);
+}
+
+.btn-small {
+  padding: 8px 14px;
+  font-size: 14px;
 }
 
 .floating-btn {
@@ -497,6 +505,14 @@ select, .login-box input {
 .jumbotron-content {
   position: relative;
   z-index: 2;
+}
+
+.jumbotron-buttons {
+  margin-top: 30px;
+  display: flex;
+  justify-content: center;
+  gap: 15px;
+  flex-wrap: wrap;
 }
 
 .course-badge {
@@ -1024,11 +1040,11 @@ hr {
 @keyframes pulse {
   0%, 100% { 
     transform: scale(1); 
-    box-shadow: 0 0 0 rgba(255, 193, 7, 0.7); 
+    /* box-shadow: 0 0 0 rgba(255, 193, 7, 0.7);  */
   }
   50% { 
     transform: scale(1.05); 
-    box-shadow: 0 0 20px rgba(255, 193, 7, 0.9); 
+    /* box-shadow: 0 0 20px rgba(255, 193, 7, 0.9);  */
   }
 }
 
