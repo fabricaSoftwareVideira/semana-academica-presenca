@@ -519,6 +519,12 @@ select, .login-box input {
   flex: 0 0 150px;
 }
 
+@media (max-width: 600px) {
+  .jumbotron-buttons .btn {
+    flex: 1 1 100%;
+  }
+}
+
 .course-badge {
   display: inline-block;
   background: rgba(255, 255, 255, 0.2);
@@ -1112,10 +1118,6 @@ hr {
 }
 
 @media (max-width: 480px) {
-  .jumbotron-buttons .btn {
-    flex: 1 1 100%;
-  }
-  
   button, .btn, .card-btn { 
     font-size: 14px; 
     padding: 10px 14px; 
