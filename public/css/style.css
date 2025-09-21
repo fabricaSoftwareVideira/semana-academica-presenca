@@ -510,7 +510,7 @@ select, .login-box input {
 .jumbotron-buttons {
   display: flex;
   justify-content: center;
-  gap: 15px;
+  gap: 20px;
   flex-wrap: wrap;
   align-items: center;
 }
