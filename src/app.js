@@ -20,6 +20,7 @@ app.use("/eventos", require("./routes/eventos.routes"));
 app.use("/turmas", require("./routes/turmas.routes"));
 app.use("/participacao", require("./routes/participacao.routes"));
 app.use("/qrcode", require("./routes/qrcode.routes"));
+app.use("/pontuacao", require("./routes/pontuacao.routes"));
 app.use("/auth", require("./routes/auth.route"));
 app.use("/users", require("./routes/users.routes"));
 
