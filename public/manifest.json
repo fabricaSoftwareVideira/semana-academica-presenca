@@ -4,8 +4,8 @@
     "description": "Aplicativo da Semana Acadêmica",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#1B3389",
-    "theme_color": "#456DAB",
+    "background_color": "#fff",
+    "theme_color": "#1B3389",
     "orientation": "portrait",
     "icons": [
         {
