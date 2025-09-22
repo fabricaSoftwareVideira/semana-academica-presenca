@@ -18,17 +18,31 @@
     <nav>
         <h1>
             <a href="/" class="logo">
+                <!-- <img src="/img/ifc.webp" alt="Logo" class="logo-img"> -->
                 <span>10°</span>Semana Acadêmica
             </a>
         </h1>
+        <div class="user-info">
+            <% if (user) { %>
+                <span class="username">
+                    <%= user.username %>
+                </span>
+                <a href="/dashboard" class="user-link">
+                    <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="/auth/logout" class="user-link logout-link">
+                    <i class="fa fa-sign-out-alt"></i> Sair
+                </a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
     </nav>
 
     <main class="container">
         <div class="login-box">
             <h2>Primeiro Login</h2>
-            <p style="margin-bottom: 20px; color: #666;">
-                Para sua segurança, crie uma nova senha personalizada.
-            </p>
+            <p>Para sua segurança, crie uma nova senha personalizada.</p>
 
             <% if (typeof error !=='undefined' && error) { %>
                 <div class="alert-message">
