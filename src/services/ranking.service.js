@@ -22,6 +22,14 @@ function listarRankingDasTurmas() {
         };
     }).sort((a, b) => b.pontosTotal - a.pontosTotal);
 
+    // Se duas turmas tiverem o mesmo total, desempatar por pontos de vitórias
+    ranking.sort((a, b) => {
+        if (b.pontosTotal === a.pontosTotal) {
+            return b.pontosVitorias - a.pontosVitorias;
+        }
+        return 0;
+    });
+
     return ranking;
 }
 
