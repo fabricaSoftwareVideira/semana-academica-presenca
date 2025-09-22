@@ -21,6 +21,8 @@ app.use("/turmas", require("./routes/turmas.routes"));
 app.use("/participacao", require("./routes/participacao.routes"));
 app.use("/qrcode", require("./routes/qrcode.routes"));
 app.use("/pontuacao", require("./routes/pontuacao.routes"));
+app.use("/biometria", require("./routes/biometria.routes"));
+app.use("/configurar-biometria", require("./routes/configurar-biometria.routes"));
 app.use("/auth", require("./routes/auth.route"));
 app.use("/users", require("./routes/users.routes"));
 

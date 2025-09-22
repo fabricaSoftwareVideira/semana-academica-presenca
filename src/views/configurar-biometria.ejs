@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurar Biometria - Semana Acadêmica</title>
+    <link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <meta name="theme-color" content="#1B3389">
+    <style>
+        .biometria-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-badge.ativo {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+
+        .status-badge.inativo {
+            background: #ffebee;
+            color: #c62828;
+        }
+
+        .credencial-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .credencial-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .biometria-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .alert.info {
+            background: #e3f2fd;
+            color: #1565c0;
+            border-left: 4px solid #2196f3;
+        }
+
+        .alert.success {
+            background: #e8f5e8;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+
+        .alert.error {
+            background: #ffebee;
+            color: #c62828;
+            border-left: 4px solid #f44336;
+        }
+
+        .alert.warning {
+            background: #fff3e0;
+            color: #ef6c00;
+            border-left: 4px solid #ff9800;
+        }
+
+        .btn-biometria {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            font-size: 14px;
+        }
+
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid currentColor;
+            border-top: 2px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h1>
+            <a href="/" class="logo">
+                <span>10°</span>Semana Acadêmica
+            </a>
+        </h1>
+        <div class="user-info">
+            <% if (typeof user !=='undefined' ) { %>
+                <span class="username">
+                    <%= user.username %>
+                </span>
+                <a href="/dashboard" class="user-link">
+                    <i class="fa fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="/auth/logout" class="user-link logout-link">
+                    <i class="fa fa-sign-out-alt"></i> Sair
+                </a>
+                <% } else { %>
+                    <a href="/auth/login" class="login-btn">Login</a>
+                    <% } %>
+        </div>
+    </nav>
+
+    <header>
+        <div class="container">
+            <div class="breadcrumb">
+                <a href="/">Início</a> &gt;
+                <a href="/dashboard">Dashboard</a> &gt;
+                <span>Configurar Biometria</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <section class="section">
+                <h2 class="section-title">
+                    <div class="section-icon">
+                        <i class="fas fa-fingerprint"></i>
+                    </div>
+                    Autenticação Biométrica
+                </h2>
+
+                <!-- Alerta de suporte -->
+                <div id="suporte-alert" class="alert info" style="display: none;">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Verificando suporte para biometria...</span>
+                </div>
+
+                <!-- Status da biometria -->
+                <div class="biometria-card">
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                        <h3>
+                            <i class="fas fa-shield-alt"></i>
+                            Status da Biometria
+                        </h3>
+                        <span id="status-badge" class="status-badge inativo">
+                            <i class="fas fa-times-circle"></i>
+                            Inativa
+                        </span>
+                    </div>
+
+                    <p style="color: #666; margin-bottom: 20px;">
+                        A autenticação biométrica permite que você faça login usando sua impressão digital,
+                        reconhecimento facial ou PIN do dispositivo, sem precisar digitar sua senha.
+                    </p>
+
+                    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                        <button id="btn-configurar" class="btn btn-primary btn-biometria">
+                            <i class="fas fa-plus"></i>
+                            Configurar Biometria
+                        </button>
+                        <button id="btn-testar" class="btn btn-info btn-biometria" style="display: none;">
+                            <i class="fas fa-key"></i>
+                            Testar Login
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Lista de credenciais -->
+                <div class="biometria-card">
+                    <h3 style="margin-bottom: 16px;">
+                        <i class="fas fa-list"></i>
+                        Minhas Credenciais
+                    </h3>
+
+                    <div id="credenciais-lista">
+                        <p style="color: #666; text-align: center; padding: 20px;">
+                            Nenhuma credencial biométrica configurada
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Informações sobre biometria -->
+                <div class="biometria-card">
+                    <h3 style="margin-bottom: 16px;">
+                        <i class="fas fa-question-circle"></i>
+                        Como Funciona?
+                    </h3>
+
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div>
+                            <h4><i class="fas fa-fingerprint"></i> Impressão Digital</h4>
+                            <p style="font-size: 14px; color: #666;">
+                                Use seu leitor de impressão digital para fazer login rapidamente.
+                            </p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-user-check"></i> Reconhecimento Facial</h4>
+                            <p style="font-size: 14px; color: #666;">
+                                Use a câmera do seu dispositivo para reconhecimento facial.
+                            </p>
+                        </div>
+                        <div>
+                            <h4><i class="fas fa-mobile-alt"></i> PIN do Dispositivo</h4>
+                            <p style="font-size: 14px; color: #666;">
+                                Use o PIN, padrão ou senha do seu dispositivo como alternativa.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-info">
+                <h3>10° Semana Acadêmica</h3>
+            </div>
+            <div class="footer-social">
+                <p class="footer-rights">© 2025 Todos os direitos reservados à Fábrica de Software</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/js/biometria-client.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const biometriaClient = new BiometriaClient();
+            const suporteAlert = document.getElementById('suporte-alert');
+            const statusBadge = document.getElementById('status-badge');
+            const btnConfigurar = document.getElementById('btn-configurar');
+            const btnTestar = document.getElementById('btn-testar');
+            const credenciaisLista = document.getElementById('credenciais-lista');
+
+            // Função para mostrar alertas
+            function mostrarAlerta(tipo, mensagem) {
+                // Remove alertas existentes
+                document.querySelectorAll('.alert:not(#suporte-alert)').forEach(el => el.remove());
+
+                const alert = document.createElement('div');
+                alert.className = `alert ${tipo}`;
+                alert.innerHTML = `
+                    <i class="fas fa-${tipo === 'success' ? 'check-circle' : tipo === 'error' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                    <span>${mensagem}</span>
+                `;
+
+                document.querySelector('.section').insertBefore(alert, document.querySelector('.biometria-card'));
+
+                // Remove automaticamente após 5 segundos
+                setTimeout(() => alert.remove(), 5000);
+            }
+
+            // Verifica suporte inicial
+            suporteAlert.style.display = 'flex';
+
+            const suporteBasico = biometriaClient.isSupported();
+            const suportePlataforma = await biometriaClient.isPlatformAuthenticatorAvailable();
+
+            suporteAlert.style.display = 'none';
+
+            if (!suporteBasico) {
+                mostrarAlerta('error', 'Seu navegador não suporta autenticação biométrica. Atualize para uma versão mais recente.');
+                btnConfigurar.disabled = true;
+                return;
+            }
+
+            if (!suportePlataforma) {
+                mostrarAlerta('warning', 'Nenhum autenticador biométrico encontrado neste dispositivo. Verifique se você tem leitor de impressão digital, câmera ou PIN configurado.');
+                btnConfigurar.disabled = true;
+                return;
+            }
+
+            mostrarAlerta('success', 'Seu dispositivo suporta autenticação biométrica!');
+
+            // Carrega credenciais existentes
+            await carregarCredenciais();
+
+            // Configurar nova biometria
+            btnConfigurar.addEventListener('click', async () => {
+                btnConfigurar.classList.add('loading');
+                btnConfigurar.disabled = true;
+
+                try {
+                    const resultado = await biometriaClient.registrarBiometria();
+
+                    if (resultado.success) {
+                        mostrarAlerta('success', resultado.message);
+                        await carregarCredenciais();
+                    } else {
+                        mostrarAlerta('error', resultado.error);
+                    }
+                } catch (error) {
+                    mostrarAlerta('error', 'Erro inesperado: ' + error.message);
+                } finally {
+                    btnConfigurar.classList.remove('loading');
+                    btnConfigurar.disabled = false;
+                }
+            });
+
+            // Testar login biométrico
+            btnTestar.addEventListener('click', async () => {
+                btnTestar.classList.add('loading');
+                btnTestar.disabled = true;
+
+                try {
+                    const username = '<%= typeof user !== "undefined" ? user.username : "" %>';
+                    const resultado = await biometriaClient.autenticarBiometria(username);
+
+                    if (resultado.success) {
+                        mostrarAlerta('success', 'Login biométrico funcionou! Você seria redirecionado para o dashboard.');
+                    } else {
+                        mostrarAlerta('error', resultado.error);
+                    }
+                } catch (error) {
+                    mostrarAlerta('error', 'Erro inesperado: ' + error.message);
+                } finally {
+                    btnTestar.classList.remove('loading');
+                    btnTestar.disabled = false;
+                }
+            });
+
+            // Carrega e exibe credenciais
+            async function carregarCredenciais() {
+                try {
+                    const resultado = await biometriaClient.listarCredenciais();
+
+                    if (resultado.success && resultado.credentials.length > 0) {
+                        statusBadge.innerHTML = '<i class="fas fa-check-circle"></i> Ativa';
+                        statusBadge.className = 'status-badge ativo';
+                        btnTestar.style.display = 'inline-flex';
+
+                        credenciaisLista.innerHTML = resultado.credentials.map(cred => `
+                            <div class="credencial-item">
+                                <div class="credencial-info">
+                                    <div class="biometria-icon">
+                                        <i class="fas fa-fingerprint"></i>
+                                    </div>
+                                    <div>
+                                        <strong>Credencial Biométrica</strong>
+                                        <br>
+                                        <small style="color: #666;">
+                                            Criada em: ${new Date(cred.createdAt).toLocaleDateString('pt-BR')}
+                                        </small>
+                                    </div>
+                                </div>
+                                <button class="btn btn-danger btn-small" onclick="removerCredencial('${cred.id}')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        `).join('');
+                    } else {
+                        statusBadge.innerHTML = '<i class="fas fa-times-circle"></i> Inativa';
+                        statusBadge.className = 'status-badge inativo';
+                        btnTestar.style.display = 'none';
+
+                        credenciaisLista.innerHTML = `
+                            <p style="color: #666; text-align: center; padding: 20px;">
+                                Nenhuma credencial biométrica configurada
+                            </p>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Erro ao carregar credenciais:', error);
+                }
+            }
+
+            // Remove credencial
+            window.removerCredencial = async (credentialId) => {
+                if (!confirm('Tem certeza que deseja remover esta credencial biométrica?')) {
+                    return;
+                }
+
+                try {
+                    const resultado = await biometriaClient.removerCredencial(credentialId);
+
+                    if (resultado.success) {
+                        mostrarAlerta('success', resultado.message);
+                        await carregarCredenciais();
+                    } else {
+                        mostrarAlerta('error', resultado.error);
+                    }
+                } catch (error) {
+                    mostrarAlerta('error', 'Erro inesperado: ' + error.message);
+                }
+            };
+        });
+    </script>
+</body>
+
+</html>
