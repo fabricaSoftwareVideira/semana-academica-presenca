@@ -1,48 +1,81 @@
 const crypto = require('crypto');
+const { generateRegistrationOptions, generateAuthenticationOptions } = require('@simplewebauthn/server');
 
 class WebAuthnService {
     constructor() {
+        // Para localhost, o rpID deve ser exatamente 'localhost'
+        // Para produção, use apenas o domínio (ex: 'exemplo.com', não 'https://exemplo.com')
         this.rpID = process.env.WEBAUTHN_RP_ID || 'localhost';
         this.rpName = process.env.WEBAUTHN_RP_NAME || 'Semana Acadêmica';
         this.origin = process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000';
+
+        // Validação do rpID para desenvolvimento
+        if (this.origin.includes('localhost') && this.rpID !== 'localhost') {
+            console.warn('⚠️  Para localhost, o WEBAUTHN_RP_ID deve ser "localhost"');
+            this.rpID = 'localhost';
+        }
     }
 
     /**
      * Gera opções para registro de credencial biométrica
      */
     generateRegistrationOptions(user) {
-        const challenge = crypto.randomBytes(32);
-        const userID = crypto.randomBytes(64);
+        try {
+            console.log('🔧 WebAuthn Service - Iniciando geração de opções...');
+            console.log('📋 Dados do usuário:', { id: user.id, username: user.username, name: user.name });
 
-        const options = {
-            challenge: challenge.toString('base64url'),
-            rp: {
-                name: this.rpName,
-                id: this.rpID,
-            },
-            user: {
-                id: userID.toString('base64url'),
-                name: user.username,
-                displayName: user.username,
-            },
-            pubKeyCredParams: [
-                { alg: -7, type: 'public-key' }, // ES256
-                { alg: -257, type: 'public-key' }, // RS256
-            ],
-            authenticatorSelection: {
-                authenticatorAttachment: 'platform', // biometria do dispositivo
-                userVerification: 'required',
-                requireResidentKey: false,
-            },
-            attestation: 'direct',
-            timeout: 60000,
-        };
+            const userID = Buffer.from(user.id.toString());
+            console.log('🆔 User ID Buffer criado:', userID.toString('hex'));
 
-        return {
-            options,
-            challenge: challenge.toString('base64url'),
-            userID: userID.toString('base64url'),
-        };
+            console.log('⚙️  Configurações WebAuthn:');
+            console.log('   📍 RP Name:', this.rpName);
+            console.log('   📍 RP ID:', this.rpID);
+            console.log('   🌐 Origin:', this.origin);
+
+            if (this.rpID === 'localhost') {
+                console.log('⚠️  DEVELOPMENT MODE: Using localhost as Relying Party ID');
+            }
+
+            const registrationOptions = {
+                rpName: this.rpName,
+                rpID: this.rpID,
+                userID,
+                userName: user.username,
+                userDisplayName: user.name || user.username,
+                timeout: 60000,
+                attestationType: 'none',
+                authenticatorSelection: {
+                    authenticatorAttachment: 'platform',
+                    userVerification: 'preferred',
+                },
+                supportedAlgorithmIDs: [-7, -257],
+            };
+
+            console.log('📝 Opções que serão passadas para generateRegistrationOptions:', {
+                ...registrationOptions,
+                userID: userID.toString('hex') // Para visualização
+            });
+
+            const options = generateRegistrationOptions(registrationOptions);
+
+            console.log('✅ Opções geradas com sucesso');
+            console.log('🔑 Challenge gerado:', options.challenge.slice(0, 20) + '...');
+
+            return {
+                options,
+                challenge: options.challenge,
+                userID: userID.toString('base64url'),
+            };
+        } catch (error) {
+            console.error('❌ Error generating registration options:', error);
+            console.error('📊 Error stack:', error.stack);
+            console.error('📊 Error details:', {
+                name: error.name,
+                message: error.message,
+                code: error.code
+            });
+            throw error;
+        }
     }
 
     /**

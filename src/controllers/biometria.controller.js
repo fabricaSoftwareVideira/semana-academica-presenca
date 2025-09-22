@@ -12,14 +12,24 @@ class BiometriaController {
      */
     iniciarRegistroBiometria = async (req, res) => {
         try {
+            console.log('🔧 Iniciando registro de biometria...');
+
             if (!req.user) {
+                console.log('❌ Usuário não autenticado');
                 return res.status(401).json({ error: 'Usuário não autenticado' });
             }
 
+            console.log('👤 Usuário autenticado:', req.user.username);
+
             const user = UserModel.getUserByUsername(req.user.username);
             if (!user) {
+                console.log('❌ Usuário não encontrado no banco');
                 return res.status(404).json({ error: 'Usuário não encontrado' });
             }
+
+            console.log('🔐 Gerando opções de registro...');
+            console.log('📍 RP ID:', this.webauthnService.rpID);
+            console.log('🌐 Origin:', this.webauthnService.origin);
 
             const { options, challenge, userID } = this.webauthnService.generateRegistrationOptions(user);
 
@@ -30,13 +40,17 @@ class BiometriaController {
                 timestamp: Date.now(),
             });
 
+            console.log('✅ Opções geradas com sucesso');
+            console.log('📋 Challenge armazenado para:', req.user.username);
+
             // Remove challenges antigos (cleanup)
             this.cleanupOldChallenges();
 
             res.json({ options });
         } catch (error) {
-            console.error('Erro ao iniciar registro de biometria:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            console.error('❌ Erro ao iniciar registro de biometria:', error);
+            console.error('📊 Stack trace:', error.stack);
+            res.status(500).json({ error: 'Erro interno do servidor: ' + error.message });
         }
     };
 
