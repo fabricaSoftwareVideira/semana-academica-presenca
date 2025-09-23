@@ -133,13 +133,36 @@ class WebAuthnService {
             });
 
             console.log('✅ Verificação concluída:', verification.verified);
+            console.log('📋 Estrutura da verificação:', Object.keys(verification));
+
+            if (verification.registrationInfo) {
+                console.log('📋 Estrutura registrationInfo:', Object.keys(verification.registrationInfo));
+            }
 
             if (verification.verified) {
+                // Vamos verificar o que realmente está disponível
+                const registrationInfo = verification.registrationInfo;
+
+                console.log('📋 registrationInfo completo:', registrationInfo);
+
+                // Na versão mais recente, pode ser credentialPublicKey diretamente na verificação
+                let publicKey;
+                if (registrationInfo?.credentialPublicKey) {
+                    publicKey = Buffer.from(registrationInfo.credentialPublicKey).toString('base64url');
+                } else if (verification.credentialPublicKey) {
+                    publicKey = Buffer.from(verification.credentialPublicKey).toString('base64url');
+                } else {
+                    // Fallback para estrutura do response original
+                    publicKey = response.response.attestationObject
+                        ? Buffer.from(response.response.attestationObject).toString('base64url')
+                        : '';
+                }
+
                 return {
                     verified: true,
                     credentialID: response.id,
-                    credentialPublicKey: Buffer.from(verification.registrationInfo.credentialPublicKey).toString('base64url'),
-                    counter: verification.registrationInfo.counter,
+                    credentialPublicKey: publicKey,
+                    counter: registrationInfo?.counter || 0,
                     transports: response.response.transports || ['internal'],
                 };
             } else {
@@ -163,6 +186,15 @@ class WebAuthnService {
     async verifyAuthenticationResponse(response, expectedChallenge, storedCredential, expectedOrigin = this.origin) {
         try {
             console.log('🔧 WebAuthn Service - Verificando resposta de autenticação...');
+            console.log('📋 storedCredential:', storedCredential);
+
+            // Validações de entrada
+            if (!storedCredential.credentialID) {
+                throw new Error('credentialID não encontrado na credencial armazenada');
+            }
+            if (!storedCredential.credentialPublicKey) {
+                throw new Error('credentialPublicKey não encontrado na credencial armazenada');
+            }
 
             const verification = await verifyAuthenticationResponse({
                 response: response,
@@ -172,13 +204,11 @@ class WebAuthnService {
                 authenticator: {
                     credentialID: new Uint8Array(Buffer.from(storedCredential.credentialID, 'base64url')),
                     credentialPublicKey: new Uint8Array(Buffer.from(storedCredential.credentialPublicKey, 'base64url')),
-                    counter: storedCredential.counter,
-                    transports: storedCredential.transports,
+                    counter: storedCredential.counter || 0,
+                    transports: storedCredential.transports || ['internal'],
                 },
                 requireUserVerification: false,
-            });
-
-            console.log('✅ Verificação de autenticação concluída:', verification.verified);
+            }); console.log('✅ Verificação de autenticação concluída:', verification.verified);
 
             if (verification.verified) {
                 return {
