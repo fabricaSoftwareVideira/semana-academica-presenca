@@ -4,7 +4,7 @@
  */
 class BiometriaClient {
     constructor() {
-        this.baseURL = '/biometria';
+        this.baseURL = '/api/biometria';
     }
 
     /**
@@ -135,9 +135,9 @@ class BiometriaClient {
             // Inicia o registro
             const iniciarResponse = await fetch(`${this.baseURL}/registrar/iniciar`, {
                 method: 'POST',
+                credentials: 'include', // Inclui cookies de sessão
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
             });
 
@@ -163,9 +163,9 @@ class BiometriaClient {
             // Finaliza o registro
             const finalizarResponse = await fetch(`${this.baseURL}/registrar/finalizar`, {
                 method: 'POST',
+                credentials: 'include', // Inclui cookies de sessão
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
                 },
                 body: JSON.stringify({ credential: credentialData }),
             });
@@ -268,8 +268,10 @@ class BiometriaClient {
     async listarCredenciais() {
         try {
             const response = await fetch(`${this.baseURL}/credenciais`, {
+                method: 'GET',
+                credentials: 'include', // Inclui cookies de sessão
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
                 },
             });
 
@@ -294,8 +296,9 @@ class BiometriaClient {
         try {
             const response = await fetch(`${this.baseURL}/credenciais/${credentialId}`, {
                 method: 'DELETE',
+                credentials: 'include', // Inclui cookies de sessão
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                    'Content-Type': 'application/json',
                 },
             });
 

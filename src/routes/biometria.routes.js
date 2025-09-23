@@ -13,25 +13,4 @@ router.delete('/credenciais/:credentialId', ensureAuthenticated, biometriaContro
 router.post('/autenticar/iniciar', biometriaController.iniciarAutenticacaoBiometria);
 router.post('/autenticar/finalizar', biometriaController.finalizarAutenticacaoBiometria);
 
-// Debug temporário
-router.get('/debug/:username', (req, res) => {
-    const UserModel = require('../models/user.model');
-    const { username } = req.params;
-
-    console.log('🐛 DEBUG - Verificando usuário:', username);
-    const user = UserModel.getUserByUsername(username);
-    const credentials = UserModel.getUserWebAuthnCredentials(username);
-
-    res.json({
-        userExists: !!user,
-        hasWebAuthnProperty: !!user?.webauthnCredentials,
-        credentialsCount: credentials.length,
-        credentials: credentials.map(c => ({
-            id: c.credentialID,
-            createdAt: c.createdAt,
-            transports: c.transports
-        }))
-    });
-});
-
-module.exports = router;
+module.exports = router; module.exports = router;
