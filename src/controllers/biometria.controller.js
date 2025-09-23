@@ -112,22 +112,37 @@ class BiometriaController {
      */
     iniciarAutenticacaoBiometria = async (req, res) => {
         try {
+            console.log('🔧 Iniciando autenticação biométrica...');
             const { username } = req.body;
 
             if (!username) {
+                console.log('❌ Username não fornecido');
                 return res.status(400).json({ error: 'Nome de usuário é obrigatório' });
             }
 
             console.log('🔍 Procurando credenciais para usuário:', username);
+
+            // Validar se o usuário existe
+            const user = UserModel.getUserByUsername(username);
+            if (!user) {
+                console.log('❌ Usuário não encontrado:', username);
+                return res.status(404).json({ error: 'Usuário não encontrado' });
+            }
+
             const credentials = UserModel.getUserWebAuthnCredentials(username);
             console.log('📋 Credenciais encontradas:', credentials.length);
-            console.log('📋 Detalhes das credenciais:', credentials);
 
             if (credentials.length === 0) {
+                console.log('❌ Nenhuma credencial biométrica encontrada');
                 return res.status(400).json({
                     error: 'Nenhuma credencial biométrica encontrada para este usuário'
                 });
             }
+
+            console.log('📋 Detalhes das credenciais que serão processadas:');
+            credentials.forEach((cred, index) => {
+                console.log(`   ${index}: ID=${cred.credentialID?.substring(0, 20)}..., transports=${cred.transports}`);
+            });
 
             const { options, challenge } = await this.webauthnService.generateAuthenticationOptions(credentials);
 
@@ -138,13 +153,19 @@ class BiometriaController {
                 timestamp: Date.now(),
             });
 
+            console.log('✅ Challenge armazenado para autenticação:', username);
+
             // Remove challenges antigos
             this.cleanupOldChallenges();
 
             res.json({ options });
         } catch (error) {
-            console.error('Erro ao iniciar autenticação biométrica:', error);
-            res.status(500).json({ error: 'Erro interno do servidor' });
+            console.error('❌ Erro ao iniciar autenticação biométrica:', error);
+            console.error('📊 Stack trace:', error.stack);
+            res.status(500).json({
+                error: 'Erro interno do servidor: ' + error.message,
+                details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+            });
         }
     };
 

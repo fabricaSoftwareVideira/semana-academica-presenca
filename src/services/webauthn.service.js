@@ -9,10 +9,56 @@ class WebAuthnService {
         this.rpName = process.env.WEBAUTHN_RP_NAME || 'Semana Acadêmica';
         this.origin = process.env.WEBAUTHN_ORIGIN || 'http://localhost:3000';
 
-        // Validação do rpID para desenvolvimento
-        if (this.origin.includes('localhost') && this.rpID !== 'localhost') {
+        // Validação e configuração automática baseada no ambiente
+        this.setupEnvironment();
+
+        console.log('🔧 WebAuthn Service inicializado:');
+        console.log('   📍 RP ID:', this.rpID);
+        console.log('   📍 RP Name:', this.rpName);
+        console.log('   🌐 Origin:', this.origin);
+        console.log('   🔧 Environment:', process.env.NODE_ENV || 'development');
+    }
+
+    setupEnvironment() {
+        const isProduction = process.env.NODE_ENV === 'production';
+        const isLocalhost = this.origin.includes('localhost') || this.origin.includes('127.0.0.1');
+
+        // Validação para desenvolvimento
+        if (!isProduction && isLocalhost && this.rpID !== 'localhost') {
             console.warn('⚠️  Para localhost, o WEBAUTHN_RP_ID deve ser "localhost"');
             this.rpID = 'localhost';
+        }
+
+        // Validação para produção
+        if (isProduction) {
+            if (isLocalhost) {
+                console.error('❌ ERRO: Configuração de localhost em produção!');
+                throw new Error('Configuração WebAuthn inválida para produção');
+            }
+
+            // Extrair domínio do origin para rpID
+            try {
+                const url = new URL(this.origin);
+                const domain = url.hostname;
+                if (this.rpID !== domain) {
+                    console.warn(`⚠️  Ajustando RP ID de "${this.rpID}" para "${domain}"`);
+                    this.rpID = domain;
+                }
+            } catch (error) {
+                console.error('❌ Origin inválido:', this.origin);
+                throw new Error('WEBAUTHN_ORIGIN inválido');
+            }
+        }
+
+        // Validação final
+        if (!this.rpID || typeof this.rpID !== 'string') {
+            throw new Error('WEBAUTHN_RP_ID é obrigatório e deve ser uma string');
+        }
+        if (!this.rpName || typeof this.rpName !== 'string') {
+            throw new Error('WEBAUTHN_RP_NAME é obrigatório e deve ser uma string');
+        }
+        if (!this.origin || typeof this.origin !== 'string') {
+            throw new Error('WEBAUTHN_ORIGIN é obrigatório e deve ser uma string');
         }
     }
 
@@ -94,37 +140,59 @@ class WebAuthnService {
             console.log('📋 allowCredentials recebidos:', allowCredentials);
             console.log('📋 Número de credenciais:', allowCredentials.length);
 
+            // Validação de entrada
+            if (!Array.isArray(allowCredentials)) {
+                throw new Error('allowCredentials deve ser um array');
+            }
+
             // Vamos verificar cada credencial
+            const processedCredentials = [];
             allowCredentials.forEach((cred, index) => {
                 console.log(`📋 Credencial ${index}:`, {
                     credentialID: typeof cred.credentialID,
-                    credentialIDValue: cred.credentialID,
+                    credentialIDValue: cred.credentialID ? cred.credentialID.substring(0, 20) + '...' : 'undefined',
                     transports: cred.transports
                 });
-            });
 
-            const options = await generateAuthenticationOptions({
-                rpID: this.rpID,
-                allowCredentials: allowCredentials.map(cred => {
-                    // Verificação de tipo para evitar erro
-                    let credentialID;
+                // Validações críticas
+                if (!cred.credentialID) {
+                    console.error(`❌ Credencial ${index} não tem credentialID`);
+                    throw new Error(`Credencial ${index} não possui credentialID válido`);
+                }
+
+                // Verificação de tipo para evitar erro
+                let credentialID;
+                try {
                     if (typeof cred.credentialID === 'string') {
+                        if (cred.credentialID.trim() === '') {
+                            throw new Error('credentialID é uma string vazia');
+                        }
                         credentialID = new Uint8Array(Buffer.from(cred.credentialID, 'base64url'));
                     } else if (cred.credentialID instanceof Uint8Array) {
                         credentialID = cred.credentialID;
                     } else if (cred.credentialID instanceof Buffer) {
                         credentialID = new Uint8Array(cred.credentialID);
                     } else {
-                        console.error('❌ Tipo de credentialID não suportado:', typeof cred.credentialID);
                         throw new Error(`Tipo de credentialID inválido: ${typeof cred.credentialID}`);
                     }
 
-                    return {
+                    processedCredentials.push({
                         id: credentialID,
                         type: 'public-key',
                         transports: cred.transports || ['internal'],
-                    };
-                }),
+                    });
+                } catch (error) {
+                    console.error(`❌ Erro ao processar credencial ${index}:`, error.message);
+                    console.error('   📋 Credencial problemática:', cred);
+                    throw new Error(`Erro ao processar credencial ${index}: ${error.message}`);
+                }
+            });
+
+            console.log('✅ Credenciais processadas:', processedCredentials.length);
+
+            const options = await generateAuthenticationOptions({
+                rpID: this.rpID,
+                allowCredentials: processedCredentials,
                 userVerification: 'preferred',
                 timeout: 60000,
             });
@@ -137,6 +205,8 @@ class WebAuthnService {
             };
         } catch (error) {
             console.error('❌ Error generating authentication options:', error);
+            console.error('📊 Error stack:', error.stack);
+            console.error('📊 Input data:', { allowCredentials });
             throw error;
         }
     }

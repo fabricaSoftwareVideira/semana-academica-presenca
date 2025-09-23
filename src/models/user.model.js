@@ -54,20 +54,51 @@ function addWebAuthnCredential(username, credential) {
 
 function getUserWebAuthnCredentials(username) {
     console.log('🔍 UserModel - Buscando credenciais para:', username);
+
+    if (!username || typeof username !== 'string') {
+        console.error('❌ Username inválido:', username);
+        return [];
+    }
+
     const user = getUserByUsername(username);
     console.log('👤 Usuário encontrado:', !!user);
     console.log('🔐 Propriedade webauthnCredentials existe:', !!user?.webauthnCredentials);
     console.log('🔐 Número de credenciais:', user?.webauthnCredentials?.length || 0);
 
-    if (user?.webauthnCredentials) {
-        console.log('📋 Detalhes das credenciais:', user.webauthnCredentials.map(c => ({
-            id: c.credentialID,
+    if (!user || !user.webauthnCredentials || !Array.isArray(user.webauthnCredentials)) {
+        console.log('ℹ️ Nenhuma credencial encontrada ou estrutura inválida');
+        return [];
+    }
+
+    // Validar e filtrar credenciais válidas
+    const validCredentials = user.webauthnCredentials.filter((cred, index) => {
+        if (!cred.credentialID) {
+            console.warn(`⚠️ Credencial ${index} sem credentialID`);
+            return false;
+        }
+        if (typeof cred.credentialID !== 'string' || cred.credentialID.trim() === '') {
+            console.warn(`⚠️ Credencial ${index} com credentialID inválido:`, typeof cred.credentialID);
+            return false;
+        }
+        if (!cred.credentialPublicKey) {
+            console.warn(`⚠️ Credencial ${index} sem credentialPublicKey`);
+            return false;
+        }
+        return true;
+    });
+
+    console.log('✅ Credenciais válidas:', validCredentials.length);
+
+    if (validCredentials.length > 0) {
+        console.log('📋 Detalhes das credenciais válidas:', validCredentials.map(c => ({
+            id: c.credentialID.substring(0, 20) + '...',
             hasPublicKey: !!c.credentialPublicKey,
-            transports: c.transports
+            transports: c.transports,
+            counter: c.counter
         })));
     }
 
-    return user?.webauthnCredentials || [];
+    return validCredentials;
 }
 
 module.exports = {
