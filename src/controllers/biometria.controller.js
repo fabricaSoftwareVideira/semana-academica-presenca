@@ -68,7 +68,7 @@ class BiometriaController {
                 return res.status(400).json({ error: 'Challenge não encontrado ou expirado' });
             }
 
-            const verification = this.webauthnService.verifyRegistrationResponse(
+            const verification = await this.webauthnService.verifyRegistrationResponse(
                 credential,
                 pendingChallenge.challenge
             );
@@ -165,7 +165,7 @@ class BiometriaController {
                 return res.status(400).json({ error: 'Credencial não reconhecida' });
             }
 
-            const verification = this.webauthnService.verifyAuthenticationResponse(
+            const verification = await this.webauthnService.verifyAuthenticationResponse(
                 credential,
                 pendingChallenge.challenge,
                 storedCredential

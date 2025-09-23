@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { generateRegistrationOptions, generateAuthenticationOptions } = require('@simplewebauthn/server');
+const { generateRegistrationOptions, generateAuthenticationOptions, verifyRegistrationResponse, verifyAuthenticationResponse } = require('@simplewebauthn/server');
 
 class WebAuthnService {
     constructor() {
@@ -118,41 +118,38 @@ class WebAuthnService {
     /**
      * Verifica a resposta de registro
      */
-    verifyRegistrationResponse(response, expectedChallenge, expectedOrigin = this.origin) {
+    async verifyRegistrationResponse(response, expectedChallenge, expectedOrigin = this.origin) {
         try {
-            // Validações básicas
-            if (!response.id || !response.rawId || !response.response) {
-                throw new Error('Resposta de registro inválida');
+            console.log('🔧 WebAuthn Service - Verificando resposta de registro...');
+            console.log('📋 Response ID:', response.id);
+            console.log('🔑 Expected Challenge:', expectedChallenge.slice(0, 20) + '...');
+
+            const verification = await verifyRegistrationResponse({
+                response: response,
+                expectedChallenge: expectedChallenge,
+                expectedOrigin: expectedOrigin,
+                expectedRPID: this.rpID,
+                requireUserVerification: false,
+            });
+
+            console.log('✅ Verificação concluída:', verification.verified);
+
+            if (verification.verified) {
+                return {
+                    verified: true,
+                    credentialID: response.id,
+                    credentialPublicKey: Buffer.from(verification.registrationInfo.credentialPublicKey).toString('base64url'),
+                    counter: verification.registrationInfo.counter,
+                    transports: response.response.transports || ['internal'],
+                };
+            } else {
+                return {
+                    verified: false,
+                    error: 'Verificação falhou',
+                };
             }
-
-            // Decodifica os dados
-            const clientDataJSON = JSON.parse(
-                Buffer.from(response.response.clientDataJSON, 'base64url').toString()
-            );
-
-            // Verifica o challenge
-            if (clientDataJSON.challenge !== expectedChallenge) {
-                throw new Error('Challenge inválido');
-            }
-
-            // Verifica a origem
-            if (clientDataJSON.origin !== expectedOrigin) {
-                throw new Error('Origem inválida');
-            }
-
-            // Verifica o tipo
-            if (clientDataJSON.type !== 'webauthn.create') {
-                throw new Error('Tipo de operação inválido');
-            }
-
-            return {
-                verified: true,
-                credentialID: response.id,
-                credentialPublicKey: response.response.attestationObject,
-                counter: 0,
-                transports: response.response.getTransports?.() || ['internal'],
-            };
         } catch (error) {
+            console.error('❌ Erro na verificação de registro:', error);
             return {
                 verified: false,
                 error: error.message,
@@ -163,44 +160,40 @@ class WebAuthnService {
     /**
      * Verifica a resposta de autenticação
      */
-    verifyAuthenticationResponse(response, expectedChallenge, storedCredential, expectedOrigin = this.origin) {
+    async verifyAuthenticationResponse(response, expectedChallenge, storedCredential, expectedOrigin = this.origin) {
         try {
-            // Validações básicas
-            if (!response.id || !response.rawId || !response.response) {
-                throw new Error('Resposta de autenticação inválida');
+            console.log('🔧 WebAuthn Service - Verificando resposta de autenticação...');
+
+            const verification = await verifyAuthenticationResponse({
+                response: response,
+                expectedChallenge: expectedChallenge,
+                expectedOrigin: expectedOrigin,
+                expectedRPID: this.rpID,
+                authenticator: {
+                    credentialID: new Uint8Array(Buffer.from(storedCredential.credentialID, 'base64url')),
+                    credentialPublicKey: new Uint8Array(Buffer.from(storedCredential.credentialPublicKey, 'base64url')),
+                    counter: storedCredential.counter,
+                    transports: storedCredential.transports,
+                },
+                requireUserVerification: false,
+            });
+
+            console.log('✅ Verificação de autenticação concluída:', verification.verified);
+
+            if (verification.verified) {
+                return {
+                    verified: true,
+                    credentialID: response.id,
+                    newCounter: verification.authenticationInfo.newCounter,
+                };
+            } else {
+                return {
+                    verified: false,
+                    error: 'Verificação de autenticação falhou',
+                };
             }
-
-            // Decodifica os dados
-            const clientDataJSON = JSON.parse(
-                Buffer.from(response.response.clientDataJSON, 'base64url').toString()
-            );
-
-            // Verifica o challenge
-            if (clientDataJSON.challenge !== expectedChallenge) {
-                throw new Error('Challenge inválido');
-            }
-
-            // Verifica a origem
-            if (clientDataJSON.origin !== expectedOrigin) {
-                throw new Error('Origem inválida');
-            }
-
-            // Verifica o tipo
-            if (clientDataJSON.type !== 'webauthn.get') {
-                throw new Error('Tipo de operação inválido');
-            }
-
-            // Verifica se o credential ID corresponde
-            if (response.id !== storedCredential.credentialID) {
-                throw new Error('Credencial não reconhecida');
-            }
-
-            return {
-                verified: true,
-                credentialID: response.id,
-                newCounter: parseInt(response.response.signature) || storedCredential.counter + 1,
-            };
         } catch (error) {
+            console.error('❌ Erro na verificação de autenticação:', error);
             return {
                 verified: false,
                 error: error.message,
