@@ -19,13 +19,13 @@ class WebAuthnService {
     /**
      * Gera opções para registro de credencial biométrica
      */
-    generateRegistrationOptions(user) {
+    async generateRegistrationOptions(user) {
         try {
             console.log('🔧 WebAuthn Service - Iniciando geração de opções...');
             console.log('📋 Dados do usuário:', { id: user.id, username: user.username, name: user.name });
 
-            const userID = Buffer.from(user.id.toString());
-            console.log('🆔 User ID Buffer criado:', userID.toString('hex'));
+            const userID = new Uint8Array(Buffer.from(user.id.toString()));
+            console.log('🆔 User ID Buffer criado:', Array.from(userID));
 
             console.log('⚙️  Configurações WebAuthn:');
             console.log('   📍 RP Name:', this.rpName);
@@ -53,18 +53,25 @@ class WebAuthnService {
 
             console.log('📝 Opções que serão passadas para generateRegistrationOptions:', {
                 ...registrationOptions,
-                userID: userID.toString('hex') // Para visualização
+                userID: Array.from(userID) // Para visualização
             });
 
-            const options = generateRegistrationOptions(registrationOptions);
+            const options = await generateRegistrationOptions(registrationOptions);
 
             console.log('✅ Opções geradas com sucesso');
-            console.log('🔑 Challenge gerado:', options.challenge.slice(0, 20) + '...');
+            console.log('� Estrutura das opções:', Object.keys(options));
+
+            if (options.challenge) {
+                console.log('�🔑 Challenge gerado:', options.challenge.slice(0, 20) + '...');
+            } else {
+                console.log('⚠️ Challenge não encontrado nas opções!');
+                console.log('📋 Opções completas:', options);
+            }
 
             return {
                 options,
                 challenge: options.challenge,
-                userID: userID.toString('base64url'),
+                userID: Buffer.from(userID).toString('base64url'),
             };
         } catch (error) {
             console.error('❌ Error generating registration options:', error);
@@ -81,24 +88,31 @@ class WebAuthnService {
     /**
      * Gera opções para autenticação biométrica
      */
-    generateAuthenticationOptions(allowCredentials = []) {
-        const challenge = crypto.randomBytes(32);
+    async generateAuthenticationOptions(allowCredentials = []) {
+        try {
+            console.log('🔧 WebAuthn Service - Gerando opções de autenticação...');
 
-        const options = {
-            challenge: challenge.toString('base64url'),
-            allowCredentials: allowCredentials.map(cred => ({
-                id: cred.credentialID,
-                type: 'public-key',
-                transports: cred.transports || ['internal'],
-            })),
-            userVerification: 'required',
-            timeout: 60000,
-        };
+            const options = await generateAuthenticationOptions({
+                rpID: this.rpID,
+                allowCredentials: allowCredentials.map(cred => ({
+                    id: new Uint8Array(Buffer.from(cred.credentialID, 'base64url')),
+                    type: 'public-key',
+                    transports: cred.transports || ['internal'],
+                })),
+                userVerification: 'preferred',
+                timeout: 60000,
+            });
 
-        return {
-            options,
-            challenge: challenge.toString('base64url'),
-        };
+            console.log('✅ Opções de autenticação geradas com sucesso');
+
+            return {
+                options,
+                challenge: options.challenge,
+            };
+        } catch (error) {
+            console.error('❌ Error generating authentication options:', error);
+            throw error;
+        }
     }
 
     /**

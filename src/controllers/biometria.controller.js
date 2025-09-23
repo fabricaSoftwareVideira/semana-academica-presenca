@@ -31,9 +31,7 @@ class BiometriaController {
             console.log('📍 RP ID:', this.webauthnService.rpID);
             console.log('🌐 Origin:', this.webauthnService.origin);
 
-            const { options, challenge, userID } = this.webauthnService.generateRegistrationOptions(user);
-
-            // Armazena o challenge temporariamente
+            const { options, challenge, userID } = await this.webauthnService.generateRegistrationOptions(user);            // Armazena o challenge temporariamente
             this.pendingChallenges.set(req.user.username, {
                 challenge,
                 userID,
@@ -122,7 +120,7 @@ class BiometriaController {
                 });
             }
 
-            const { options, challenge } = this.webauthnService.generateAuthenticationOptions(credentials);
+            const { options, challenge } = await this.webauthnService.generateAuthenticationOptions(credentials);
 
             // Armazena o challenge temporariamente
             this.pendingChallenges.set(`auth_${username}`, {
