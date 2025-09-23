@@ -22,7 +22,8 @@ function rankingTurmasHandler(req, res) {
 }
 
 function rankingPublico() {
-    return listarRankingPublicoDasTurmas();
+    const { ranking, vitoriasOrdenadas } = listarRankingPublicoDasTurmas();
+    return { ranking, vitoriasOrdenadas };
 }
 
 module.exports = { rankingAlunosHandler, rankingTurmasHandler, rankingPublico };

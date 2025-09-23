@@ -29,7 +29,6 @@ function listarRankingDasTurmas() {
         }
         return 0;
     });
-
     return ranking;
 }
 
