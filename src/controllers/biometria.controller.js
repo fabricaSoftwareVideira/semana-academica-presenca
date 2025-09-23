@@ -118,7 +118,10 @@ class BiometriaController {
                 return res.status(400).json({ error: 'Nome de usuário é obrigatório' });
             }
 
+            console.log('🔍 Procurando credenciais para usuário:', username);
             const credentials = UserModel.getUserWebAuthnCredentials(username);
+            console.log('📋 Credenciais encontradas:', credentials.length);
+            console.log('📋 Detalhes das credenciais:', credentials);
 
             if (credentials.length === 0) {
                 return res.status(400).json({
@@ -223,7 +226,10 @@ class BiometriaController {
                 return res.status(401).json({ error: 'Usuário não autenticado' });
             }
 
+            console.log('📋 Listando credenciais para usuário:', req.user.username);
             const credentials = UserModel.getUserWebAuthnCredentials(req.user.username);
+            console.log('📋 Credenciais encontradas na listagem:', credentials.length);
+            console.log('📋 Detalhes das credenciais encontradas:', credentials);
 
             // Remove dados sensíveis antes de enviar
             const safeCredentials = credentials.map(cred => ({
@@ -249,15 +255,24 @@ class BiometriaController {
             }
 
             const { credentialId } = req.params;
+            console.log('🗑️ Tentando remover credencial:', credentialId, 'para usuário:', req.user.username);
+
             const user = UserModel.getUserByUsername(req.user.username);
+            console.log('👤 Usuário encontrado:', !!user);
+            console.log('🔐 Credenciais do usuário:', user?.webauthnCredentials?.length || 0);
 
             if (!user.webauthnCredentials) {
                 return res.status(404).json({ error: 'Nenhuma credencial encontrada' });
             }
 
+            console.log('📋 Credenciais antes da remoção:', user.webauthnCredentials.map(c => c.credentialID));
+
             const updatedCredentials = user.webauthnCredentials.filter(
                 cred => cred.credentialID !== credentialId
             );
+
+            console.log('📋 Credenciais após filtro:', updatedCredentials.length);
+            console.log('📋 CredentialId procurado:', credentialId);
 
             UserModel.updateUser(req.user.username, {
                 webauthnCredentials: updatedCredentials

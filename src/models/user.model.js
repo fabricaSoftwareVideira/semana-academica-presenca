@@ -53,7 +53,20 @@ function addWebAuthnCredential(username, credential) {
 }
 
 function getUserWebAuthnCredentials(username) {
+    console.log('🔍 UserModel - Buscando credenciais para:', username);
     const user = getUserByUsername(username);
+    console.log('👤 Usuário encontrado:', !!user);
+    console.log('🔐 Propriedade webauthnCredentials existe:', !!user?.webauthnCredentials);
+    console.log('🔐 Número de credenciais:', user?.webauthnCredentials?.length || 0);
+
+    if (user?.webauthnCredentials) {
+        console.log('📋 Detalhes das credenciais:', user.webauthnCredentials.map(c => ({
+            id: c.credentialID,
+            hasPublicKey: !!c.credentialPublicKey,
+            transports: c.transports
+        })));
+    }
+
     return user?.webauthnCredentials || [];
 }
 
