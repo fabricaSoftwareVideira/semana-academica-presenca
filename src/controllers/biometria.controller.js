@@ -79,12 +79,18 @@ class BiometriaController {
 
             // Salva a credencial no usuário
             const credentialData = {
-                credentialID: verification.credentialID,
+                credentialID: String(verification.credentialID), // Garantir que seja string
                 credentialPublicKey: verification.credentialPublicKey,
                 counter: verification.counter,
                 transports: verification.transports,
                 userID: pendingChallenge.userID,
             };
+
+            console.log('💾 Salvando credencial:', {
+                credentialID: typeof credentialData.credentialID,
+                credentialIDValue: credentialData.credentialID,
+                transports: credentialData.transports
+            });
 
             UserModel.addWebAuthnCredential(req.user.username, credentialData);
 

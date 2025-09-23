@@ -91,14 +91,40 @@ class WebAuthnService {
     async generateAuthenticationOptions(allowCredentials = []) {
         try {
             console.log('🔧 WebAuthn Service - Gerando opções de autenticação...');
+            console.log('📋 allowCredentials recebidos:', allowCredentials);
+            console.log('📋 Número de credenciais:', allowCredentials.length);
+
+            // Vamos verificar cada credencial
+            allowCredentials.forEach((cred, index) => {
+                console.log(`📋 Credencial ${index}:`, {
+                    credentialID: typeof cred.credentialID,
+                    credentialIDValue: cred.credentialID,
+                    transports: cred.transports
+                });
+            });
 
             const options = await generateAuthenticationOptions({
                 rpID: this.rpID,
-                allowCredentials: allowCredentials.map(cred => ({
-                    id: new Uint8Array(Buffer.from(cred.credentialID, 'base64url')),
-                    type: 'public-key',
-                    transports: cred.transports || ['internal'],
-                })),
+                allowCredentials: allowCredentials.map(cred => {
+                    // Verificação de tipo para evitar erro
+                    let credentialID;
+                    if (typeof cred.credentialID === 'string') {
+                        credentialID = new Uint8Array(Buffer.from(cred.credentialID, 'base64url'));
+                    } else if (cred.credentialID instanceof Uint8Array) {
+                        credentialID = cred.credentialID;
+                    } else if (cred.credentialID instanceof Buffer) {
+                        credentialID = new Uint8Array(cred.credentialID);
+                    } else {
+                        console.error('❌ Tipo de credentialID não suportado:', typeof cred.credentialID);
+                        throw new Error(`Tipo de credentialID inválido: ${typeof cred.credentialID}`);
+                    }
+
+                    return {
+                        id: credentialID,
+                        type: 'public-key',
+                        transports: cred.transports || ['internal'],
+                    };
+                }),
                 userVerification: 'preferred',
                 timeout: 60000,
             });
