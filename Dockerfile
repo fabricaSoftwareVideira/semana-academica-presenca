@@ -20,7 +20,9 @@ RUN npm ci --only=production
 
 COPY . .
 
-EXPOSE 3000
+# Expose port from .env
+ARG PORT
+EXPOSE ${PORT}
 
 ENV NODE_ENV=production
 
