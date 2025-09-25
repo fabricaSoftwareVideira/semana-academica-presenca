@@ -3,12 +3,12 @@ const AlunoRepository = require("../repositories/aluno.repository.js");
 const EventoRepository = require("../repositories/evento.repository.js");
 const TurmaRepository = require("../repositories/turma.repository.js");
 const ValidacaoService = require('../services/validacao.service.js');
-const { validarCancelamentoVitoriaChain, validarVitoriaChain } = require('../services/vitoria.validation.js');
+const { validarCancelamentoVitoriaChain, validarVitoriaChain, calcularPontos, obterTextoColocacao } = require('../services/vitoria.validation.js');
 const { userView } = require('../utils/user-view.utils.js');
 const { isAdmin } = require('../utils/auth.utils.js');
 const { validarCancelamentoParticipacaoChain } = require('../services/cancelamento-participacao.validation.js');
 
-// ---------------- PARTICIPAÇÃO ----------------
+// ---------------- PARTICIPAÇÃO INDIVIDUAL (para alunos) ----------------
 function adicionarParticipacao(aluno, evento, user) {
     const alunos = AlunoRepository.getAll();
 
@@ -36,7 +36,7 @@ function adicionarParticipacao(aluno, evento, user) {
     return { success: true, data: { aluno: alunos[idx] } };
 }
 
-function registrarParticipacao(matricula, eventoId, user) {
+function registrarParticipacaoIndividual(matricula, eventoId, user) {
     const resultadoValidacao = ValidacaoService.validarParticipacaoChain({ matricula, eventoId });
 
     if (!resultadoValidacao.success) return resultadoValidacao;
@@ -54,7 +54,7 @@ function participarHandler(req, res) {
         return res.status(400).json({ success: false, message: "Aluno não encontrado" });
     }
 
-    const resultado = registrarParticipacao(aluno.matricula, eventoId, req.user);
+    const resultado = registrarParticipacaoIndividual(aluno.matricula, eventoId, req.user);
 
     if (!resultado.success) {
         return res.status(400).json(resultado);
@@ -63,12 +63,12 @@ function participarHandler(req, res) {
     res.json(resultado);
 }
 
-// ---------------- VITÓRIAS ----------------
+// ---------------- VITÓRIAS (sistema atualizado para múltiplas colocações) ----------------
 function registrarVitoria(matricula, eventoId, posicao) {
     const resultadoValidacao = validarVitoriaChain({ matricula, eventoId, posicao });
     if (!resultadoValidacao.success) return resultadoValidacao;
 
-    const { turma, evento } = resultadoValidacao.data;
+    const { turma, evento, vitoriaConfig } = resultadoValidacao.data;
     const turmas = TurmaRepository.getAll();
 
     const idx = turmas.findIndex(t => t.id === turma.id);
@@ -76,25 +76,45 @@ function registrarVitoria(matricula, eventoId, posicao) {
         return { success: false, message: "Turma não encontrada para salvar" };
     }
 
-    let pontos = 0;
-    if (posicao === "1") pontos = evento.primeiroLugar;
-    else if (posicao === "2") pontos = evento.segundoLugar;
-    else if (posicao === "3") pontos = evento.terceiroLugar;
+    // Usar configuração de vitória validada
+    const pontos = vitoriaConfig ? vitoriaConfig.pontos : calcularPontos(evento, posicao);
+    const colocacao = posicao === 'participacao' ? 'participacao' : parseInt(posicao);
 
+    // Atualizar pontos da turma
     turmas[idx].pontos = (turmas[idx].pontos || 0) + pontos;
 
+    // Adicionar vitória
     if (!Array.isArray(turmas[idx].vitorias)) turmas[idx].vitorias = [];
-    turmas[idx].vitorias.push({
+
+    const novaVitoria = {
         eventoId: evento.id,
         eventoNome: evento.nome,
-        posicao: parseInt(posicao),
-        pontos,
-        data: new Date().toISOString()
-    });
+        posicao: colocacao,
+        pontos: pontos,
+        data: new Date().toISOString(),
+        tipoRegistro: posicao === 'participacao' ? 'participacao' : 'vitoria'
+    };
+
+    // Adicionar detalhes específicos da vitória se não for participação
+    if (posicao !== 'participacao' && vitoriaConfig) {
+        novaVitoria.detalhesVitoria = {
+            colocacao: vitoriaConfig.colocacao,
+            descricao: obterTextoColocacao(posicao)
+        };
+    }
+
+    turmas[idx].vitorias.push(novaVitoria);
 
     TurmaRepository.saveAll(turmas);
 
-    return { success: true, data: { turma: turmas[idx] } };
+    return {
+        success: true,
+        data: {
+            turma: turmas[idx],
+            vitoria: novaVitoria,
+            pontosGanhos: pontos
+        }
+    };
 }
 
 function registrarVitoriaHandler(req, res) {
@@ -112,7 +132,17 @@ function registrarVitoriaHandler(req, res) {
         return res.status(400).json(resultado);
     }
 
-    res.json(resultado);
+    // Resposta mais informativa
+    const { vitoria, pontosGanhos } = resultado.data;
+    const textoColocacao = obterTextoColocacao(posicao);
+
+    res.json({
+        success: true,
+        message: posicao === 'participacao'
+            ? `✅ Participação registrada! Turma ganhou ${pontosGanhos} pontos.`
+            : `🏆 Vitória registrada! Turma conquistou ${textoColocacao} e ganhou ${pontosGanhos} pontos!`,
+        data: resultado.data
+    });
 }
 
 // ---------------- CANCELAMENTOS ----------------
@@ -150,12 +180,20 @@ function cancelarVitoria(matricula, eventoId, posicao) {
         return { success: false, message: "Turma não encontrada para salvar" };
     }
 
+    // Remover vitória e ajustar pontos
     turmas[idx].vitorias.splice(vitoriaIndex, 1);
     turmas[idx].pontos = Math.max(0, (turmas[idx].pontos || 0) - vitoria.pontos);
 
     TurmaRepository.saveAll(turmas);
 
-    return { success: true, data: { turma: turmas[idx] } };
+    return {
+        success: true,
+        data: {
+            turma: turmas[idx],
+            vitoriaRemovida: vitoria,
+            pontosSubtraidos: vitoria.pontos
+        }
+    };
 }
 
 function cancelarParticipacaoHandler(req, res) {
@@ -191,7 +229,17 @@ function cancelarVitoriaHandler(req, res) {
         return res.status(400).json(resultado);
     }
 
-    res.json(resultado);
+    // Resposta mais informativa para cancelamento
+    const { vitoriaRemovida, pontosSubtraidos } = resultado.data;
+    const textoColocacao = obterTextoColocacao(posicao);
+
+    res.json({
+        success: true,
+        message: posicao === 'participacao'
+            ? `❌ Participação cancelada. ${pontosSubtraidos} pontos removidos.`
+            : `❌ Vitória cancelada. ${textoColocacao} removida e ${pontosSubtraidos} pontos subtraídos.`,
+        data: resultado.data
+    });
 }
 
 // ---------------- PAGE ----------------
@@ -226,7 +274,7 @@ function registrarParticipacaoPage(req, res) {
     res.render("registrar-participacao", { user: userView(req.user), alunos, eventos });
 }
 
-// ---------------- NOVO REGISTRO DE PARTICIPAÇÃO ----------------
+// ---------------- REGISTRO DE PARTICIPAÇÃO VIA QR CODE (sistema unificado) ----------------
 async function registrarParticipacao(req, res) {
     try {
         console.log('🔧 Iniciando registro de participação...');
@@ -246,8 +294,16 @@ async function registrarParticipacao(req, res) {
             });
         }
 
+        // Verificar se registro está ativo
+        if (process.env.REGISTRO_PARTICIPACAO_ATIVO === 'false') {
+            return res.status(403).json({
+                success: false,
+                message: 'Registro de participação está desabilitado no momento.'
+            });
+        }
+
         // Buscar evento
-        const evento = await EventoRepository.getById(eventoId);
+        const evento = EventoRepository.findById(parseInt(eventoId));
         if (!evento) {
             return res.status(404).json({
                 success: false,
@@ -268,7 +324,7 @@ async function registrarParticipacao(req, res) {
             });
         }
 
-        const aluno = await AlunoRepository.findByCode(decodedToken.data.codigo);
+        const aluno = AlunoRepository.findByCode(decodedToken.data.codigo);
         if (!aluno) {
             return res.status(404).json({
                 success: false,
@@ -279,33 +335,37 @@ async function registrarParticipacao(req, res) {
         console.log('👤 Aluno encontrado:', aluno.nome);
 
         // Calcular pontos baseado na posição
-        let pontos = evento.pontos || 1; // Pontos padrão para participação
-        let tipoRegistro = 'participacao';
+        let pontos = calcularPontos(evento, posicao);
+        let tipoRegistro = posicao === 'participacao' ? 'participacao' : 'vitoria';
         let detalhesVitoria = null;
 
         if (posicao !== 'participacao') {
-            // É uma vitória - buscar pontos no array de vitórias
             const colocacao = parseInt(posicao);
 
+            // Verificar se a colocação é válida para o evento
             if (evento.vitorias && Array.isArray(evento.vitorias)) {
                 const vitoria = evento.vitorias.find(v => v.colocacao === colocacao);
-
-                if (vitoria) {
-                    pontos = vitoria.pontos;
-                    tipoRegistro = 'vitoria';
-                    detalhesVitoria = {
-                        colocacao: colocacao,
-                        pontos: vitoria.pontos
-                    };
-                    console.log(`🏆 Vitória detectada: ${colocacao}º lugar (${pontos} pontos)`);
-                } else {
-                    console.warn(`⚠️ Colocação ${colocacao} não encontrada nas vitórias do evento`);
-                    // Usar pontos padrão se colocação não existir
+                if (!vitoria) {
+                    const colocacoesDisponiveis = evento.vitorias.map(v => v.colocacao).sort((a, b) => a - b);
+                    return res.status(400).json({
+                        success: false,
+                        message: `Colocação ${colocacao} não disponível para este evento. Colocações válidas: ${colocacoesDisponiveis.join(', ')}`
+                    });
                 }
-            } else {
-                console.warn('⚠️ Evento não possui array de vitórias configurado');
-                // Fallback para sistema antigo se necessário
-                pontos = this.calcularPontosLegado(evento, colocacao);
+
+                pontos = vitoria.pontos;
+                detalhesVitoria = {
+                    colocacao: colocacao,
+                    pontos: vitoria.pontos,
+                    descricao: obterTextoColocacao(posicao)
+                };
+                console.log(`🏆 Vitória detectada: ${colocacao}º lugar (${pontos} pontos)`);
+            } else if (![1, 2, 3].includes(colocacao)) {
+                // Sistema legado - aceita apenas 1, 2, 3
+                return res.status(400).json({
+                    success: false,
+                    message: 'Este evento usa o sistema legado. Colocações válidas: 1, 2, 3'
+                });
             }
         }
 
@@ -316,27 +376,36 @@ async function registrarParticipacao(req, res) {
             detalhesVitoria: detalhesVitoria
         });
 
-        // Verificar se já participou
-        const jaParticipou = aluno.participacoes && aluno.participacoes.some(p =>
-            p.eventoId === eventoId &&
-            (p.posicao === posicao || (p.posicao === 'participacao' && posicao !== 'participacao'))
-        );
+        // Verificar se já participou (considerando tanto participação quanto vitórias)
+        const jaParticipou = aluno.participacoes && aluno.participacoes.some(p => {
+            // Se posições são iguais, já participou
+            if (p.posicao === posicao) return true;
+
+            // Se aluno já tem participação normal e está tentando registrar vitória (ou vice-versa)
+            if ((p.posicao === 'participacao' && posicao !== 'participacao') ||
+                (p.posicao !== 'participacao' && posicao === 'participacao')) {
+                return p.eventoId === parseInt(eventoId);
+            }
+
+            return false;
+        });
 
         if (jaParticipou) {
             return res.status(409).json({
                 success: false,
-                message: `Aluno ${aluno.nome} já está registrado neste evento na posição solicitada`
+                message: `Aluno ${aluno.nome} já está registrado neste evento`
             });
         }
 
         // Registrar participação
         const participacao = {
-            eventoId: eventoId,
+            eventoId: parseInt(eventoId),
             eventoNome: evento.nome,
             posicao: posicao,
             pontos: pontos,
-            dataRegistro: new Date(),
-            tipoRegistro: tipoRegistro
+            dataRegistro: new Date().toISOString(),
+            tipoRegistro: tipoRegistro,
+            user: req.user ? req.user.username : 'sistema'
         };
 
         if (detalhesVitoria) {
@@ -349,27 +418,33 @@ async function registrarParticipacao(req, res) {
         }
         aluno.participacoes.push(participacao);
 
-        // Atualizar pontos totais
+        // Atualizar pontos totais do aluno
         aluno.pontos = (aluno.pontos || 0) + pontos;
 
         // Salvar aluno atualizado
-        await AlunoRepository.update(aluno.matricula, aluno);
+        AlunoRepository.update(aluno.matricula, aluno);
 
         console.log('✅ Participação registrada com sucesso');
 
         return res.json({
             success: true,
             message: tipoRegistro === 'vitoria'
-                ? `🏆 Vitória registrada! ${aluno.nome} conquistou o ${posicao}º lugar e ganhou ${pontos} pontos!`
+                ? `🏆 Vitória registrada! ${aluno.nome} conquistou ${obterTextoColocacao(posicao)} e ganhou ${pontos} pontos!`
                 : `✅ Participação registrada! ${aluno.nome} ganhou ${pontos} pontos!`,
             data: {
-                aluno: aluno.nome,
+                aluno: {
+                    nome: aluno.nome,
+                    matricula: aluno.matricula,
+                    turma: aluno.turma,
+                    codigo: aluno.codigo,
+                    pontosTotal: aluno.pontos
+                },
                 evento: evento.nome,
                 posicao: posicao,
                 pontos: pontos,
-                pontosTotal: aluno.pontos,
                 tipoRegistro: tipoRegistro,
-                vitoria: detalhesVitoria
+                vitoria: detalhesVitoria,
+                dataRegistro: participacao.dataRegistro
             }
         });
 
@@ -381,21 +456,6 @@ async function registrarParticipacao(req, res) {
             error: error.message
         });
     }
-}
-
-/**
- * Fallback para calcular pontos no sistema legado (compatibilidade)
- */
-function calcularPontosLegado(evento, colocacao) {
-    const campos = ['primeiroLugar', 'segundoLugar', 'terceiroLugar'];
-    const campo = campos[colocacao - 1];
-
-    if (campo && evento[campo] && evento[campo] > 0) {
-        return evento[campo];
-    }
-
-    // Se não encontrar, usar pontos padrão
-    return evento.pontos || 1;
 }
 
 module.exports = {
