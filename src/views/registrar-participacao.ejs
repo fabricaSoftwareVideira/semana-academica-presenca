@@ -209,6 +209,99 @@
             font-weight: 500;
             color: #444;
         }
+
+        #vitoriasContainer {
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #ddd;
+        }
+
+        #vitoriasContainer label {
+            margin-bottom: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+
+        /* #vitoriasContainer label:hover {
+            background-color: #e3f2fd;
+            border-color: #2196f3;
+        } */
+
+        /* #vitoriasContainer input[type="radio"] {
+            margin-right: 12px;
+            accent-color: #2196f3;
+            transform: scale(1.2);
+        } */
+
+        .posicao-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .posicao-pontos {
+            background: linear-gradient(45deg, #4caf50, #2e7d32);
+            color: white;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Cores específicas por posição */
+        .colocacao-1 {
+            background: linear-gradient(45deg, #ffd700, #ffb300) !important;
+        }
+
+        .colocacao-2 {
+            background: linear-gradient(45deg, #c0c0c0, #9e9e9e) !important;
+        }
+
+        .colocacao-3 {
+            background: linear-gradient(45deg, #cd7f32, #8d5524) !important;
+        }
+
+        .colocacao-4 {
+            background: linear-gradient(45deg, #2196f3, #1565c0) !important;
+        }
+
+        .colocacao-5 {
+            background: linear-gradient(45deg, #9c27b0, #6a1b9a) !important;
+        }
+
+        .colocacao-6 {
+            background: linear-gradient(45deg, #ff5722, #d84315) !important;
+        }
+
+        /* Emojis por posição */
+        .emoji-1::before {
+            content: "🥇";
+        }
+
+        .emoji-2::before {
+            content: "🥈";
+        }
+
+        .emoji-3::before {
+            content: "🥉";
+        }
+
+        .emoji-4::before {
+            content: "🏅";
+        }
+
+        .emoji-5::before {
+            content: "🎖️";
+        }
+
+        .emoji-6::before {
+            content: "🏆";
+        }
     </style>
 </head>
 
@@ -277,17 +370,13 @@
                                     <% } %>
                                         <% eventos.forEach(e=> { %>
                                             <option value="<%= e.id %>" <% if (eventos.length===1) { %>selected<% } %>
-                                                    class="<% if ((e.primeiroLugar||0)> 0 || (e.segundoLugar||0) > 0 ||
-                                                        (e.terceiroLugar||0) > 0) { %>com-medalha<% } %>"
-                                                            data-primeiro="<%= e.primeiroLugar || 0 %>"
-                                                                data-segundo="<%= e.segundoLugar || 0 %>"
-                                                                    data-terceiro="<%= e.terceiroLugar || 0 %>">
-                                                                        <% if ((e.primeiroLugar||0)> 0 ||
-                                                                            (e.segundoLugar||0) > 0 ||
-                                                                            (e.terceiroLugar||0) >
-                                                                            0) {
-                                                                            %>🏅<% } %>
-                                                                                <%= e.nome %>
+                                                    class="<% if (e.vitorias && e.vitorias.length> 0) { %>com-medalha<%
+                                                            } %>"
+                                                            data-vitorias="<%= e.vitorias ?
+                                                                JSON.stringify(e.vitorias).replace(/"/g, '&quot;' )
+                                                                : '[]' %>">
+                                                                <% if (e.vitorias && e.vitorias.length> 0) { %>🏅<% } %>
+                                                                        <%= e.nome %>
                                             </option>
                                             <% }) %>
                             </select>
@@ -296,15 +385,11 @@
                         <!-- Grupo de registro -->
                         <div id="registroGroup" style="display:none;">
                             <p><strong>Escolha o tipo de registro:</strong></p>
-                            <label><input type="radio" name="posicao" value="participacao"><span class="texto">📌
-                                    Participação</span></label>
-                            <hr>
-                            <label><input type="radio" name="posicao" value="1"><span class="texto">🥇 1º
-                                    Lugar</span></label>
-                            <label><input type="radio" name="posicao" value="2"><span class="texto">🥈 2º
-                                    Lugar</span></label>
-                            <label><input type="radio" name="posicao" value="3"><span class="texto">🥉 3º
-                                    Lugar</span></label>
+                            <label><input type="radio" name="posicao" value="participacao" checked><span
+                                    class="texto">📌 Participação</span></label>
+                            <div id="vitoriasContainer">
+                                <!-- As vitórias serão inseridas dinamicamente aqui -->
+                            </div>
                         </div>
 
                         <div class="button-group">

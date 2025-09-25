@@ -226,10 +226,183 @@ function registrarParticipacaoPage(req, res) {
     res.render("registrar-participacao", { user: userView(req.user), alunos, eventos });
 }
 
+// ---------------- NOVO REGISTRO DE PARTICIPAÇÃO ----------------
+async function registrarParticipacao(req, res) {
+    try {
+        console.log('🔧 Iniciando registro de participação...');
+        console.log('📋 Dados recebidos:', {
+            body: req.body,
+            eventoId: req.body.eventoId,
+            posicao: req.body.posicao
+        });
+
+        const { token, eventoId, posicao } = req.body;
+
+        // Validações básicas
+        if (!token || !eventoId || !posicao) {
+            return res.status(400).json({
+                success: false,
+                message: 'Dados obrigatórios não fornecidos (token, eventoId, posicao)'
+            });
+        }
+
+        // Buscar evento
+        const evento = await EventoRepository.getById(eventoId);
+        if (!evento) {
+            return res.status(404).json({
+                success: false,
+                message: 'Evento não encontrado'
+            });
+        }
+
+        console.log('🎯 Evento encontrado:', evento.nome);
+
+        // Decodificar token JWT e buscar aluno
+        const jwtService = require('../services/jwt.service');
+        const decodedToken = jwtService.verifyToken(token);
+
+        if (!decodedToken.success) {
+            return res.status(401).json({
+                success: false,
+                message: 'Token inválido'
+            });
+        }
+
+        const aluno = await AlunoRepository.findByCode(decodedToken.data.codigo);
+        if (!aluno) {
+            return res.status(404).json({
+                success: false,
+                message: 'Aluno não encontrado'
+            });
+        }
+
+        console.log('👤 Aluno encontrado:', aluno.nome);
+
+        // Calcular pontos baseado na posição
+        let pontos = evento.pontos || 1; // Pontos padrão para participação
+        let tipoRegistro = 'participacao';
+        let detalhesVitoria = null;
+
+        if (posicao !== 'participacao') {
+            // É uma vitória - buscar pontos no array de vitórias
+            const colocacao = parseInt(posicao);
+
+            if (evento.vitorias && Array.isArray(evento.vitorias)) {
+                const vitoria = evento.vitorias.find(v => v.colocacao === colocacao);
+
+                if (vitoria) {
+                    pontos = vitoria.pontos;
+                    tipoRegistro = 'vitoria';
+                    detalhesVitoria = {
+                        colocacao: colocacao,
+                        pontos: vitoria.pontos
+                    };
+                    console.log(`🏆 Vitória detectada: ${colocacao}º lugar (${pontos} pontos)`);
+                } else {
+                    console.warn(`⚠️ Colocação ${colocacao} não encontrada nas vitórias do evento`);
+                    // Usar pontos padrão se colocação não existir
+                }
+            } else {
+                console.warn('⚠️ Evento não possui array de vitórias configurado');
+                // Fallback para sistema antigo se necessário
+                pontos = this.calcularPontosLegado(evento, colocacao);
+            }
+        }
+
+        console.log('📊 Registro será feito com:', {
+            tipo: tipoRegistro,
+            pontos: pontos,
+            posicao: posicao,
+            detalhesVitoria: detalhesVitoria
+        });
+
+        // Verificar se já participou
+        const jaParticipou = aluno.participacoes && aluno.participacoes.some(p =>
+            p.eventoId === eventoId &&
+            (p.posicao === posicao || (p.posicao === 'participacao' && posicao !== 'participacao'))
+        );
+
+        if (jaParticipou) {
+            return res.status(409).json({
+                success: false,
+                message: `Aluno ${aluno.nome} já está registrado neste evento na posição solicitada`
+            });
+        }
+
+        // Registrar participação
+        const participacao = {
+            eventoId: eventoId,
+            eventoNome: evento.nome,
+            posicao: posicao,
+            pontos: pontos,
+            dataRegistro: new Date(),
+            tipoRegistro: tipoRegistro
+        };
+
+        if (detalhesVitoria) {
+            participacao.vitoria = detalhesVitoria;
+        }
+
+        // Adicionar participação ao aluno
+        if (!aluno.participacoes) {
+            aluno.participacoes = [];
+        }
+        aluno.participacoes.push(participacao);
+
+        // Atualizar pontos totais
+        aluno.pontos = (aluno.pontos || 0) + pontos;
+
+        // Salvar aluno atualizado
+        await AlunoRepository.update(aluno.matricula, aluno);
+
+        console.log('✅ Participação registrada com sucesso');
+
+        return res.json({
+            success: true,
+            message: tipoRegistro === 'vitoria'
+                ? `🏆 Vitória registrada! ${aluno.nome} conquistou o ${posicao}º lugar e ganhou ${pontos} pontos!`
+                : `✅ Participação registrada! ${aluno.nome} ganhou ${pontos} pontos!`,
+            data: {
+                aluno: aluno.nome,
+                evento: evento.nome,
+                posicao: posicao,
+                pontos: pontos,
+                pontosTotal: aluno.pontos,
+                tipoRegistro: tipoRegistro,
+                vitoria: detalhesVitoria
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Erro ao registrar participação:', error);
+        return res.status(500).json({
+            success: false,
+            message: 'Erro interno do servidor',
+            error: error.message
+        });
+    }
+}
+
+/**
+ * Fallback para calcular pontos no sistema legado (compatibilidade)
+ */
+function calcularPontosLegado(evento, colocacao) {
+    const campos = ['primeiroLugar', 'segundoLugar', 'terceiroLugar'];
+    const campo = campos[colocacao - 1];
+
+    if (campo && evento[campo] && evento[campo] > 0) {
+        return evento[campo];
+    }
+
+    // Se não encontrar, usar pontos padrão
+    return evento.pontos || 1;
+}
+
 module.exports = {
     participarHandler,
     registrarVitoriaHandler,
     cancelarParticipacaoHandler,
     cancelarVitoriaHandler,
-    registrarParticipacaoPage
+    registrarParticipacaoPage,
+    registrarParticipacao
 };

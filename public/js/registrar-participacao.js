@@ -43,24 +43,104 @@ modeToggle.addEventListener("change", function () {
 
 // Atualizar posição selecionada
 document.querySelectorAll("#registroGroup input[name=posicao]").forEach(radio => {
-    radio.addEventListener("change", function () {
-        posicaoSelecionada = this.value;
+    radio.addEventListener('change', function () {
+        marcarPosicaoSelecionada(this.value);
     });
 });
 
+// Event listener para mudança do evento
 eventoSelect.addEventListener("change", function () {
-    resetPosicaoSelecionada(); // reset ao mudar evento
-    const selected = this.options[this.selectedIndex];
-    const temPremiacao = selected.dataset.primeiro > 0 || selected.dataset.segundo > 0 || selected.dataset.terceiro > 0;
-    const registroGroup = document.getElementById("registroGroup");
+    const eventoId = this.value;
+    const selectedOption = this.options[this.selectedIndex];
 
-    if (temPremiacao) {
-        registroGroup.style.display = "block";
+    if (eventoId && selectedOption) {
+        try {
+            // Buscar dados de vitórias do evento selecionado
+            const vitoriasData = selectedOption.getAttribute('data-vitorias');
+            const vitorias = vitoriasData ? JSON.parse(vitoriasData.replace(/&quot;/g, '"')) : [];
+
+            // Atualizar interface com as vitórias
+            atualizarVitorias(vitorias);
+
+            // Mostrar grupo de registro se há vitórias
+            if (vitorias.length > 0) {
+                document.getElementById("registroGroup").style.display = "block";
+            } else {
+                document.getElementById("registroGroup").style.display = "none";
+            }
+        } catch (error) {
+            console.error('❌ Erro ao processar vitórias:', error);
+            // Fallback: esconder grupo de registro
+            document.getElementById("registroGroup").style.display = "none";
+        }
     } else {
-        registroGroup.style.display = "none";
+        document.getElementById("registroGroup").style.display = "none";
+        limparVitorias();
     }
-    pararScanner(); // opcional: parar scanner ao mudar evento
 });
+
+/**
+ * Atualiza a interface com as vitórias disponíveis para o evento
+ */
+function atualizarVitorias(vitorias) {
+    const vitoriasContainer = document.getElementById('vitoriasContainer');
+
+    // Limpar vitórias anteriores
+    vitoriasContainer.innerHTML = '';
+
+    if (vitorias && vitorias.length > 0) {
+        // Adicionar separator
+        const separator = document.createElement('hr');
+        separator.style.margin = '10px 0';
+        vitoriasContainer.appendChild(separator);
+
+        // Ordenar vitórias por colocação
+        const vitoriasOrdenadas = [...vitorias].sort((a, b) => a.colocacao - b.colocacao);
+
+        vitoriasOrdenadas.forEach(vitoria => {
+            const label = document.createElement('label');
+
+            const input = document.createElement('input');
+            input.type = 'radio';
+            input.name = 'posicao';
+            input.value = vitoria.colocacao.toString();
+
+            // Adicionar listener para mudança
+            input.addEventListener('change', function () {
+                marcarPosicaoSelecionada(this.value);
+            });
+
+            const posicaoInfo = document.createElement('div');
+            posicaoInfo.className = 'posicao-info';
+
+            const textoSpan = document.createElement('span');
+            textoSpan.className = `texto emoji-${vitoria.colocacao}`;
+            textoSpan.textContent = ` ${vitoria.colocacao}º Lugar`;
+
+            const pontosSpan = document.createElement('span');
+            pontosSpan.className = `posicao-pontos colocacao-${vitoria.colocacao}`;
+            pontosSpan.textContent = `${vitoria.pontos} pts`;
+
+            posicaoInfo.appendChild(textoSpan);
+            posicaoInfo.appendChild(pontosSpan);
+
+            label.appendChild(input);
+            label.appendChild(posicaoInfo);
+
+            vitoriasContainer.appendChild(label);
+        });
+    }
+}
+
+/**
+ * Limpa todas as vitórias da interface
+ */
+function limparVitorias() {
+    const vitoriasContainer = document.getElementById('vitoriasContainer');
+    if (vitoriasContainer) {
+        vitoriasContainer.innerHTML = '';
+    }
+}
 
 // Verificar se há apenas um evento e processá-lo automaticamente
 document.addEventListener("DOMContentLoaded", function () {
