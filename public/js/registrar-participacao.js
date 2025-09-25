@@ -211,13 +211,15 @@ async function registrarVitoriaParaTurma(token, eventoId) {
         const data = await res.json();
 
         if (!data.success) {
-            throw new Error(data.message || "Erro ao registrar vitória");
+            throw new Error(data.error || data.message || "Erro ao registrar vitória");
         }
 
         const acao = modo === "registrar" ? "Registrada" : "Cancelada";
-        resultado.innerText = `Vitória ${acao}: ${posicaoSelecionada}º lugar (+${data.vitoria?.pontos || 0} pontos)`;
+        resultado.innerText = `Vitória ${acao}: ${posicaoSelecionada}º lugar (+${data.data.vitoria?.pontos || 0} pontos)`;
         erro.innerText = "";
     } catch (err) {
+        console.log(err);
+
         erro.innerText = err.message;
         console.error(err);
     }
