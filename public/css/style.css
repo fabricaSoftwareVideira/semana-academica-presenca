@@ -282,7 +282,7 @@ button, .btn, .card-btn, .logout-btn {
 
 .animated-btn {
   position: relative;
-  transition: transform 0.2s ease;
+  transition: all 0.2s ease;
   animation: pulse 2.5s infinite;
 }
 
@@ -640,6 +640,21 @@ section h2 {
   border-bottom: 2px solid var(--primary-color);
   padding-bottom: 5px;
   color: var(--primary-color);
+}
+
+.divider {
+  border: none;
+  border-top: 2px solid var(--primary-color);
+  margin: 15px auto;
+  width: 60px;
+}
+
+.text-muted {
+  color: var(--gray-dark);
+}
+
+.text-small {
+  font-size: 0.9rem;
 }
 
 .page-title {

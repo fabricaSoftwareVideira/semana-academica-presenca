@@ -98,11 +98,11 @@
                 </div>
 
                 <div class="jumbotron-buttons">
-                    <a href="/qrcode" class="btn btn-warning animated-btn btn-small" title="Gerar Meu QR Code">
+                    <a href="/qrcode" class="btn btn-info animated-btn btn-small" title="Gerar Meu QR Code">
                         <i class="fa fa-qrcode"></i>
                         Gerar Meu QR Code
                     </a>
-                    <a href="/pontuacao" class="btn btn-info animated-btn btn-small"
+                    <a href="/pontuacao" class="btn btn-warning animated-btn btn-small"
                         title="Consultar sua pontuação sem login">
                         <i class="fa fa-trophy"></i>
                         Meus Pontos
@@ -117,7 +117,9 @@
         <section class="content-section">
             <div class="ranking-highlight">
                 <div class="ranking-trophy">🏆</div>
-                <h2>Primeira Colocação</h2>
+                <h3>Classificação</h3>
+                <p class="text-muted text-small">Confira a turma com mais pontos até agora!</p>
+                <hr class="divider">
                 <% if (rankingExistePontuacao) { %>
                     <% if (ranking && ranking.length> 0) { %>
                         <p>A turma <strong>
