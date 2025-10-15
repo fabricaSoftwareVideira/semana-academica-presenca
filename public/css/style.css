@@ -472,7 +472,7 @@ select, .login-box input {
   position: relative;
   background: linear-gradient(135deg, var(--primary-color) 0%, var(--tertiary-color) 100%);
   color: white;
-  padding: 80px 40px;
+  padding: 40px 40px;
   text-align: center;
   overflow: hidden;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
@@ -1293,6 +1293,20 @@ hr {
   }
 }
 
+@media (max-width: 600px) {
+  nav {
+    flex-direction: column;
+    gap: 8px;
+    text-align: center;
+  }
+
+  nav h1 {
+    font-size: clamp(1.2rem, 4vw, 1.6rem);
+    text-wrap: balance;
+  }
+}
+
+
 @media (max-width: 480px) {
   .jumbotron-buttons .btn {
     flex: 1 1 100%;
@@ -1344,4 +1358,45 @@ hr {
   .jumbotron {
     padding: 30px 15px;
   }
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+}
+
+.logo img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* Responsividade */
+@media (max-width: 600px) {
+  .logo img {
+    width: 32px;
+    height: 32px;
+  }
+
+  .logo span {
+    font-size: 1.1rem;
+  }
+}
+
+
+.logo img {
+  width: 48px;
+  height: 48px;
+  background: white;
+  border-radius: 50%;
+  padding: 6px;
+  box-shadow: 0 0 4px rgba(0,0,0,0.2);
+}
+
+.hero-logo {
+  width: 200px;
+  height: 200px;
 }
