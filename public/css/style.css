@@ -1439,3 +1439,151 @@ hr {
   0%, 100% { filter: drop-shadow(0 0 8px rgba(0,188,212,0.5)); }
   50% { filter: drop-shadow(0 0 20px rgba(0,188,212,1)); }
 }
+
+
+/* --- SEÇÃO DA PROGRAMAÇÃO COMPLETA --- */
+.programacao-section {
+  background: linear-gradient(180deg, #f8faff 0%, #eef3ff 100%);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+}
+
+.programacao-section .section-title {
+  text-align: center;
+  font-size: 2rem;
+  color: var(--primary-color);
+  position: relative;
+}
+
+.programacao-section .section-icon {
+  display: inline-block;
+  color: #ffb703;
+}
+
+/* --- DATA DO DIA --- */
+.evento-dia {
+  margin-bottom: 20px;
+  padding-bottom: 30px;
+  border-bottom: 1px solid #dbe2ff;
+}
+
+.evento-data {
+  font-size: 1.4rem;
+  color: #0a1c5c;
+  margin-bottom: 20px;
+  text-transform: capitalize;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.evento-data i {
+  color: #ffb703;
+}
+
+/* --- GRID DE EVENTOS --- */
+.eventos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 15px;
+}
+
+/* --- CARD DE EVENTO --- */
+.evento-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(27, 51, 137, 0.08);
+  border-top: 4px solid #1b3389;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  
+}
+
+/* .evento-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 18px rgba(27, 51, 137, 0.15);
+} */
+
+/* Tipo do evento (tag colorida) */
+.evento-tipo {
+  background: #1b3389;
+  color: #fff;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 8px;
+  align-self: flex-start;
+  font-weight: 600;
+}
+
+.evento-nome {
+  margin: 12px 0 8px;
+  color: #222;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.evento-descricao {
+  color: #555;
+  font-size: 0.95rem;
+  margin-bottom: 10px;
+}
+
+.evento-detalhes {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.evento-detalhes li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.evento-detalhes i {
+  color: #1b3389;
+}
+
+.vitorias-container {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  justify-content: flex-start;
+}
+
+/* .vitoria-card {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(12px);
+  padding: 10px 14px;
+  border-radius: 12px;
+  text-align: center;
+  min-width: 70px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+} */
+
+/* .vitoria-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 15px rgba(0,0,0,0.18);
+} */
+
+.vitoria-card .medalha {
+  font-size: 1.4rem;
+}
+
+.vitoria-card .pontos {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--primary-color);
+}

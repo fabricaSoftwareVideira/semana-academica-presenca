@@ -144,56 +144,90 @@
         </section>
 
         <!-- Programação dos eventos -->
-        <section class="content-section">
+        <section class="content-section programacao-section">
             <h2 class="section-title">
                 <div class="section-icon">
                     <i class="fas fa-calendar-alt"></i>
                 </div>
                 Programação Completa
             </h2>
-            <% if (eventosPorTipo) { %>
-                <div class="eventos-grid">
-                    <% eventosPorTipo.forEach(tipo=> { %>
-                        <div class="evento-card">
-                            <div class="evento-tipo">
-                                <%= tipo.tipo %>
-                            </div>
-                            <% if (tipo.eventos.length> 0) { %>
-                                <% tipo.eventos.forEach(evento=> { %>
-                                    <hr>
 
-                                    <div class="evento-nome">
-                                        <%= evento.nome %>
+            <% if (eventosPorData && eventosPorData.length> 0) { %>
+                <% eventosPorData.forEach(grupo=> { %>
+                    <div class="evento-dia">
+                        <h3 class="evento-data">
+                            <% if (grupo.data==='Sem Data' || !grupo.data) { %>
+                                <i class="fa fa-calendar-times"></i> Sem data definida
+                                <% } else { %>
+                                    <i class="fa fa-calendar-day"></i>
+                                    <%= grupo.dataFormatada %>
+                                        <% } %>
+                        </h3>
+
+                        <div class="eventos-grid">
+                            <% grupo.eventos.forEach(evento=> { %>
+                                <div class="evento-card">
+                                    <div class="evento-card-top">
+                                        <span class="evento-tipo">
+                                            <%= evento.tipo %>
+                                        </span>
                                     </div>
-                                    <p class="detalhe">
-                                        <i class="fas fa-calendar"></i>
-                                        <span>
-                                            <%= new Date(evento.data).toLocaleDateString('pt-BR') %>
-                                        </span>
-                                    </p>
-                                    <p class="detalhe">
-                                        <i class="fas fa-clock"></i>
-                                        <span>
-                                            <%= evento.horario %>
-                                        </span>
-                                    </p>
-                                    <p class="detalhe">
-                                        <i class="fas fa-map-marker-alt"></i>
-                                        <span>
-                                            <%= evento.local %>
-                                        </span>
-                                    </p>
-                                    <% }) %>
-                                        <% } else { %>
-                                            <p>Nenhum evento disponível para este tipo.</p>
+
+                                    <div class="evento-card-body">
+                                        <h4 class="evento-nome">
+                                            <%= evento.nome %>
+                                        </h4>
+                                        <p class="evento-descricao">
+                                            <%= evento.descricao %>
+                                        </p>
+
+                                        <ul class="evento-detalhes">
+                                            <% if (evento.horario) { %>
+                                                <li><i class="fas fa-clock"></i>
+                                                    <%= evento.horario %>
+                                                </li>
+                                                <% } %>
+                                                    <% if (evento.local) { %>
+                                                        <li><i class="fas fa-map-marker-alt"></i>
+                                                            <%= evento.local %>
+                                                        </li>
+                                                        <% } %>
+                                                            <% if (evento.pontos) { %>
+                                                                <li><i class="fas fa-star"></i> Vale <%= evento.pontos
+                                                                        %> pontos
+                                                                </li>
+                                                                <% } %>
+                                        </ul>
+                                        <% if (evento.vitorias && evento.vitorias.length> 0) { %>
+                                            <div class="vitorias-container">
+                                                <% evento.vitorias.forEach(v=> {
+                                                    let medalha = v.colocacao === 1 ? '🥇' :
+                                                    v.colocacao === 2 ? '🥈' :
+                                                    v.colocacao === 3 ? '🥉' :
+                                                    v.colocacao === 4 ? '🏅' :
+                                                    v.colocacao === 5 ? '🏅' : '🏅'; %>
+                                                    <div class="vitoria-card">
+                                                        <span class="medalha">
+                                                            <%= medalha %>
+                                                        </span>
+                                                        <span class="pontos">
+                                                            <%= v.pontos %> pts
+                                                        </span>
+                                                    </div>
+                                                    <% }) %>
+                                            </div>
                                             <% } %>
+                                    </div>
+                                </div>
+                                <% }) %>
                         </div>
-                        <% }) %>
-                </div>
-                <% } else { %>
-                    <p>Nenhum evento disponível no momento.</p>
-                    <% } %>
+                    </div>
+                    <% }) %>
+                        <% } else { %>
+                            <p>Nenhum evento disponível no momento.</p>
+                            <% } %>
         </section>
+
     </div>
 
     <footer role="contentinfo">

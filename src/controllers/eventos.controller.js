@@ -45,4 +45,62 @@ function agruparPorTipo() {
     }));
 }
 
-module.exports = { listar, cadastrar, agruparPorTipo };
+/**
+ * Agrupar por data
+ */
+function agruparPorData() {
+    const eventos = EventoRepository.getAll();
+
+    // Reduz os eventos em grupos por data
+    const eventosPorData = eventos.reduce((acc, evento) => {
+        const data = evento.data || "Sem Data";
+
+        if (!acc[data]) {
+            acc[data] = [];
+        }
+
+        // Corrige o timezone e formata a data em pt-BR
+        let dataFormatada = "Sem data definida";
+        if (evento.data) {
+            const partes = evento.data.split("-"); // ["2025", "11", "10"]
+            const dataObj = new Date(partes[0], partes[1] - 1, partes[2]); // local time
+            dataFormatada = dataObj.toLocaleDateString("pt-BR", {
+                weekday: "long",
+                day: "2-digit",
+                month: "long",
+                year: "numeric",
+            });
+        }
+
+        // Adiciona o evento com a data formatada
+        acc[data].push({
+            ...evento,
+            dataFormatada,
+        });
+
+        return acc;
+    }, {});
+
+    // Converte para array e ordena cronologicamente
+    const gruposOrdenados = Object.keys(eventosPorData)
+        .sort((a, b) => {
+            if (a === "Sem Data") return 1; // "Sem Data" no final
+            if (b === "Sem Data") return -1;
+            return new Date(a) - new Date(b);
+        })
+        .map((data) => {
+            const eventos = eventosPorData[data];
+            const primeiraDataFormatada = eventos[0]?.dataFormatada || "Sem data definida";
+            return {
+                data,
+                dataFormatada: primeiraDataFormatada,
+                eventos,
+            };
+        });
+
+    return gruposOrdenados;
+}
+
+
+
+module.exports = { listar, cadastrar, agruparPorTipo, agruparPorData };
