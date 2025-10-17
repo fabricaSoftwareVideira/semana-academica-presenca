@@ -39,18 +39,13 @@
         </div>
     </nav>
 
-    <header>
+    <!-- <header>
         <div class="jumbotron">
             <div class="tech-pattern"></div>
             <div class="jumbotron-content">
                 <div class="course-badge">
                     <i class="fas fa-code"></i> Curso Técnico em Informática Integrado ao Ensino Médio
                 </div>
-
-                <!-- <h1 class="event-title">
-                    <span class="event-edition">10°</span>
-                    Semana da Informática
-                </h1> -->
 
                 <div class="hero-content">
                     <img src="/img/logo.svg" alt="Logo Semana da Informática" class="hero-logo">
@@ -116,7 +111,87 @@
                 </div>
             </div>
         </div>
+    </header> -->
+
+    <header>
+        <section class="jumbotron">
+            <div class="tech-pattern"></div>
+
+            <div class="jumbotron-inner">
+                <!-- Bloco 1: Logo + Nome do curso -->
+                <div class="hero-side">
+                    <div class="hero-content">
+                        <img src="/img/logo.svg" alt="Logo Start" class="hero-logo" />
+                        <p class="course-badge">
+                            <i class="fas fa-code"></i> Curso Técnico em Informática Integrado ao Ensino Médio
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Bloco 2: Informações e ações -->
+                <div class="info-side">
+                    <div class="event-info">
+                        <div class="info-item">
+                            <i class="fas fa-calendar info-icon"></i>
+                            <div>
+                                <strong>10 a 12 de Novembro</strong>
+                                <br><small>2025</small>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt info-icon"></i>
+                            <div>
+                                <strong>IFC Videira</strong>
+                                <br><small>Campus Videira</small>
+                            </div>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-users info-icon"></i>
+                            <div>
+                                <strong>Informática</strong>
+                                <br><small>Curso Técnico</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="countdown">
+                        <h3><i class="fas fa-clock"></i> Faltam para o evento:</h3>
+                        <div class="countdown-timer" id="countdown">
+                            <div class="time-unit">
+                                <span class="time-value" id="days">--</span>
+                                <span class="time-label">Dias</span>
+                            </div>
+                            <div class="time-unit">
+                                <span class="time-value" id="hours">--</span>
+                                <span class="time-label">Horas</span>
+                            </div>
+                            <div class="time-unit">
+                                <span class="time-value" id="minutes">--</span>
+                                <span class="time-label">Min</span>
+                            </div>
+                            <div class="time-unit">
+                                <span class="time-value" id="seconds">--</span>
+                                <span class="time-label">Seg</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="jumbotron-buttons">
+                        <a href="/qrcode" class="btn btn-info animated-btn btn-small" title="Gerar Meu QR Code">
+                            <i class="fa fa-qrcode"></i>
+                            Gerar Meu QR Code
+                        </a>
+                        <a href="/pontuacao" class="btn btn-warning animated-btn btn-small"
+                            title="Consultar sua pontuação sem login">
+                            <i class="fa fa-trophy"></i>
+                            Meus Pontos
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
     </header>
+
 
     <div class="container">
         <!-- Ranking destacado -->
@@ -142,6 +217,8 @@
                                 <% } %>
             </div>
         </section>
+    </div>
+    <div class="container">
 
         <!-- Programação dos eventos -->
         <section class="content-section programacao-section">
