@@ -1,6 +1,6 @@
 {
     "name": "10° Semana da Informática",
-    "short_name": "Sin 2025",
+    "short_name": "SIN 2025",
     "description": "Aplicativo da Semana da Informática",
     "start_url": "/",
     "display": "standalone",
@@ -9,14 +9,14 @@
     "orientation": "portrait",
     "icons": [
         {
-            "src": "/img/icons/icon-192.svg",
+            "src": "/img/icons/icon-192.webp",
             "sizes": "192x192",
-            "type": "image/png"
+            "type": "image/webp"
         },
         {
-            "src": "/img/icons/icon-512.svg",
+            "src": "/img/icons/icon-512.webp",
             "sizes": "512x512",
-            "type": "image/png"
+            "type": "image/webp"
         }
     ]
 }
