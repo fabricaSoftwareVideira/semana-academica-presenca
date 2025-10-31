@@ -4,7 +4,7 @@
     "description": "Aplicativo da Semana da Informática",
     "start_url": "/",
     "display": "standalone",
-    "background_color": "#fff",
+    "background_color": "#1B3389",
     "theme_color": "#1B3389",
     "orientation": "portrait",
     "icons": [
