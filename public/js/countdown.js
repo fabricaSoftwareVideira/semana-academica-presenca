@@ -15,7 +15,8 @@ function updateCountdown() {
         document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
         document.getElementById('seconds').textContent = seconds.toString().padStart(2, '0');
     } else {
-        document.getElementById('countdown').innerHTML = '<h3 style="color: #4caf50;">🎉 O evento começou! 🎉</h3>';
+        // document.getElementById('countdown').innerHTML = '<h3 style="color: #4caf50;">🎉 O evento começou! 🎉</h3>';
+        document.querySelector('.countdown').remove();
     }
 }
 
