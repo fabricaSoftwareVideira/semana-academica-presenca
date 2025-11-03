@@ -1706,3 +1706,115 @@ header {
     min-width: 150px;
   }
 }
+
+/* ===== SEÇÃO DE PATROCINADORES E APOIADORES ===== */
+.sponsors-section,
+.supporters-section {
+    background: white;
+    border-radius: 20px;
+    padding: 40px 30px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    margin-bottom: 30px;
+}
+
+.sponsors-section .section-title,
+.supporters-section .section-title {
+    text-align: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 35px;
+}
+
+/* Grid de Patrocinadores (3 colunas) */
+.sponsors-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    align-items: center;
+    justify-items: center;
+}
+
+/* Grid de Apoiadores (2 colunas) */
+.supporters-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+    align-items: center;
+    justify-items: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+/* Cards de Patrocinadores e Apoiadores */
+.sponsor-card,
+.supporter-card {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 150px;
+    transition: all 0.3s ease;
+}
+
+.sponsor-card:hover,
+.supporter-card:hover {
+    transform: scale(1.05);
+}
+
+/* Imagens dos logos */
+.sponsor-card img,
+.supporter-card img {
+    max-width: 100%;
+    max-height: 150px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    filter: grayscale(0%);
+    transition: filter 0.3s ease, transform 0.3s ease;
+    /* border-radius: 50%; */
+}
+
+.sponsor-card:hover img,
+.supporter-card:hover img {
+    filter: grayscale(0%);
+    transform: scale(1.05);
+}
+
+/* ===== RESPONSIVIDADE ===== */
+@media (max-width: 992px) {
+    .sponsors-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .supporters-grid {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 500px;
+    }
+}
+
+@media (max-width: 600px) {
+    .sponsors-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .sponsors-section,
+    .supporters-section {
+        padding: 30px 20px;
+    }
+    
+    .sponsor-card,
+    .supporter-card {
+        padding: 10px;
+        min-height: 120px;
+    }
+    
+    .sponsor-card img,
+    .supporter-card img {
+        max-height: 100px;
+    }
+    
+    .supporter-card img {
+        max-height: 80px;
+    }
+}
