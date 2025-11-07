@@ -1,6 +1,6 @@
 // Contador regressivo
 function updateCountdown() {
-    const eventDate = new Date('2025-11-10T08:00:00').getTime();
+    const eventDate = new Date('2025-11-10T07:30:00').getTime();
     const now = new Date().getTime();
     const distance = eventDate - now;
 
