@@ -364,21 +364,19 @@
                                 </label>
                             </div>
 
-                            <select id="eventoSelect" class="form-control evento-select" autofocus>
-                                <% if (eventos.length> 1) { %>
-                                    <option value="">-- Selecione o Evento --</option>
-                                    <% } %>
-                                        <% eventos.forEach(e=> { %>
-                                            <option value="<%= e.id %>" <% if (eventos.length===1) { %>selected<% } %>
-                                                    class="<% if (e.vitorias && e.vitorias.length> 0) { %>com-medalha<%
-                                                            } %>"
-                                                            data-vitorias="<%= e.vitorias ?
-                                                                JSON.stringify(e.vitorias).replace(/"/g, '&quot;' )
-                                                                : '[]' %>">
-                                                                <% if (e.vitorias && e.vitorias.length> 0) { %>🏅<% } %>
-                                                                        <%= e.nome %>
-                                            </option>
-                                            <% }) %>
+                            <select id="eventoSelect" class="form-control" required>
+                                <option value="">Selecione o evento</option>
+                                <% eventos.forEach(e=> { %>
+                                    <option value="<%= e.id %>" <% if (eventos.length===1) { %>selected<% } %>
+                                            class="<% if (e.vitorias && e.vitorias.length> 0) { %>com-medalha<% } %>"
+                                                    data-pontos="<%= e.pontos || 0 %>"
+                                                        data-vitorias="<%= e.vitorias ?
+                                                            JSON.stringify(e.vitorias).replace(/"/g, '&quot;' ) : '[]'
+                                                            %>">
+                                                            <% if (e.vitorias && e.vitorias.length> 0) { %>🏅<% } %>
+                                                                    <%= e.nome %>
+                                    </option>
+                                    <% }); %>
                             </select>
                         </div>
 

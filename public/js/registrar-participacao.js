@@ -59,11 +59,14 @@ eventoSelect.addEventListener("change", function () {
             const vitoriasData = selectedOption.getAttribute('data-vitorias');
             const vitorias = vitoriasData ? JSON.parse(vitoriasData.replace(/&quot;/g, '"')) : [];
 
-            // Atualizar interface com as vitórias
-            atualizarVitorias(vitorias);
+            // Buscar pontos do evento
+            const pontos = parseInt(selectedOption.getAttribute('data-pontos') || '0');
 
-            // Mostrar grupo de registro se há vitórias
-            if (vitorias.length > 0) {
+            // Atualizar interface com as vitórias e pontos
+            atualizarVitorias(vitorias, pontos);
+
+            // Mostrar grupo de registro se há vitórias OU pontos
+            if (vitorias.length > 0 || pontos > 0) {
                 document.getElementById("registroGroup").style.display = "block";
             } else {
                 document.getElementById("registroGroup").style.display = "none";
@@ -72,6 +75,7 @@ eventoSelect.addEventListener("change", function () {
             console.error('❌ Erro ao processar vitórias:', error);
             // Fallback: esconder grupo de registro
             document.getElementById("registroGroup").style.display = "none";
+            limparVitorias();
         }
     } else {
         document.getElementById("registroGroup").style.display = "none";
@@ -82,17 +86,29 @@ eventoSelect.addEventListener("change", function () {
 /**
  * Atualiza a interface com as vitórias disponíveis para o evento
  */
-function atualizarVitorias(vitorias) {
+function atualizarVitorias(vitorias, pontos = 0) {
     const vitoriasContainer = document.getElementById('vitoriasContainer');
+    const participacaoLabel = document.querySelector('#registroGroup label:first-of-type');
 
     // Limpar vitórias anteriores
     vitoriasContainer.innerHTML = '';
 
+    // Mostrar/Ocultar opção de participação baseado nos pontos
+    if (participacaoLabel) {
+        if (pontos > 0) {
+            participacaoLabel.style.display = 'flex';
+        } else {
+            participacaoLabel.style.display = 'none';
+        }
+    }
+
     if (vitorias && vitorias.length > 0) {
-        // Adicionar separator
-        const separator = document.createElement('hr');
-        separator.style.margin = '10px 0';
-        vitoriasContainer.appendChild(separator);
+        // Adicionar separator apenas se houver participação visível
+        if (pontos > 0) {
+            const separator = document.createElement('hr');
+            separator.style.margin = '10px 0';
+            vitoriasContainer.appendChild(separator);
+        }
 
         // Ordenar vitórias por colocação
         const vitoriasOrdenadas = [...vitorias].sort((a, b) => a.colocacao - b.colocacao);
@@ -130,6 +146,16 @@ function atualizarVitorias(vitorias) {
             vitoriasContainer.appendChild(label);
         });
     }
+
+    // Auto-seleção inteligente
+    if (pontos === 0 && vitorias && vitorias.length > 0) {
+        // Se evento só tem vitórias (sem pontos de participação), selecionar primeira vitória
+        const primeiraVitoria = vitorias.sort((a, b) => a.colocacao - b.colocacao)[0];
+        marcarPosicaoSelecionada(primeiraVitoria.colocacao.toString());
+    } else if (pontos > 0) {
+        // Se tem pontos, selecionar participação
+        marcarPosicaoSelecionada('participacao');
+    }
 }
 
 /**
@@ -137,8 +163,15 @@ function atualizarVitorias(vitorias) {
  */
 function limparVitorias() {
     const vitoriasContainer = document.getElementById('vitoriasContainer');
+    const participacaoLabel = document.querySelector('#registroGroup label:first-of-type');
+
     if (vitoriasContainer) {
         vitoriasContainer.innerHTML = '';
+    }
+
+    // Resetar exibição da participação
+    if (participacaoLabel) {
+        participacaoLabel.style.display = 'flex';
     }
 }
 
@@ -151,14 +184,18 @@ document.addEventListener("DOMContentLoaded", function () {
         // Se há um evento selecionado automaticamente, processar
         const selectedOption = eventoSelect.selectedOptions[0];
         if (selectedOption && selectedOption.value) {
-            resetPosicaoSelecionada();
-            const temPremiacao = selectedOption.dataset.primeiro > 0 || selectedOption.dataset.segundo > 0 || selectedOption.dataset.terceiro > 0;
-            const registroGroup = document.getElementById("registroGroup");
+            try {
+                const vitoriasData = selectedOption.getAttribute('data-vitorias');
+                const vitorias = vitoriasData ? JSON.parse(vitoriasData.replace(/&quot;/g, '"')) : [];
+                const pontos = parseInt(selectedOption.getAttribute('data-pontos') || '0');
 
-            if (temPremiacao) {
-                registroGroup.style.display = "block";
-            } else {
-                registroGroup.style.display = "none";
+                atualizarVitorias(vitorias, pontos);
+
+                if (vitorias.length > 0 || pontos > 0) {
+                    document.getElementById("registroGroup").style.display = "block";
+                }
+            } catch (error) {
+                console.error('❌ Erro ao processar evento inicial:', error);
             }
         }
     }
