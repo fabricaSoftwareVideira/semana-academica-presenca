@@ -3,10 +3,4 @@ qrcodes.zip
 node_modules
 .env
 /src/data/*
-<<<<<<< HEAD
-!/src/data/**/
-=======
-!/src/data/**/
-/src/data_limpo/*
-!/src/data_limpo/**/
->>>>>>> 24cf9447cbdbc450ce31877e7bbe69254e3a8081
+/src/data_*
