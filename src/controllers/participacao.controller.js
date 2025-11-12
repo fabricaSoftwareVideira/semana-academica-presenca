@@ -29,7 +29,8 @@ function adicionarParticipacao(aluno, evento, user) {
     }
 
     alunos[idx].participacoes.push(participacao);
-    alunos[idx].pontos = (alunos[idx].pontos || 0) + 1;
+    // Adicionar a quantidade de pontos do evento para o aluno
+    alunos[idx].pontos = (alunos[idx].pontos || 0) + evento.pontos;
 
     AlunoRepository.saveAll(alunos);
 
@@ -47,6 +48,8 @@ function registrarParticipacaoIndividual(matricula, eventoId, user) {
 
 function participarHandler(req, res) {
     const { eventoId } = req.params;
+    console.log(eventoId);
+
     const codigo = req.alunoDecoded.codigo; // 🔑 JWT
 
     const aluno = AlunoRepository.findByCodigo(codigo);
@@ -277,8 +280,8 @@ function registrarParticipacaoPage(req, res) {
 // ---------------- REGISTRO DE PARTICIPAÇÃO VIA QR CODE (sistema unificado) ----------------
 async function registrarParticipacao(req, res) {
     try {
-        console.log('🔧 Iniciando registro de participação...');
-        console.log('📋 Dados recebidos:', {
+        console.log('Iniciando registro de participação...');
+        console.log('Dados recebidos:', {
             body: req.body,
             eventoId: req.body.eventoId,
             posicao: req.body.posicao
@@ -311,8 +314,6 @@ async function registrarParticipacao(req, res) {
             });
         }
 
-        console.log('🎯 Evento encontrado:', evento.nome);
-
         // Decodificar token JWT e buscar aluno
         const jwtService = require('../services/jwt.service');
         const decodedToken = jwtService.verifyToken(token);
@@ -331,8 +332,6 @@ async function registrarParticipacao(req, res) {
                 message: 'Aluno não encontrado'
             });
         }
-
-        console.log('👤 Aluno encontrado:', aluno.nome);
 
         // Calcular pontos baseado na posição
         let pontos = calcularPontos(evento, posicao);
@@ -369,7 +368,7 @@ async function registrarParticipacao(req, res) {
             }
         }
 
-        console.log('📊 Registro será feito com:', {
+        console.info('Registro será feito com:', {
             tipo: tipoRegistro,
             pontos: pontos,
             posicao: posicao,
@@ -424,7 +423,7 @@ async function registrarParticipacao(req, res) {
         // Salvar aluno atualizado
         AlunoRepository.update(aluno.matricula, aluno);
 
-        console.log('✅ Participação registrada com sucesso');
+        console.log('Participação registrada com sucesso');
 
         return res.json({
             success: true,
