@@ -1547,13 +1547,13 @@ hr {
   color: #1b3389;
 }
 
-.vitorias-container {
+/* .vitorias-container {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
   margin-top: 12px;
   justify-content: flex-start;
-}
+} */
 
 /* .vitoria-card {
   display: flex;
